@@ -33,12 +33,14 @@ class ShaderManager {
 
     static RenderShader EnvironmentShader;
     static RenderShader ClothShader;
+    static RenderShader DebugShader;
     static GLuint ClothComputeShader;
     static GLuint ClothComputeStage;
 
    private:
     static void InitEnvironmentShaderAttributes();
     static void InitClothShaderAttributes();
+    static void InitDebugShaderAttributes();
     static void InitShaderUniforms(RenderShader& shaderProgram);
     static GLuint CompileRenderShader(const std::string& vertex_shader_file, const std::string& fragment_shader_file);
     static GLuint CompileComputeShaderProgram(const std::string& compute_shader_file);

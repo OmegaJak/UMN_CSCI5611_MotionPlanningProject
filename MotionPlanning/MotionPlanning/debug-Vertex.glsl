@@ -9,7 +9,6 @@ uniform mat4 proj;
 out vec4 Color;
 
 void main() {
+    gl_Position = proj * view * vec4(position, 1.0);
     Color = inColor;
-    vec4 eyePos = view * vec4(position, 1.0);
-    gl_Position = proj * eyePos;
 }

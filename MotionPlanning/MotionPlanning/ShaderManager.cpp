@@ -1,6 +1,7 @@
 #include <fstream>
 #include "ClothManager.h"
 #include "Constants.h"
+#include "DebugManager.h"
 #include "ModelManager.h"
 #include "ShaderManager.h"
 
@@ -8,25 +9,30 @@ GLuint ShaderManager::ClothComputeShader;
 GLuint ShaderManager::ClothComputeStage;
 RenderShader ShaderManager::EnvironmentShader;
 RenderShader ShaderManager::ClothShader;
+RenderShader ShaderManager::DebugShader;
 
 std::map<int, std::function<void(ShaderAttributes)>> ShaderManager::ShaderFunctions;
 
 void ShaderManager::InitShaders() {
     ClothShader.Program = EnvironmentShader.Program = CompileRenderShader("environment-Vertex.glsl", "environment-Fragment.glsl");
+    DebugShader.Program = CompileRenderShader("debug-Vertex.glsl", "debug-Fragment.glsl");
     ClothComputeShader = CompileComputeShaderProgram("clothComputeShader.glsl");
     ClothComputeStage = glGetUniformLocation(ClothComputeShader, "computationStage");
 
     InitEnvironmentShaderAttributes();
     InitClothShaderAttributes();
+    InitDebugShaderAttributes();
 }
 
 void ShaderManager::Cleanup() {
     glDeleteProgram(EnvironmentShader.Program);
+    glDeleteProgram(DebugShader.Program);
     glDeleteProgram(ClothComputeShader);
     glDeleteProgram(ClothShader.Program);
 
     glDeleteVertexArrays(1, &EnvironmentShader.VAO);
     glDeleteVertexArrays(1, &ClothShader.VAO);
+    glDeleteVertexArrays(1, &DebugShader.VAO);
 }
 
 void ShaderManager::ActivateShader(RenderShader shader) {
@@ -107,6 +113,36 @@ void ShaderManager::InitClothShaderAttributes() {
     ClothManager::InitClothIBO();
 
     glBindVertexArray(0);  // Unbind the VAO in case we want to create a new one
+}
+
+void ShaderManager::InitDebugShaderAttributes() {
+    memset(&DebugShader.Attributes, 0, sizeof(ShaderAttributes));  // Ensure that any unset attributes remain at 0
+
+    DebugManager::InitVBO();
+
+    // First build a Vertex Array Object (VAO) to store mapping of shader attributes to VBO
+    glGenVertexArrays(1, &DebugShader.VAO);  // Create a VAO
+    glBindVertexArray(DebugShader.VAO);      // Bind the above created VAO to the current context
+
+    GLint posAttrib = glGetAttribLocation(DebugShader.Program, "position");
+    glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)0);
+    // Attribute, vals/attrib., type, isNormalized, stride, offset
+    glEnableVertexAttribArray(posAttrib);
+
+    GLint colAttrib = glGetAttribLocation(DebugShader.Program, "inColor");
+    glVertexAttribPointer(colAttrib, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+    glEnableVertexAttribArray(colAttrib);
+
+    GLint uniView = glGetUniformLocation(DebugShader.Program, "view");
+    GLint uniProj = glGetUniformLocation(DebugShader.Program, "proj");
+
+    DebugShader.Attributes.position = posAttrib;
+    DebugShader.Attributes.color = colAttrib;
+    DebugShader.Attributes.view = uniView;
+    DebugShader.Attributes.projection = uniProj;
+
+    glBindVertexArray(0);  // Unbind the VAO in case we want to create a new one
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void ShaderManager::InitShaderUniforms(RenderShader& shaderProgram) {
