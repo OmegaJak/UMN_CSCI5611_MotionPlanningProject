@@ -172,7 +172,7 @@ int main(int argc, char* argv[]) {
     // Create a context to draw in
     SDL_GLContext context = SDL_GL_CreateContext(window);
 
-    // SDL_SetRelativeMouseMode(SDL_TRUE);  // 'grab' the mouse
+    SDL_SetRelativeMouseMode(SDL_TRUE);  // 'grab' the mouse
 
     // Load OpenGL extentions with GLAD
     if (gladLoadGLLoader(SDL_GL_GetProcAddress)) {
@@ -201,18 +201,17 @@ int main(int argc, char* argv[]) {
     Camera camera = Camera();
 
     Environment environment = Environment();
-
-    ClothManager clothManager = ClothManager();
+	
+    //ClothManager clothManager = ClothManager();
 
     LineIndexRange lineIndices = DebugManager::RequestLines(3);
     DebugManager::SetLine(lineIndices.firstIndex, glm::vec3(0, 0, 0), glm::vec3(0, 0, 10), glm::vec3(0, 0, 1));
     DebugManager::SetLine(1, glm::vec3(0, 0, 0), glm::vec3(10, 0, 0), glm::vec3(1, 0, 0));
     DebugManager::SetLine(lineIndices.lastIndex, glm::vec3(0, 0, 0), glm::vec3(0, 10, 0), glm::vec3(0, 1, 0));
-
+	
     ShaderManager::InitShaders();
-
+	
     TextureManager::InitTextures();
-
     glEnable(GL_DEPTH_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
@@ -255,22 +254,20 @@ int main(int argc, char* argv[]) {
                 }
             } else if (windowEvent.type == SDL_KEYDOWN) {
                 if (windowEvent.key.keysym.sym == SDLK_SPACE) {
-                    if (clothManager.simParameters.dt > 0) {
-                        clothManager.simParameters.dt = 0;
-                    } else {
-                        clothManager.simParameters.dt = COMPUTE_SHADER_TIMESTEP;
-                    }
+                    
                 }
             }
 
+
+			/*
             if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT)) {  // Right click is down
                 SDL_SetRelativeMouseMode(SDL_TRUE);
             } else {
                 SDL_SetRelativeMouseMode(SDL_FALSE);
             }
+			*/
 
             if (windowEvent.type == SDL_MOUSEMOTION && SDL_GetRelativeMouseMode() == SDL_TRUE) {
-                // printf("Mouse movement (xrel, yrel): (%i, %i)\n", windowEvent.motion.xrel, windowEvent.motion.yrel);
                 camera.ProcessMouseInput(windowEvent.motion.xrel, windowEvent.motion.yrel);
             } else if (SDL_GetRelativeMouseMode() == SDL_FALSE) {
                 SDL_GetMouseState(&mouseX, &mouseY);
@@ -314,25 +311,23 @@ int main(int argc, char* argv[]) {
             [proj](ShaderAttributes attributes) -> void { glUniformMatrix4fv(attributes.projection, 1, GL_FALSE, glm::value_ptr(proj)); },
             PROJ_SHADER_FUNCTION_ID);
 
+
+		//OLD SPHERE MOVEMENT CODE
+		/*
         if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT) & ~SDL_BUTTON(SDL_BUTTON_RIGHT)) {
             lastMouseWorldCoord = camera.GetMousePosition(normalizedMouseX, normalizedMouseY, proj, gravityCenterDistance);
             environment.SetGravityCenterPosition(lastMouseWorldCoord);
-            clothManager.simParameters.obstacleCenterX = lastMouseWorldCoord.x;
-            clothManager.simParameters.obstacleCenterY = lastMouseWorldCoord.y;
-            clothManager.simParameters.obstacleCenterZ = lastMouseWorldCoord.z;
         }
+		*/
 
         stringstream debugText;
         debugText << fixed << setprecision(3) << COMPUTES_PER_FRAME << " steps per frame, " << ClothManager::NUM_THREADS << "x"
                   << ClothManager::MASSES_PER_THREAD << " masses "
                   << " | " << lastAverageFrameTime << " per frame (" << lastFramerate << "FPS) average over " << framesPerSample
                   << " frames "
-                  << " | cameraPosition: " << camera.GetPosition() << " | CoG position: " << lastMouseWorldCoord
-                  << " | Sim running: " << (clothManager.simParameters.dt > 0);
+                  << " | cameraPosition: " << camera.GetPosition() << " | CoG position: " << lastMouseWorldCoord;
         SDL_SetWindowTitle(window, debugText.str().c_str());
 
-        // Simulate using compute shader
-        clothManager.ExecuteComputeShader();
 
         // Render the environment
         ShaderManager::ActivateShader(ShaderManager::EnvironmentShader);
@@ -341,11 +336,7 @@ int main(int argc, char* argv[]) {
         environment.UpdateAll();
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        // Render particles!!
-        // ShaderManager::ActivateShader(ShaderManager::ClothShader);
-        // TextureManager::Update(ShaderManager::ClothShader.Program);
-        clothManager.RenderParticles(deltaTime, &environment);
-
+		// Render Debug Lines
         ShaderManager::ActivateShader(ShaderManager::DebugShader);
         glBindBuffer(GL_ARRAY_BUFFER, ShaderManager::DebugShader.VBO);
         DebugManager::Draw();
