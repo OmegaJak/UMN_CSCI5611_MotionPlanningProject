@@ -51,8 +51,10 @@ void MotionPlanner::CreateMotionPlanner() {
 		return; 
 	}
 
-	if (GreedySolve(start, end))
+	if (GreedySolve(start, end)) {
+		solution.push_back(start);
 		printf("FOUND SOLUTION\n");
+	}
 	else
 		printf("FAILED to find Solution");
 }

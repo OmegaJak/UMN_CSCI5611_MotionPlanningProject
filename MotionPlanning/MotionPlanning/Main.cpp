@@ -339,13 +339,19 @@ if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT)) {  // Right cl
             [proj](ShaderAttributes attributes) -> void { glUniformMatrix4fv(attributes.projection, 1, GL_FALSE, glm::value_ptr(proj)); },
             PROJ_SHADER_FUNCTION_ID);
 
-        // OLD SPHERE MOVEMENT CODE
-        /*
-if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT) & ~SDL_BUTTON(SDL_BUTTON_RIGHT)) {
-    lastMouseWorldCoord = camera.GetMousePosition(normalizedMouseX, normalizedMouseY, proj, gravityCenterDistance);
-    environment.SetGravityCenterPosition(lastMouseWorldCoord);
-}
-        */
+
+        /// MOVEMENT OF PLACEHOLDER GUY ///
+		// path is stored in solutions vector
+		int solutionsize = solutions.size();
+		GameObject* guy = environment.getObject();
+
+		printf("TIME IS: %f \n", time);
+		float modulartime = fminf(time, solutionsize - 1.01);
+		int inter = trunc(modulartime);
+		float remainder = modulartime - inter;
+		guy->SetPosition((1-remainder) * solutions[inter]->position + remainder * solutions[inter+1]->position);
+
+
 
         stringstream debugText;
         debugText << fixed << setprecision(3) << COMPUTES_PER_FRAME << " steps per frame, " << ClothManager::NUM_THREADS << "x"
