@@ -226,6 +226,15 @@ int main(int argc, char* argv[]) {
         }
     }
 
+	std::vector<Node*> solutions;
+	solutions = motionPlanner.solution;
+	LineIndexRange lineIndices2 = DebugManager::RequestLines(solutions.size() - 1);
+	for (int i = 1; i < solutions.size(); i++) {
+		Node* n1 = solutions[i];
+		Node* n2 = solutions[i - 1];
+		DebugManager::SetLine(lineIndices.firstIndex + i, n1->position, n2->position, glm::vec3(0, 1, 0));
+	}
+
     // DebugManager::SetLine(lineIndices.firstIndex, glm::vec3(0, 0, 0), glm::vec3(0, 0, 10), glm::vec3(0, 0, 1));
     // DebugManager::SetLine(1, glm::vec3(0, 0, 0), glm::vec3(10, 0, 0), glm::vec3(1, 0, 0));
     // DebugManager::SetLine(lineIndices.lastIndex, glm::vec3(0, 0, 0), glm::vec3(0, 10, 0), glm::vec3(0, 1, 0));
