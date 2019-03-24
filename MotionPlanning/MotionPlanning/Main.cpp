@@ -12,6 +12,7 @@
 #include "Constants.h"
 #include "DebugManager.h"
 #include "Environment.h"
+#include "MotionPlanner.h"
 #include "GameObject.h"
 #include "ShaderManager.h"
 #include "TextureManager.h"
@@ -201,13 +202,34 @@ int main(int argc, char* argv[]) {
     Camera camera = Camera();
 
     Environment environment = Environment();
+
+	MotionPlanner motionPlanner = MotionPlanner();
 	
     //ClothManager clothManager = ClothManager();
+	std::vector<Node*> nodes;
+	nodes = motionPlanner.pbr;
+	int numlines = 0;
+	
+	for (int i = 0; i < nodes.size(); i++) {
+		numlines += nodes[i]->connections.size();
+	}
+	printf("NUMBER OF LINES: %d \n", numlines);
 
-    LineIndexRange lineIndices = DebugManager::RequestLines(3);
-    DebugManager::SetLine(lineIndices.firstIndex, glm::vec3(0, 0, 0), glm::vec3(0, 0, 10), glm::vec3(0, 0, 1));
-    DebugManager::SetLine(1, glm::vec3(0, 0, 0), glm::vec3(10, 0, 0), glm::vec3(1, 0, 0));
-    DebugManager::SetLine(lineIndices.lastIndex, glm::vec3(0, 0, 0), glm::vec3(0, 10, 0), glm::vec3(0, 1, 0));
+    LineIndexRange lineIndices = DebugManager::RequestLines(numlines);
+	int curline = lineIndices.firstIndex;
+	for (int i = 0; i < nodes.size(); i++) {
+		Node* n1 = nodes[i];
+		for (int j = 0; j < n1->connections.size(); j++) {
+			Node* n2 = n1->connections[j];
+			DebugManager::SetLine(curline, n1->position, n2->position, glm::vec3(0, 0, 1));
+			curline++;
+		}
+	}
+
+
+    //DebugManager::SetLine(lineIndices.firstIndex, glm::vec3(0, 0, 0), glm::vec3(0, 0, 10), glm::vec3(0, 0, 1));
+    //DebugManager::SetLine(1, glm::vec3(0, 0, 0), glm::vec3(10, 0, 0), glm::vec3(1, 0, 0));
+    //DebugManager::SetLine(lineIndices.lastIndex, glm::vec3(0, 0, 0), glm::vec3(0, 10, 0), glm::vec3(0, 1, 0));
 	
     ShaderManager::InitShaders();
 	
@@ -335,6 +357,9 @@ int main(int argc, char* argv[]) {
         TextureManager::Update(ShaderManager::EnvironmentShader.Program);
         environment.UpdateAll();
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		// Render the PBR (DEBUG ONLY)
+		motionPlanner.Update();
 
 		// Render Debug Lines
         ShaderManager::ActivateShader(ShaderManager::DebugShader);

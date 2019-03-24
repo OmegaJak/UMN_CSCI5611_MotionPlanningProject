@@ -74,9 +74,9 @@ void Camera::ProcessKeyboardInput() {
     }
 
     // Up/down
-    if (key_state[SDL_SCANCODE_R]) {
+    if (key_state[SDL_SCANCODE_E]) {
         _position += _up * moveSpeed;
-    } else if (key_state[SDL_SCANCODE_F]) {
+    } else if (key_state[SDL_SCANCODE_Q]) {
         _position -= _up * moveSpeed;
     }
 
