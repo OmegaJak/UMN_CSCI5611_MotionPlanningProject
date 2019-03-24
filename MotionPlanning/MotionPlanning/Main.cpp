@@ -12,8 +12,8 @@
 #include "Constants.h"
 #include "DebugManager.h"
 #include "Environment.h"
-#include "MotionPlanner.h"
 #include "GameObject.h"
+#include "MotionPlanner.h"
 #include "ShaderManager.h"
 #include "TextureManager.h"
 const char* INSTRUCTIONS =
@@ -203,36 +203,35 @@ int main(int argc, char* argv[]) {
 
     Environment environment = Environment();
 
-	MotionPlanner motionPlanner = MotionPlanner();
-	
-    //ClothManager clothManager = ClothManager();
-	std::vector<Node*> nodes;
-	nodes = motionPlanner.pbr;
-	int numlines = 0;
-	
-	for (int i = 0; i < nodes.size(); i++) {
-		numlines += nodes[i]->connections.size();
-	}
-	printf("NUMBER OF LINES: %d \n", numlines);
+    MotionPlanner motionPlanner = MotionPlanner();
+
+    // ClothManager clothManager = ClothManager();
+    std::vector<Node*> nodes;
+    nodes = motionPlanner.pbr;
+    int numlines = 0;
+
+    for (int i = 0; i < nodes.size(); i++) {
+        numlines += nodes[i]->connections.size();
+    }
+    printf("NUMBER OF LINES: %d \n", numlines);
 
     LineIndexRange lineIndices = DebugManager::RequestLines(numlines);
-	int curline = lineIndices.firstIndex;
-	for (int i = 0; i < nodes.size(); i++) {
-		Node* n1 = nodes[i];
-		for (int j = 0; j < n1->connections.size(); j++) {
-			Node* n2 = n1->connections[j];
-			DebugManager::SetLine(curline, n1->position, n2->position, glm::vec3(0, 0, 1));
-			curline++;
-		}
-	}
+    int curline = lineIndices.firstIndex;
+    for (int i = 0; i < nodes.size(); i++) {
+        Node* n1 = nodes[i];
+        for (int j = 0; j < n1->connections.size(); j++) {
+            Node* n2 = n1->connections[j];
+            DebugManager::SetLine(curline, n1->position, n2->position, glm::vec3(0, 0, 1));
+            curline++;
+        }
+    }
 
+    // DebugManager::SetLine(lineIndices.firstIndex, glm::vec3(0, 0, 0), glm::vec3(0, 0, 10), glm::vec3(0, 0, 1));
+    // DebugManager::SetLine(1, glm::vec3(0, 0, 0), glm::vec3(10, 0, 0), glm::vec3(1, 0, 0));
+    // DebugManager::SetLine(lineIndices.lastIndex, glm::vec3(0, 0, 0), glm::vec3(0, 10, 0), glm::vec3(0, 1, 0));
 
-    //DebugManager::SetLine(lineIndices.firstIndex, glm::vec3(0, 0, 0), glm::vec3(0, 0, 10), glm::vec3(0, 0, 1));
-    //DebugManager::SetLine(1, glm::vec3(0, 0, 0), glm::vec3(10, 0, 0), glm::vec3(1, 0, 0));
-    //DebugManager::SetLine(lineIndices.lastIndex, glm::vec3(0, 0, 0), glm::vec3(0, 10, 0), glm::vec3(0, 1, 0));
-	
     ShaderManager::InitShaders();
-	
+
     TextureManager::InitTextures();
     glEnable(GL_DEPTH_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -276,18 +275,16 @@ int main(int argc, char* argv[]) {
                 }
             } else if (windowEvent.type == SDL_KEYDOWN) {
                 if (windowEvent.key.keysym.sym == SDLK_SPACE) {
-                    
                 }
             }
 
-
-			/*
-            if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT)) {  // Right click is down
-                SDL_SetRelativeMouseMode(SDL_TRUE);
-            } else {
-                SDL_SetRelativeMouseMode(SDL_FALSE);
-            }
-			*/
+            /*
+if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT)) {  // Right click is down
+    SDL_SetRelativeMouseMode(SDL_TRUE);
+} else {
+    SDL_SetRelativeMouseMode(SDL_FALSE);
+}
+            */
 
             if (windowEvent.type == SDL_MOUSEMOTION && SDL_GetRelativeMouseMode() == SDL_TRUE) {
                 camera.ProcessMouseInput(windowEvent.motion.xrel, windowEvent.motion.yrel);
@@ -333,14 +330,13 @@ int main(int argc, char* argv[]) {
             [proj](ShaderAttributes attributes) -> void { glUniformMatrix4fv(attributes.projection, 1, GL_FALSE, glm::value_ptr(proj)); },
             PROJ_SHADER_FUNCTION_ID);
 
-
-		//OLD SPHERE MOVEMENT CODE
-		/*
-        if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT) & ~SDL_BUTTON(SDL_BUTTON_RIGHT)) {
-            lastMouseWorldCoord = camera.GetMousePosition(normalizedMouseX, normalizedMouseY, proj, gravityCenterDistance);
-            environment.SetGravityCenterPosition(lastMouseWorldCoord);
-        }
-		*/
+        // OLD SPHERE MOVEMENT CODE
+        /*
+if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT) & ~SDL_BUTTON(SDL_BUTTON_RIGHT)) {
+    lastMouseWorldCoord = camera.GetMousePosition(normalizedMouseX, normalizedMouseY, proj, gravityCenterDistance);
+    environment.SetGravityCenterPosition(lastMouseWorldCoord);
+}
+        */
 
         stringstream debugText;
         debugText << fixed << setprecision(3) << COMPUTES_PER_FRAME << " steps per frame, " << ClothManager::NUM_THREADS << "x"
@@ -350,7 +346,6 @@ int main(int argc, char* argv[]) {
                   << " | cameraPosition: " << camera.GetPosition() << " | CoG position: " << lastMouseWorldCoord;
         SDL_SetWindowTitle(window, debugText.str().c_str());
 
-
         // Render the environment
         ShaderManager::ActivateShader(ShaderManager::EnvironmentShader);
         glBindBuffer(GL_ARRAY_BUFFER, ShaderManager::EnvironmentShader.VBO);
@@ -358,10 +353,10 @@ int main(int argc, char* argv[]) {
         environment.UpdateAll();
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		// Render the PBR (DEBUG ONLY)
-		motionPlanner.Update();
+        // Render the PBR (DEBUG ONLY)
+        motionPlanner.Update();
 
-		// Render Debug Lines
+        // Render Debug Lines
         ShaderManager::ActivateShader(ShaderManager::DebugShader);
         glBindBuffer(GL_ARRAY_BUFFER, ShaderManager::DebugShader.VBO);
         DebugManager::Draw();
