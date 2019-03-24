@@ -42,7 +42,7 @@ CMakeCache.txt
 *.tlog
 *vs*
 *.pdb
-*.vcxproj*
+*.vcxproj.user
 *.log
 *.ilk
 *.idb
