@@ -61,7 +61,6 @@ float timePassed = 0;
 
 bool fullscreen = false;
 
-// srand(time(NULL));
 float rand01() {
     return rand() / (float)RAND_MAX;
 }
@@ -199,6 +198,8 @@ int main(int argc, char* argv[]) {
 
     SDL_GL_SetSwapInterval(1);
 
+    srand(time(NULL));
+
     Camera camera = Camera();
 
     Environment environment = Environment();
@@ -226,14 +227,14 @@ int main(int argc, char* argv[]) {
         }
     }
 
-	std::vector<Node*> solutions;
-	solutions = motionPlanner.solution;
-	LineIndexRange lineIndices2 = DebugManager::RequestLines(solutions.size() - 1);
-	for (int i = 1; i < solutions.size(); i++) {
-		Node* n1 = solutions[i];
-		Node* n2 = solutions[i - 1];
-		DebugManager::SetLine(lineIndices.firstIndex + i, n1->position, n2->position, glm::vec3(0, 1, 0));
-	}
+    std::vector<Node*> solutions;
+    solutions = motionPlanner.solution;
+    LineIndexRange lineIndices2 = DebugManager::RequestLines(solutions.size() - 1);
+    for (int i = 1; i < solutions.size(); i++) {
+        Node* n1 = solutions[i];
+        Node* n2 = solutions[i - 1];
+        DebugManager::SetLine(lineIndices.firstIndex + i, n1->position, n2->position, glm::vec3(0, 1, 0));
+    }
 
     // DebugManager::SetLine(lineIndices.firstIndex, glm::vec3(0, 0, 0), glm::vec3(0, 0, 10), glm::vec3(0, 0, 1));
     // DebugManager::SetLine(1, glm::vec3(0, 0, 0), glm::vec3(10, 0, 0), glm::vec3(1, 0, 0));
@@ -339,19 +340,18 @@ if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT)) {  // Right cl
             [proj](ShaderAttributes attributes) -> void { glUniformMatrix4fv(attributes.projection, 1, GL_FALSE, glm::value_ptr(proj)); },
             PROJ_SHADER_FUNCTION_ID);
 
-
         /// MOVEMENT OF PLACEHOLDER GUY ///
-		// path is stored in solutions vector
-		int solutionsize = solutions.size();
-		GameObject* guy = environment.getObject();
+        // path is stored in solutions vector
+        int solutionsize = solutions.size();
+        if (solutionsize > 0) {
+            GameObject* guy = environment.getObject();
 
-		printf("TIME IS: %f \n", time);
-		float modulartime = fminf(time, solutionsize - 1.01);
-		int inter = trunc(modulartime);
-		float remainder = modulartime - inter;
-		guy->SetPosition((1-remainder) * solutions[inter]->position + remainder * solutions[inter+1]->position);
-
-
+            printf("TIME IS: %f \n", time);
+            float modulartime = fminf(time, solutionsize - 1.01);
+            int inter = trunc(modulartime);
+            float remainder = modulartime - inter;
+            guy->SetPosition((1 - remainder) * solutions[inter]->position + remainder * solutions[inter + 1]->position);
+        }
 
         stringstream debugText;
         debugText << fixed << setprecision(3) << COMPUTES_PER_FRAME << " steps per frame, " << ClothManager::NUM_THREADS << "x"
