@@ -22,13 +22,13 @@ void MotionPlanner::CreateMotionPlanner() {
     for (int i = 0; i < numsamples; i++) {
         Node* n = new Node();
 
-        glm::vec3 pos = glm::vec3(0);                                                // Hard coded radius of 5, center of (0, 0, 0)
-        while (glm::distance(glm::vec3(pos.x, pos.y, 0), glm::vec3(0, 0, 0)) < 5) {  // Make sure points don't collide with center sphere
+        glm::vec3 pos = glm::vec3(0);                                                 // Hard coded radius of 5, center of (0, 0, 0)
+        while (glm::distance(glm::vec3(pos.x, pos.y, 0), glm::vec3(0, 0, 0)) <= 5) {  // Make sure points don't collide with center sphere
             pos = Utils::RandomVector() * 10.f;
+            pos.z = elevation;
         }
 
         n->position = pos;
-
         n->position.z = elevation;
         pbr.push_back(n);
 
@@ -101,15 +101,15 @@ bool MotionPlanner::Solve(Node* current, Node* goal) {
 // Always goes to the node with the best heuristic. Not guaranteed to find a solution
 bool MotionPlanner::GreedySolve(Node* current, Node* goal) {
     current->explored = true;
-    if (current->position == goal->position) {
+    if (current == goal) {
         solution.push_back(current);
         return true;
     }
 
-    float min = 9999;
+    float min = INFINITY;
     int index = -1;
     for (int i = 0; i < current->connections.size(); i++) {
-        if (current->connections[i]->explored == false && glm::distance(current->connections[i]->position, goal->position) < min) {
+        if (!current->connections[i]->explored && glm::distance(current->connections[i]->position, goal->position) < min) {
             min = glm::distance(current->connections[i]->position, goal->position);
             index = i;
         }
@@ -117,7 +117,9 @@ bool MotionPlanner::GreedySolve(Node* current, Node* goal) {
     if (index < 0) return false;
 
     if (GreedySolve(current->connections[index], goal)) {
-        solution.push_back(current->connections[index]);
+        solution.push_back(current);
         return true;
     }
+
+    return false;
 }

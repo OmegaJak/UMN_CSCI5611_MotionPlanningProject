@@ -206,17 +206,15 @@ int main(int argc, char* argv[]) {
 
     MotionPlanner motionPlanner = MotionPlanner();
 
-    // ClothManager clothManager = ClothManager();
-    std::vector<Node*> nodes;
-    nodes = motionPlanner.pbr;
-    int numlines = 0;
+    std::vector<Node*> nodes = motionPlanner.pbr;
+    int numLines = 0;
 
     for (int i = 0; i < nodes.size(); i++) {
-        numlines += nodes[i]->connections.size();
+        numLines += nodes[i]->connections.size();
     }
-    printf("NUMBER OF LINES: %d \n", numlines);
+    printf("NUMBER OF LINES: %d \n", numLines);
 
-    LineIndexRange lineIndices = DebugManager::RequestLines(numlines);
+    LineIndexRange lineIndices = DebugManager::RequestLines(numLines);
     int curline = lineIndices.firstIndex;
     for (int i = 0; i < nodes.size(); i++) {
         Node* n1 = nodes[i];
@@ -227,13 +225,12 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    std::vector<Node*> solutions;
-    solutions = motionPlanner.solution;
+    std::vector<Node*> solutions = motionPlanner.solution;
     LineIndexRange lineIndices2 = DebugManager::RequestLines(solutions.size() - 1);
     for (int i = 1; i < solutions.size(); i++) {
         Node* n1 = solutions[i];
         Node* n2 = solutions[i - 1];
-        DebugManager::SetLine(lineIndices.firstIndex + i, n1->position, n2->position, glm::vec3(0, 1, 0));
+        DebugManager::SetLine(lineIndices.firstIndex + i - 1, n1->position, n2->position, glm::vec3(0, 1, 0));
     }
 
     // DebugManager::SetLine(lineIndices.firstIndex, glm::vec3(0, 0, 0), glm::vec3(0, 0, 10), glm::vec3(0, 0, 1));
@@ -311,6 +308,7 @@ if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT)) {  // Right cl
                     break;
                 case SDL_WINDOWEVENT_FOCUS_GAINED:
                     SDL_Log("Window focus gained");
+                    SDL_SetRelativeMouseMode(SDL_TRUE);
                     break;
             }
         }
@@ -335,7 +333,7 @@ if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT)) {  // Right cl
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         camera.Update();
-        glm::mat4 proj = glm::perspective(3.14f / 2, screenWidth / (float)screenHeight, 0.4f, 10000.0f);  // FOV, aspect, near, far
+        glm::mat4 proj = glm::perspective(3.14f / 2, screenWidth / (float)screenHeight, 0.1f, 1000.0f);  // FOV, aspect, near, far
         ShaderManager::ApplyToEachRenderShader(
             [proj](ShaderAttributes attributes) -> void { glUniformMatrix4fv(attributes.projection, 1, GL_FALSE, glm::value_ptr(proj)); },
             PROJ_SHADER_FUNCTION_ID);
