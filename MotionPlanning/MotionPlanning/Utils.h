@@ -27,7 +27,7 @@ class Utils {
         float y = (Random() * 2.0f) - 1.0f;
         float z = (Random() * 2.0f) - 1.0f;
 
-        return glm::normalize(glm::vec3(x, y, z));
+        return glm::vec3(x, y, z);
     }
 
     static bool SegmentSphereIntersect(const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& sphere_pos, const float sphere_radius) {
