@@ -1,19 +1,13 @@
 #pragma once
 #include "DebugManager.h"
 #include "GameObject.h"
-
-struct Node {
-    std::vector<Node*> connections;
-    glm::vec3 position;
-    bool explored;
-};
+#include "Search.h"
 
 class MotionPlanner {
    public:
     MotionPlanner();
     void Update();
-    bool Solve(Node* current, Node* goal);
-    bool GreedySolve(Node* current, Node* goal);
+
     int numsamples;
     std::vector<Node*> pbr;
     std::vector<Node*> solution;
@@ -24,6 +18,5 @@ class MotionPlanner {
     Model* _sphereModel;
 
     void CreateMotionPlanner();
+    void Connect(Node* n1, Node* n2) const;
 };
-
-void Connect(Node* n1, Node* n2);

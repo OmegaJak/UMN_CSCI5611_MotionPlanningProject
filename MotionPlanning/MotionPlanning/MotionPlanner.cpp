@@ -3,7 +3,7 @@
 #include "Utils.h"
 
 MotionPlanner::MotionPlanner() {
-    numsamples = 100;
+    numsamples = 10;
     _sphereModel = new Model("models/sphere.txt");
     CreateMotionPlanner();
 }
@@ -55,11 +55,11 @@ void MotionPlanner::CreateMotionPlanner() {
         return;
     }
 
-    if (GreedySolve(start, end)) {
-        solution.push_back(start);
+    if (Search::Solve(start, end, &solution)) {
         printf("FOUND SOLUTION\n");
-    } else
+    } else {
         printf("FAILED to find Solution");
+    }
 }
 
 void MotionPlanner::Update() {
@@ -68,58 +68,12 @@ void MotionPlanner::Update() {
     }
 }
 
-void Connect(Node* n1, Node* n2) {
-    if (n1 != n2 && glm::distance(n1->position, n2->position) < 5) {  // Only allow connections that are somewhat close to each other.
+void MotionPlanner::Connect(Node* n1, Node* n2) const {
+    if (n1 != n2 &&
+        glm::distance(n1->position, n2->position) < INFINITY) {  // Only allow connections that are somewhat close to each other.
         if (!(Utils::SegmentSphereIntersect(n1->position, n2->position, glm::vec3(0, 0, 0), 5))) {
             n1->connections.push_back(n2);
             n2->connections.push_back(n1);
         }
     }
-}
-
-// Regular Solve uses Depth First search to find the goal. Almost never will return an optimal route.
-bool MotionPlanner::Solve(Node* current, Node* goal) {
-    current->explored = true;
-
-    if (current->position == goal->position) {
-        solution.push_back(current);
-        return true;
-    }
-
-    for (int i = 0; i < current->connections.size(); i++) {
-        if (current->connections[i]->explored == false) {
-            if (Solve(current->connections[i], goal)) {
-                solution.push_back(current->connections[i]);
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-// Always goes to the node with the best heuristic. Not guaranteed to find a solution
-bool MotionPlanner::GreedySolve(Node* current, Node* goal) {
-    current->explored = true;
-    if (current == goal) {
-        solution.push_back(current);
-        return true;
-    }
-
-    float min = INFINITY;
-    int index = -1;
-    for (int i = 0; i < current->connections.size(); i++) {
-        if (!current->connections[i]->explored && glm::distance(current->connections[i]->position, goal->position) < min) {
-            min = glm::distance(current->connections[i]->position, goal->position);
-            index = i;
-        }
-    }
-    if (index < 0) return false;
-
-    if (GreedySolve(current->connections[index], goal)) {
-        solution.push_back(current);
-        return true;
-    }
-
-    return false;
 }
