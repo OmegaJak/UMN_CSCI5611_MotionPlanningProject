@@ -11,16 +11,20 @@ MotionPlanner::MotionPlanner() {
 void MotionPlanner::CreateMotionPlanner() {
     const float elevation = 0.5f;
     GameObject gameObject;
+    int currentNodeId = 0;
 
     Node* start = new Node();
+    start->id = currentNodeId++;
     start->position = glm::vec3(-10, -10, elevation);
     Node* end = new Node();
+    end->id = currentNodeId++;
     end->position = glm::vec3(10, 10, elevation);
     pbr.push_back(start);
     pbr.push_back(end);
 
     for (int i = 0; i < numsamples; i++) {
         Node* n = new Node();
+        n->id = currentNodeId++;
 
         glm::vec3 pos = glm::vec3(0);                                                 // Hard coded radius of 5, center of (0, 0, 0)
         while (glm::distance(glm::vec3(pos.x, pos.y, 0), glm::vec3(0, 0, 0)) <= 5) {  // Make sure points don't collide with center sphere
@@ -42,7 +46,7 @@ void MotionPlanner::CreateMotionPlanner() {
 
     // Make Valid Connections.
     for (int i = 0; i < pbr.size(); i++) {
-        for (int j = 0; j < pbr.size(); j++) {
+        for (int j = i + 1; j < pbr.size(); j++) {
             if (i == j) continue;
 
             Connect(pbr[i], pbr[j]);
