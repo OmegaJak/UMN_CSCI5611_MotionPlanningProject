@@ -10,12 +10,12 @@
 #include "gtx/rotate_vector.hpp"
 
 Camera::Camera() {
-    _position = glm::vec3(15, 8, 12.5);
+    _position = glm::vec3(0, 0, 14);
     _forward = glm::vec3(1, 0, 0);
     _worldUp = _up = glm::vec3(0, 0, 1);
 
-    _yaw = 180.0f;
-    _pitch = 0.0f;
+    _yaw = 270.f;
+    _pitch = -89.f;
 
     UpdateCameraVectors();
 }

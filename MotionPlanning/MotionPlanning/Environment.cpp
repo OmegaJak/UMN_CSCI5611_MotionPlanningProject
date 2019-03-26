@@ -40,7 +40,7 @@ void Environment::CreateEnvironment() {
     gameObject->SetTextureIndex(UNTEXTURED);
     gameObject->SetColor(glm::vec3(.5f, .2f, .3f));
     gameObject->SetPosition(glm::vec3(0, 0, 0));
-    gameObject->SetScale(10, 10, 10);
+    gameObject->SetScale(4, 4, 4);
     _gameObjects.push_back(gameObject);
 
     gameObject = new GameObject(_sphereModel);  // Start
