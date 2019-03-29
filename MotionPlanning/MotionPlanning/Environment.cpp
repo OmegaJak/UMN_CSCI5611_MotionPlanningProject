@@ -34,13 +34,6 @@ void Environment::CreateEnvironment() {
     gameObject->SetPosition(glm::vec3(-10, -10, 0));
     _gameObjects.push_back(gameObject);
 
-    gameObject = new GameObject(ModelManager::SphereModel);  // Obstacle
-    gameObject->SetTextureIndex(UNTEXTURED);
-    gameObject->SetColor(glm::vec3(.5f, .2f, .3f));
-    gameObject->SetPosition(glm::vec3(0, 0, 0));
-    gameObject->SetScale(4, 4, 4);
-    _gameObjects.push_back(gameObject);
-
     gameObject = new GameObject(ModelManager::SphereModel);  // Start
     gameObject->SetTextureIndex(UNTEXTURED);
     gameObject->SetColor(glm::vec3(.5f, .2f, 1.f));

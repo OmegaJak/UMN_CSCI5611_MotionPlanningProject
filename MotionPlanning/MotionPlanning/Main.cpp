@@ -15,6 +15,7 @@
 #include "GameObject.h"
 #include "MotionPlanner.h"
 #include "ShaderManager.h"
+#include "SphereObstacle.h"
 #include "TextureManager.h"
 const char* INSTRUCTIONS =
     "***************\n"
@@ -202,11 +203,13 @@ int main(int argc, char* argv[]) {
 
     Camera camera = Camera();
 
+    ModelManager::InitModels();
     Environment environment = Environment();
-	printf("Pee");
+    ConfigurationSpace cSpace = ConfigurationSpace(new SphereObstacle(glm::vec3(0, 0, 0), 5));
+    cSpace.AddObstacle(new SphereObstacle(glm::vec3(0, 0, 10), 4));
+    cSpace.AddObstacle(new SphereObstacle(glm::vec3(8, -2, 5), 2));
 
-    MotionPlanner motionPlanner = MotionPlanner();
-	printf("Pee");
+    MotionPlanner motionPlanner = MotionPlanner(cSpace);
     std::vector<Node*> nodes = motionPlanner.pbr;
     int numLines = 0;
 
@@ -214,7 +217,7 @@ int main(int argc, char* argv[]) {
         numLines += nodes[i]->connections.size();
     }
     printf("NUMBER OF LINES: %d \n", numLines);
-	printf("Pee");
+
     LineIndexRange lineIndices = DebugManager::RequestLines(numLines);
     int curline = lineIndices.firstIndex;
     for (int i = 0; i < nodes.size(); i++) {
@@ -225,7 +228,7 @@ int main(int argc, char* argv[]) {
             curline++;
         }
     }
-	printf("Pee");
+
     std::vector<Node*> solutions = motionPlanner.solution;
     LineIndexRange lineIndices2 = DebugManager::RequestLines(solutions.size() - 1);
     for (int i = 1; i < solutions.size(); i++) {
@@ -233,7 +236,7 @@ int main(int argc, char* argv[]) {
         Node* n2 = solutions[i - 1];
         DebugManager::SetLine(lineIndices.firstIndex + i - 1, n1->position, n2->position, glm::vec3(0, 1, 0));
     }
-	printf("Pee");
+
     // DebugManager::SetLine(lineIndices.firstIndex, glm::vec3(0, 0, 0), glm::vec3(0, 0, 10), glm::vec3(0, 0, 1));
     // DebugManager::SetLine(1, glm::vec3(0, 0, 0), glm::vec3(10, 0, 0), glm::vec3(1, 0, 0));
     // DebugManager::SetLine(lineIndices.lastIndex, glm::vec3(0, 0, 0), glm::vec3(0, 10, 0), glm::vec3(0, 1, 0));

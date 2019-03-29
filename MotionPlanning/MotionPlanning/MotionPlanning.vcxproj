@@ -169,6 +169,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ConfigurationSpace.cpp" />
     <ClCompile Include="DebugManager.cpp" />
     <ClCompile Include="Environment.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -179,12 +180,15 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="MotionPlanner.cpp" />
+    <ClCompile Include="Obstacle.cpp" />
     <ClCompile Include="Search.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
+    <ClCompile Include="SphereObstacle.cpp" />
     <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ConfigurationSpace.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="DebugManager.h" />
     <ClInclude Include="Environment.h" />
@@ -196,10 +200,12 @@
     <ClInclude Include="ModelManager.h" />
     <ClInclude Include="ClothManager.h" />
     <ClInclude Include="MotionPlanner.h" />
+    <ClInclude Include="Obstacle.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Search.h" />
     <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="SphereObstacle.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>

@@ -1,11 +1,12 @@
 #pragma once
+#include "ConfigurationSpace.h"
 #include "DebugManager.h"
 #include "GameObject.h"
 #include "Search.h"
 
 class MotionPlanner {
    public:
-    MotionPlanner();
+    explicit MotionPlanner(ConfigurationSpace cSpace);
     void Update();
 
     int numsamples;
@@ -13,8 +14,9 @@ class MotionPlanner {
     std::vector<Node*> solution;
 
    private:
-    std::vector<GameObject> _gameObjects;
-
     void CreateMotionPlanner();
     void Connect(Node* n1, Node* n2) const;
+
+    std::vector<GameObject> _gameObjects;
+    ConfigurationSpace _cSpace;
 };

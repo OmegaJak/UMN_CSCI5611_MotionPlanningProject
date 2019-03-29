@@ -3,7 +3,9 @@
 #include "MotionPlanner.h"
 #include "Utils.h"
 
-MotionPlanner::MotionPlanner() {
+MotionPlanner::MotionPlanner(ConfigurationSpace cSpace) {
+    _cSpace = cSpace;
+
     numsamples = 100;
     CreateMotionPlanner();
 }
@@ -26,8 +28,8 @@ void MotionPlanner::CreateMotionPlanner() {
         Node* n = new Node();
         n->id = currentNodeId++;
 
-        glm::vec3 pos = glm::vec3(0);                                                   // Hard coded radius of 5, center of (0, 0, 0)
-        while (glm::distance(glm::vec3(pos.x, pos.y, 0), glm::vec3(0, 0, 0)) <= 2.5) {  // Make sure points don't collide with center sphere
+        glm::vec3 pos = Utils::RandomVector() * 10.f;
+        while (_cSpace.PointIsInsideObstacle(pos)) {  // Ensure we don't collide with any obstacles
             pos = Utils::RandomVector() * 10.f;
         }
 
@@ -64,6 +66,8 @@ void MotionPlanner::CreateMotionPlanner() {
 }
 
 void MotionPlanner::Update() {
+    _cSpace.Update();
+
     for (auto gameObject : _gameObjects) {
         gameObject.Update();
     }
@@ -71,7 +75,7 @@ void MotionPlanner::Update() {
 
 void MotionPlanner::Connect(Node* n1, Node* n2) const {
     if (n1 != n2 && glm::distance(n1->position, n2->position) < 10) {  // Only allow connections that are somewhat close to each other.
-        if (!(Utils::SegmentSphereIntersect(n1->position, n2->position, glm::vec3(0, 0, 0), 2.5))) {
+        if (!_cSpace.SegmentIntersectsObstacle(n1->position, n2->position)) {
             n1->connections.push_back(n2);
             n2->connections.push_back(n1);
         }
