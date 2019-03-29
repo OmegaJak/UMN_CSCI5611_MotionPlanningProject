@@ -15,8 +15,6 @@ class MotionPlanner {
    private:
     std::vector<GameObject> _gameObjects;
 
-    Model* _sphereModel;
-
     void CreateMotionPlanner();
     void Connect(Node* n1, Node* n2) const;
 };

@@ -3,6 +3,16 @@
 #include "ModelManager.h"
 #include "ShaderManager.h"
 
+Model* ModelManager::SphereModel;
+Model* ModelManager::CubeModel;
+std::vector<Model*> ModelManager::models_;
+int ModelManager::num_verts_;
+
+void ModelManager::InitModels() {
+    SphereModel = new Model("models/sphere.txt");
+    CubeModel = new Model("models/cube.txt");
+}
+
 void ModelManager::RegisterModel(Model* model) {
     models_.push_back(model);
     model->vbo_vertex_start_index_ = num_verts_;
@@ -31,6 +41,3 @@ void ModelManager::Cleanup() {
 int ModelManager::NumElements() {
     return num_verts_ * ELEMENTS_PER_VERT;
 }
-
-std::vector<Model*> ModelManager::models_;
-int ModelManager::num_verts_;

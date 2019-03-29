@@ -5,12 +5,16 @@
 
 class ModelManager {
    public:
+    static void InitModels();
     static void RegisterModel(Model* model);
 
     static void InitVBO();
     static void Cleanup();
 
     static int NumElements();
+
+    static Model* SphereModel;
+    static Model* CubeModel;
 
    private:
     static std::vector<Model*> models_;

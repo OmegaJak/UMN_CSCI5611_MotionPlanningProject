@@ -1,10 +1,10 @@
 #include "ClothManager.h"
+#include "ModelManager.h"
 #include "MotionPlanner.h"
 #include "Utils.h"
 
 MotionPlanner::MotionPlanner() {
     numsamples = 100;
-    _sphereModel = new Model("models/sphere.txt");
     CreateMotionPlanner();
 }
 
@@ -34,7 +34,7 @@ void MotionPlanner::CreateMotionPlanner() {
         n->position = pos;
         pbr.push_back(n);
 
-        gameObject = GameObject(_sphereModel);  // PBR individual point
+        gameObject = GameObject(ModelManager::SphereModel);  // PBR individual point
         gameObject.SetTextureIndex(UNTEXTURED);
         gameObject.SetColor(glm::vec3(.5f, .5f, .5f));
         gameObject.SetPosition(n->position);
@@ -70,8 +70,7 @@ void MotionPlanner::Update() {
 }
 
 void MotionPlanner::Connect(Node* n1, Node* n2) const {
-    if (n1 != n2 &&
-        glm::distance(n1->position, n2->position) < 10) {  // Only allow connections that are somewhat close to each other.
+    if (n1 != n2 && glm::distance(n1->position, n2->position) < 10) {  // Only allow connections that are somewhat close to each other.
         if (!(Utils::SegmentSphereIntersect(n1->position, n2->position, glm::vec3(0, 0, 0), 2.5))) {
             n1->connections.push_back(n2);
             n2->connections.push_back(n1);
