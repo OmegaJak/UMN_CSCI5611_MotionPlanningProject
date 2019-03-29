@@ -3,6 +3,7 @@
 #include <SDL.h>
 #define GLM_FORCE_RADIANS
 #include <gtc/type_ptr.hpp>
+#include <iostream>
 #include "Camera.h"
 #include "Constants.h"
 #include "ShaderManager.h"
@@ -10,12 +11,12 @@
 #include "gtx/rotate_vector.hpp"
 
 Camera::Camera() {
-    _position = glm::vec3(0, 0, 14);
+    _position = glm::vec3(13, -11, 5.5);
     _forward = glm::vec3(1, 0, 0);
     _worldUp = _up = glm::vec3(0, 0, 1);
 
-    _yaw = 270.f;
-    _pitch = -89.f;
+    _yaw = 138.f;
+    _pitch = -21.f;
 
     UpdateCameraVectors();
 }
@@ -113,6 +114,8 @@ void Camera::Update() {
 }
 
 void Camera::UpdateCameraVectors() {
+    // std::cout << "yaw: " << _yaw << "pitch: " << _pitch << std::endl;
+
     glm::vec3 forward;
     forward.x = cos(glm::radians(_yaw)) * cos(glm::radians(_pitch));
     forward.y = sin(glm::radians(_yaw)) * cos(glm::radians(_pitch));
