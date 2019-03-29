@@ -23,7 +23,7 @@
     <ProjectGuid>{0E4A80E2-E717-4644-BE15-CC29F27CBA1A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>MazeGame</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
     <ProjectName>MotionPlanning</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -94,7 +94,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>D:\Program Files\glm\glm;D:\Program Files\SDL2\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Program Files\SDL2_image-2.0.4\include;D:\Program Files\glm\glm;D:\Program Files\SDL2\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
