@@ -57,7 +57,6 @@ bool Search::A_Star(Node* start, Node* goal, std::vector<Node*>* solution) {
 
     start->aStarData = Node::AStarNodeData(0, Heuristic(start, goal), true);
     fringe.push(start);
-	
 
     while (!fringe.empty()) {
         auto current = fringe.top();
@@ -66,7 +65,7 @@ bool Search::A_Star(Node* start, Node* goal, std::vector<Node*>* solution) {
             *solution = Reconstruct_Solution(current);
             return true;
         }
-		printf("FRINGE SIZE %d \n", fringe.size());
+        printf("FRINGE SIZE %d \n", fringe.size());
         fringe.pop();
         current->explored = true;
         for (auto neighbor : current->connections) {
@@ -89,7 +88,7 @@ bool Search::A_Star(Node* start, Node* goal, std::vector<Node*>* solution) {
             neighbor->aStarData.f_cost = tentativeGCost + Heuristic(neighbor, goal);
         }
     }
-	printf("PEE2");
+
     return false;
 }
 
@@ -102,5 +101,7 @@ std::vector<Node*> Search::Reconstruct_Solution(Node* current) {
         solution.push_back(current);
     }
 
-    return solution;  // Should this be reversed?
+    std::reverse(solution.begin(), solution.end());
+
+    return solution;
 }

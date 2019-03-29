@@ -15,10 +15,10 @@ void MotionPlanner::CreateMotionPlanner() {
 
     Node* start = new Node();
     start->id = currentNodeId++;
-    start->position = glm::vec3(-10, -10, elevation);
+    start->position = glm::vec3(-10, -10, -10);
     Node* end = new Node();
     end->id = currentNodeId++;
-    end->position = glm::vec3(10, 10, elevation);
+    end->position = glm::vec3(10, 10, 10);
     pbr.push_back(start);
     pbr.push_back(end);
 

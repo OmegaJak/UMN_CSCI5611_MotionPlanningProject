@@ -44,14 +44,14 @@ void Environment::CreateEnvironment() {
     gameObject = new GameObject(ModelManager::SphereModel);  // Start
     gameObject->SetTextureIndex(UNTEXTURED);
     gameObject->SetColor(glm::vec3(.5f, .2f, 1.f));
-    gameObject->SetPosition(glm::vec3(-10, -10, 0.5));
+    gameObject->SetPosition(glm::vec3(-10, -10, -10));
     gameObject->SetScale(1, 1, 1);
     _gameObjects.push_back(gameObject);
 
     gameObject = new GameObject(ModelManager::SphereModel);  // End
     gameObject->SetTextureIndex(UNTEXTURED);
     gameObject->SetColor(glm::vec3(.5f, 1.f, .3f));
-    gameObject->SetPosition(glm::vec3(10, 10, 0.5));
+    gameObject->SetPosition(glm::vec3(10, 10, 10));
     gameObject->SetScale(1, 1, 1);
     _gameObjects.push_back(gameObject);
 
