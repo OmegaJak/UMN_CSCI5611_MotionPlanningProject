@@ -344,16 +344,27 @@ if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT)) {  // Right cl
 
         /// MOVEMENT OF PLACEHOLDER GUY ///
         // path is stored in solutions vector
+        int currentNode = 0;
         int solutionsize = solutions.size();
-        if (solutionsize > 0) {
+        float distToNextNode = 0;
+        float speed = 10.f;
+        float distanceToTravel = speed * time;
+		//This while loop finds out which node the "distance to Travel" falls between. 
+        while (distanceToTravel > 0 && currentNode < solutionsize - 1) { 
+            distToNextNode = glm::distance(solutions[currentNode]->position, solutions[currentNode + 1]->position);
+            distanceToTravel -= distToNextNode;
+            currentNode++;
+		}
+        currentNode--; //Undo Last step of While loop (So distanceToTravel is not negative)
+        distanceToTravel += distToNextNode;
+        
+        if (solutionsize > 0 && currentNode < solutionsize - 1) {
             GameObject* guy = environment.getObject();
-
-            printf("TIME IS: %f \n", time);
-            float modulartime = fminf(time, solutionsize - 1.01);
-            int inter = trunc(modulartime);
-            float remainder = modulartime - inter;
-            guy->SetPosition((1 - remainder) * solutions[inter]->position + remainder * solutions[inter + 1]->position);
-        }
+            glm::vec3 dir = glm::normalize(solutions[currentNode + 1]->position - solutions[currentNode]->position); 
+            guy->SetPosition(solutions[currentNode]->position + distanceToTravel * dir);  
+		}
+		
+		/// END MOVEMENT OF PLACEHOLDER GUY ///
 
         stringstream debugText;
         debugText << fixed << setprecision(3) << COMPUTES_PER_FRAME << " steps per frame, " << ClothManager::NUM_THREADS << "x"
