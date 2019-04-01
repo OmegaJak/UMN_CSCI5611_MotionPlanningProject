@@ -11,6 +11,7 @@ int ModelManager::num_verts_;
 void ModelManager::InitModels() {
     SphereModel = new Model("models/sphere.txt");
     CubeModel = new Model("models/cube.txt");
+    Model* child = new Model("models/Bird2.obj");
 }
 
 void ModelManager::RegisterModel(Model* model) {
@@ -23,7 +24,10 @@ void ModelManager::InitVBO() {
     float* model_data = new float[NumElements()];
 
     int current_offset = 0;
+
+
     for (auto model : models_) {
+        printf("Size of Model: %d", model->NumElements());
         std::copy(model->model_, model->model_ + model->NumElements(), model_data + current_offset);
         current_offset += model->NumElements();
     }
@@ -40,4 +44,8 @@ void ModelManager::Cleanup() {
 
 int ModelManager::NumElements() {
     return num_verts_ * ELEMENTS_PER_VERT;
+}
+
+Model* ModelManager::GetModel(int index) {
+    return models_[index];
 }

@@ -13,6 +13,7 @@
 #include "DebugManager.h"
 #include "Environment.h"
 #include "GameObject.h"
+#include "AnimatedObject.h"
 #include "MotionPlanner.h"
 #include "ShaderManager.h"
 #include "SphereObstacle.h"
@@ -203,7 +204,9 @@ int main(int argc, char* argv[]) {
 
     Camera camera = Camera();
 
-    ModelManager::InitModels();
+    ModelManager::InitModels(); 
+
+
     Environment environment = Environment();
     ConfigurationSpace cSpace = ConfigurationSpace(new SphereObstacle(glm::vec3(0, 0, 0), 5));
     cSpace.AddObstacle(new SphereObstacle(glm::vec3(0, 0, 10), 4));
@@ -347,24 +350,24 @@ if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT)) {  // Right cl
         int currentNode = 0;
         int solutionsize = solutions.size();
         float distToNextNode = 0;
-        float speed = 10.f;
+        float speed = 1.f;
         float distanceToTravel = speed * time;
-		//This while loop finds out which node the "distance to Travel" falls between. 
-        while (distanceToTravel > 0 && currentNode < solutionsize - 1) { 
+        // This while loop finds out which node the "distance to Travel" falls between.
+        while (distanceToTravel > 0 && currentNode < solutionsize - 1) {
             distToNextNode = glm::distance(solutions[currentNode]->position, solutions[currentNode + 1]->position);
             distanceToTravel -= distToNextNode;
             currentNode++;
-		}
-        currentNode--; //Undo Last step of While loop (So distanceToTravel is not negative)
+        }
+        currentNode--;  // Undo Last step of While loop (So distanceToTravel is not negative)
         distanceToTravel += distToNextNode;
-        
+
         if (solutionsize > 0 && currentNode < solutionsize - 1) {
             GameObject* guy = environment.getObject();
-            glm::vec3 dir = glm::normalize(solutions[currentNode + 1]->position - solutions[currentNode]->position); 
-            guy->SetPosition(solutions[currentNode]->position + distanceToTravel * dir);  
-		}
-		
-		/// END MOVEMENT OF PLACEHOLDER GUY ///
+            glm::vec3 dir = glm::normalize(solutions[currentNode + 1]->position - solutions[currentNode]->position);
+            guy->SetPosition(solutions[currentNode]->position + distanceToTravel * dir);
+        }
+
+        /// END MOVEMENT OF PLACEHOLDER GUY ///
 
         stringstream debugText;
         debugText << fixed << setprecision(3) << COMPUTES_PER_FRAME << " steps per frame, " << ClothManager::NUM_THREADS << "x"

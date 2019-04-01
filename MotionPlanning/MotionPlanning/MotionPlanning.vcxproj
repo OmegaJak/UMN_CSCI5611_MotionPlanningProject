@@ -94,13 +94,13 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>D:\Program Files\SDL2_image-2.0.4\include;D:\Program Files\glm\glm;D:\Program Files\SDL2\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Program Files\iconv-1.9.2.win32\include;D:\Program Files\SDL2_image-2.0.4\include;D:\Program Files\glm\glm;D:\Program Files\SDL2\include;D:\Program Files\libxml2-2.7.8.win32\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\Program Files\SDL2\lib\x86</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);SDL2.lib;SDL2main.lib;SDL2_image.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Program Files\iconv-1.9.2.win32\lib;D:\Program Files\libxml2-2.7.8.win32\lib;D:\Program Files\SDL2\lib\x86</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies);SDL2.lib;SDL2main.lib;SDL2_image.lib;libxml2.lib;libxml2_a.lib;libxml2_a_dll.lib;iconv.lib;iconv_a.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -168,6 +168,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\..\Kieran%27s Stuff 2.0\Graphics\Csci5611\CSCI5611MotionPlanning\MotionPlanning\MotionPlanning\AnimatedObject.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ConfigurationSpace.cpp" />
     <ClCompile Include="DebugManager.cpp" />
@@ -187,6 +188,7 @@
     <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\Kieran%27s Stuff 2.0\Graphics\Csci5611\CSCI5611MotionPlanning\MotionPlanning\MotionPlanning\AnimatedObject.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConfigurationSpace.h" />
     <ClInclude Include="Constants.h" />

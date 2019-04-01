@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "AnimatedObject.h"
 
 class Environment {
    public:
@@ -16,5 +17,6 @@ class Environment {
     void CreateEnvironment();
 
     std::vector<GameObject*> _gameObjects;
+    std::vector<AnimatedObject*> _animatedObjects;
     int _gravityCenterIndex;
 };

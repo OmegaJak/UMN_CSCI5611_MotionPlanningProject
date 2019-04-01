@@ -10,6 +10,7 @@ class ModelManager {
 
     static void InitVBO();
     static void Cleanup();
+    static Model* GetModel(int index);
 
     static int NumElements();
 

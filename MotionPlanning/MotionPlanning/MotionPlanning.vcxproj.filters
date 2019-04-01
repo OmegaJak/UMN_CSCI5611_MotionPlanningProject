@@ -66,6 +66,9 @@
     <ClCompile Include="SphereObstacle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\Kieran%27s Stuff 2.0\Graphics\Csci5611\CSCI5611MotionPlanning\MotionPlanning\MotionPlanning\AnimatedObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -129,6 +132,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SphereObstacle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\Kieran%27s Stuff 2.0\Graphics\Csci5611\CSCI5611MotionPlanning\MotionPlanning\MotionPlanning\AnimatedObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

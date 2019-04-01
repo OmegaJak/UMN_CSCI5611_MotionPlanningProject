@@ -11,14 +11,17 @@ void Environment::UpdateAll() {
     for (auto gameObject : _gameObjects) {
         gameObject->Update();
     }
+    for (auto animatedObject : _animatedObjects) {
+        animatedObject->Update();
+	}
 }
-
 void Environment::SetGravityCenterPosition(const glm::vec3& position) {
     _gameObjects[_gravityCenterIndex]->SetPosition(position);
 }
 
 void Environment::CreateEnvironment() {
     GameObject* gameObject;
+    AnimatedObject* animatedObject;
 
     gameObject = new GameObject(ModelManager::CubeModel);  // ground
     gameObject->SetTextureIndex(UNTEXTURED);
@@ -28,9 +31,9 @@ void Environment::CreateEnvironment() {
     gameObject->material_.specFactor_ = 0.2;
     _gameObjects.push_back(gameObject);
 
-    gameObject = new GameObject(ModelManager::CubeModel);  // reference person
-    gameObject->SetTextureIndex(TEX1);
-    gameObject->SetScale(1, 0, -3);
+    gameObject = new GameObject(ModelManager::GetModel(2));  // reference person
+    gameObject->SetTextureIndex(TEX0);
+    gameObject->SetScale(1, 1, -1);
     gameObject->SetPosition(glm::vec3(-10, -10, 0));
     _gameObjects.push_back(gameObject);
 
@@ -47,6 +50,20 @@ void Environment::CreateEnvironment() {
     gameObject->SetPosition(glm::vec3(10, 10, 10));
     gameObject->SetScale(1, 1, 1);
     _gameObjects.push_back(gameObject);
+
+	gameObject = new GameObject(ModelManager::GetModel(2));
+    gameObject->SetTextureIndex(TEX0);
+    gameObject->SetScale(5, 5, 5);
+    _gameObjects.push_back(gameObject);
+
+
+
+	animatedObject = new AnimatedObject(ModelManager::SphereModel);
+    animatedObject->SetTextureIndex(UNTEXTURED);
+    animatedObject->SetColor(glm::vec3(.5f, 1.f, .5f));
+    animatedObject->SetPosition(glm::vec3(20, 10, 10));
+    animatedObject->SetScale(5, 5, 5);
+    _animatedObjects.push_back(animatedObject);
 
     _gravityCenterIndex = _gameObjects.size() - 1;
 }
