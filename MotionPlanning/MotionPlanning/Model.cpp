@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 #include <libxml/xmlwriter.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 #include "Constants.h"
 #include "model.h"
 #include "ModelManager.h"
@@ -25,7 +27,9 @@ Model::Model(const string& file) {
         LoadTxt(file);
     } else if (extension == "obj") {
         LoadObj2(file);
-    } else {
+    } else if (extension == "dae") {
+        LoadDae(file);
+	} else {
         printf("Unrecognized file extension \"%s\" for file \"%s\". Exiting...\n", extension.c_str(), file.c_str());
         exit(1);
     }
@@ -225,6 +229,30 @@ void Model::LoadObj2(const std::string& filename) {
 }
 
 void Model::LoadDae(const std::string& filename) {
+	xmlDoc* doc = NULL;
+	xmlNode* root = NULL;
+	LIBXML_TEST_VERSION
+
+	doc = xmlReadFile(filename.c_str(), NULL, 0);
+	if (doc == NULL) {
+		printf("Error: could not parse file: %s\n", filename);
+	}
+	root = xmlDocGetRootElement(doc);
+	//print_xmlfile(root, 0);
+
+	xmlNode* nodeFound;
+        nodeFound = searchNode(root, (char*)"source");
+        print_xmlfile(nodeFound, -1);
+
+	if (nodeFound != NULL) {
+            nodeFound = searchNode(nodeFound, (char*)"float_array");
+	}
+    
+	if (nodeFound != NULL) parseNode(doc, nodeFound);
+        printf("-------------------------------------------\n");
+
+	xmlFreeDoc(doc);
+	xmlCleanupParser();
 
 }
 
@@ -243,4 +271,49 @@ std::vector<glm::vec4> Model::Vertices() const {
     }
 
     return verts;
+}
+
+//Recursively print xml file node names.
+//xmlsoft.org/examples/tree1.c
+void Model::print_xmlfile(xmlNode* a_node, int level) {
+    level++;
+	xmlNode* cur_node = NULL;
+	for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
+		if (cur_node->type == XML_ELEMENT_NODE) {
+            for (int i = 0; i < level; i++) {
+                printf(" +"); // Level
+			}
+			printf("node type: Element, name: %s\n", cur_node->name);
+		}
+		print_xmlfile(cur_node->children, level);
+	}
+}
+//Searches for a node, returns NULL if not found
+//http://cse.csusb.edu/tongyu/courses/cs520/notes/cs520b.pdf
+xmlNode* Model::searchNode(xmlNode* a_node, char target[]) {
+    xmlNode* nodeFound = NULL;
+    for (xmlNode* cur = a_node; cur; cur = cur->next) {
+        if (cur->type == XML_ELEMENT_NODE) {
+            if (!xmlStrcmp(cur->name, (const xmlChar*)target)) {
+                printf("Found %s \n", cur->name);
+                nodeFound = cur;
+                break;
+            }
+        }
+        // search recursively until node is found.
+        if (nodeFound == NULL && cur != NULL) nodeFound = searchNode(cur->children, target);
+    }
+    return nodeFound;
+}
+
+void Model::parseNode(xmlDocPtr doc, xmlNodePtr cur) {
+    xmlChar* key;
+    cur = cur->xmlChildrenNode;
+    while (cur != NULL) {
+        key = xmlNodeListGetString(doc, cur, 1);
+        printf(" %s\n", key);
+        xmlFree(key);
+        cur = cur->next;
+    }
+    return;
 }

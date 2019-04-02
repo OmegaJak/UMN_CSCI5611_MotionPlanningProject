@@ -15,7 +15,7 @@ void TextureManager::InitTextures() {
     glBindVertexArray(ShaderManager::EnvironmentShader.VAO);
 
     // Allocate Texture 0
-    SDL_Surface* surface = IMG_Load("images/Bird.png");
+    SDL_Surface* surface = IMG_Load("images/Bird01.png");
     glActiveTexture(GL_TEXTURE0);
     InitTexture(&tex0, surface);
 

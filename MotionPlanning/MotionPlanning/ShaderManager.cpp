@@ -182,17 +182,17 @@ GLuint ShaderManager::CompileRenderShader(const std::string& vertex_shader_file,
         printf("Failed to read from vertex shader file %s\n", vertex_shader_file.c_str());
         exit(1);
     } else if (DEBUG_ON) {
-        printf("Vertex Shader (%s):\n=====================\n", vertex_shader_file.c_str());
-        printf("%s\n", vs_text);
-        printf("=====================\n\n");
+        //printf("Vertex Shader (%s):\n=====================\n", vertex_shader_file.c_str());
+        //printf("%s\n", vs_text);
+        //printf("=====================\n\n");
     }
     if (fs_text == NULL) {
         printf("Failed to read from fragment shader file %s\n", fragment_shader_file.c_str());
         exit(1);
     } else if (DEBUG_ON) {
-        printf("\nFragment Shader (%s):\n=====================\n", fragment_shader_file.c_str());
-        printf("%s\n", fs_text);
-        printf("=====================\n\n");
+        //printf("\nFragment Shader (%s):\n=====================\n", fragment_shader_file.c_str());
+        //printf("%s\n", fs_text);
+        //printf("=====================\n\n");
     }
 
     // Load Vertex Shader
@@ -254,9 +254,9 @@ GLuint ShaderManager::CompileComputeShaderProgram(const std::string& compute_sha
         printf("Failed to read from compute shader file %s\n", compute_shader_file.c_str());
         exit(1);
     } else if (DEBUG_ON) {
-        printf("Compute Shader (%s):\n=====================\n", compute_shader_file.c_str());
-        printf("%s\n", vs_text);
-        printf("=====================\n\n");
+        //printf("Compute Shader (%s):\n=====================\n", compute_shader_file.c_str());
+        //printf("%s\n", vs_text);
+        //printf("=====================\n\n");
     }
 
     // Load Compute Shader
