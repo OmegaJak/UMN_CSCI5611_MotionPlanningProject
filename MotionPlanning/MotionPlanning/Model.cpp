@@ -3,6 +3,7 @@
 #include <detail/type_vec3.hpp>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include <string>
 #include <libxml/xmlwriter.h>
@@ -229,6 +230,15 @@ void Model::LoadObj2(const std::string& filename) {
 }
 
 void Model::LoadDae(const std::string& filename) {
+    std::vector<glm::vec3> out_vertices;
+    std::vector<glm::vec2> out_uvs;
+    std::vector<glm::vec3> out_normals;
+    std::vector<unsigned int> indices, uvs, normals;
+    std::vector<float> data;
+    std::vector<glm::vec3> temp_vertices;
+    std::vector<glm::vec2> temp_uvs;
+    std::vector<glm::vec3> temp_normals;
+
 	xmlDoc* doc = NULL;
 	xmlNode* root = NULL;
 	LIBXML_TEST_VERSION
@@ -241,15 +251,35 @@ void Model::LoadDae(const std::string& filename) {
 	//print_xmlfile(root, 0);
 
 	xmlNode* nodeFound;
-        nodeFound = searchNode(root, (char*)"source");
-        print_xmlfile(nodeFound, -1);
+    nodeFound = searchNode(root, (char*)"geometry");
+    print_xmlfile(nodeFound->parent, 0);
 
 	if (nodeFound != NULL) {
-            nodeFound = searchNode(nodeFound, (char*)"float_array");
+        nodeFound = searchNode(nodeFound, (char*)"float_array");
 	}
     
-	if (nodeFound != NULL) parseNode(doc, nodeFound);
-        printf("-------------------------------------------\n");
+	if (nodeFound != NULL) {
+            xmlChar* key;
+            nodeFound = nodeFound->xmlChildrenNode;
+            while (nodeFound != NULL) {
+                key = xmlNodeListGetString(doc, nodeFound, 1);
+                string input = (char*)key;
+                std::istringstream ss(input);
+                string token;
+                printf("-----\n");
+                int xyz = 0;
+                while (std::getline(ss, token, ' ')) {
+                    data.push_back(std::stoi(token));
+                }
+                printf("-----\n");
+                xmlFree(key);
+                nodeFound = nodeFound->next;
+            }
+
+
+		//parseNode(doc, nodeFound);
+	}
+    printf("-------------------------------------------\n");
 
 	xmlFreeDoc(doc);
 	xmlCleanupParser();
@@ -283,7 +313,7 @@ void Model::print_xmlfile(xmlNode* a_node, int level) {
             for (int i = 0; i < level; i++) {
                 printf(" +"); // Level
 			}
-			printf("node type: Element, name: %s\n", cur_node->name);
+			printf("%s\n", cur_node->name);
 		}
 		print_xmlfile(cur_node->children, level);
 	}
@@ -307,11 +337,19 @@ xmlNode* Model::searchNode(xmlNode* a_node, char target[]) {
 }
 
 void Model::parseNode(xmlDocPtr doc, xmlNodePtr cur) {
+
     xmlChar* key;
     cur = cur->xmlChildrenNode;
     while (cur != NULL) {
         key = xmlNodeListGetString(doc, cur, 1);
-        printf(" %s\n", key);
+        string input = (char*)key;
+        std::istringstream ss(input);
+        string token;
+        printf("-----\n");
+        while (std::getline(ss, token, ' ')) {
+            std::cout << token << ' ';
+		}
+        printf("-----\n");
         xmlFree(key);
         cur = cur->next;
     }

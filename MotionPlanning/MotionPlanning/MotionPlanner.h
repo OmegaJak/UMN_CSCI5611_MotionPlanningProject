@@ -8,6 +8,8 @@ class MotionPlanner {
    public:
     explicit MotionPlanner(ConfigurationSpace cSpace);
     void Update();
+    void MoveObject(GameObject* object, float speed, float dt);
+    void MoveObjectSmooth(GameObject* object, float speed, float dt);
 
     int numsamples;
     std::vector<Node*> pbr;

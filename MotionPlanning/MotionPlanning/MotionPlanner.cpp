@@ -97,3 +97,26 @@ void MotionPlanner::Connect(Node* n1, Node* n2) const {
         }
     }
 }
+
+void MotionPlanner::MoveObject(GameObject* object, float speed, float time) {
+    int currentNode = 0;
+    int solutionsize = solution.size();
+    float distToNextNode = 0;
+    float distanceToTravel = speed * time;
+    // This while loop finds out which node the "distance to Travel" falls between.
+    while (distanceToTravel > 0 && currentNode < solutionsize - 1) {
+        distToNextNode = glm::distance(solution[currentNode]->position, solution[currentNode + 1]->position);
+        distanceToTravel -= distToNextNode;
+        currentNode++;
+    }
+    currentNode--;  // Undo Last step of While loop (So distanceToTravel is not negative)
+    distanceToTravel += distToNextNode;
+
+    if (solutionsize > 0 && currentNode < solutionsize - 1) {
+        glm::vec3 dir = glm::normalize(solution[currentNode + 1]->position - solution[currentNode]->position);
+        object->SetPosition(solution[currentNode]->position + distanceToTravel * dir);
+    }
+}
+void MotionPlanner::MoveObjectSmooth(GameObject* object, float velocity, float dt) {
+
+}

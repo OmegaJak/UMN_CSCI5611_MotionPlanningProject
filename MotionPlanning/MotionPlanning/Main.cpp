@@ -345,26 +345,8 @@ if (SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_RIGHT)) {  // Right cl
             PROJ_SHADER_FUNCTION_ID);
 
         /// MOVEMENT OF PLACEHOLDER GUY ///
-        // path is stored in solutions vector
-        int currentNode = 0;
-        int solutionsize = solutions.size();
-        float distToNextNode = 0;
-        float speed = 1.f;
-        float distanceToTravel = speed * time;
-        // This while loop finds out which node the "distance to Travel" falls between.
-        while (distanceToTravel > 0 && currentNode < solutionsize - 1) {
-            distToNextNode = glm::distance(solutions[currentNode]->position, solutions[currentNode + 1]->position);
-            distanceToTravel -= distToNextNode;
-            currentNode++;
-        }
-        currentNode--;  // Undo Last step of While loop (So distanceToTravel is not negative)
-        distanceToTravel += distToNextNode;
-
-        if (solutionsize > 0 && currentNode < solutionsize - 1) {
-            GameObject* guy = environment.getObject();
-            glm::vec3 dir = glm::normalize(solutions[currentNode + 1]->position - solutions[currentNode]->position);
-            guy->SetPosition(solutions[currentNode]->position + distanceToTravel * dir);
-        }
+        GameObject* guy = environment.getObject();
+        motionPlanner.MoveObject(guy, 5, time);
 
         /// END MOVEMENT OF PLACEHOLDER GUY ///
 

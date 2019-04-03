@@ -13,7 +13,6 @@ void ModelManager::InitModels() {
     CubeModel = new Model("models/cube.txt");
     Model* child = new Model("models/Bird2.obj");
     Model* birdo = new Model("models/Bird.dae");
-
 }
 
 void ModelManager::RegisterModel(Model* model) {
