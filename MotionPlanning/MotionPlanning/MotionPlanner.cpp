@@ -16,9 +16,11 @@ MotionPlanner::MotionPlanner(ConfigurationSpace cSpace) {
     numsamples = 100;
     CreateMotionPlanner();
 
-    // vector<vec3> points = {vec3(0, 0, 0), vec3(1, 3, 5), vec3(-2, 10, 4), vec3(9, 10, 20), vec3(9, 8, 7), vec3(12, 0, 3)};
     vector<vec2> points = {vec2(2, 3), vec2(5, 4), vec2(9, 6), vec2(4, 7), vec2(8, 1), vec2(7, 2)};
-    auto tree = KDTree(points);
+    auto tree = KDTree<vec2>(points, 2);
+
+    /*vector<vec3> points3D = {vec3(0, 0, 0), vec3(1, 3, 5), vec3(-2, 10, 4), vec3(9, 10, 20), vec3(9, 8, 7), vec3(12, 0, 3)};
+    auto tree3D = KDTree<vec3>(points3D, 3);*/
 }
 
 void MotionPlanner::CreateMotionPlanner() {
