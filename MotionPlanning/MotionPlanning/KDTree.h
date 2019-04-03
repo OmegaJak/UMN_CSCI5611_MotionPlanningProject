@@ -13,10 +13,13 @@ class KDTree {
 
     KDTree(std::vector<T> points, int k);
     KDTree(std::vector<T> points, int k, int depth);
+    std::vector<T> GetNearestNeighbors(const T& point, int n);
 
    private:
     KDNode* CreateKDTree(std::vector<T> points, int depth);
+    std::vector<T> GetNearestNeighbors(const T& point, int n, KDNode* node, std::pair<KDNode*, double>& best, int depth);
+    double GetSqrDistanceBetween(const T& a, const T& b);
 
     KDNode* _root;
-    int _k;
+    int _k{};
 };

@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <functional>
-#include <iostream>
 #include "KDTree.h"
 #include "Utils.h"
 
@@ -13,16 +12,16 @@ function<bool(const T&, const T&)> GetComparePoints(const int axis) {
 }
 
 template <class T>
-KDTree<T>::KDTree(std::vector<T> points, int k) : KDTree(points, k, 0) {}
+KDTree<T>::KDTree(vector<T> points, int k) : KDTree(points, k, 0) {}
 
 template <class T>
-KDTree<T>::KDTree(std::vector<T> points, int k, int depth) {
+KDTree<T>::KDTree(vector<T> points, int k, int depth) {
     _k = k;
     _root = CreateKDTree(points, depth);
 }
 
 template <class T>
-typename KDTree<T>::KDNode* KDTree<T>::CreateKDTree(std::vector<T> points, int depth) {
+typename KDTree<T>::KDNode* KDTree<T>::CreateKDTree(vector<T> points, int depth) {
     if (points.empty()) return nullptr;
 
     int axis = depth % _k;
@@ -37,8 +36,62 @@ typename KDTree<T>::KDNode* KDTree<T>::CreateKDTree(std::vector<T> points, int d
     if (points.size() == 1) {
         return new KDNode{median, nullptr, nullptr};
     }
-    return new KDNode{median, CreateKDTree(std::vector<T>(points.begin(), medianIterator), depth + 1),
-                      CreateKDTree(std::vector<T>(medianIterator + 1, points.end()), depth + 1)};
+    return new KDNode{median, CreateKDTree(vector<T>(points.begin(), medianIterator), depth + 1),
+                      CreateKDTree(vector<T>(medianIterator + 1, points.end()), depth + 1)};
+}
+
+template <class T>
+vector<T> KDTree<T>::GetNearestNeighbors(const T& point, int n) {
+    auto best = pair<KDNode*, double>(nullptr, INFINITY);
+    return GetNearestNeighbors(point, n, _root, best, 0);
+}
+
+template <class T>
+vector<T> KDTree<T>::GetNearestNeighbors(const T& point, int n, KDNode* node, pair<KDNode*, double>& best, int depth) {
+    if (node == nullptr) return vector<T>();
+    int axis = depth % _k;
+
+    // Traverse the tree
+    if (point[axis] <= node->location[axis]) {
+        GetNearestNeighbors(point, n, node->left, best, depth + 1);
+    } else {
+        GetNearestNeighbors(point, n, node->right, best, depth + 1);
+    }
+
+    // Are we closer than the currently known closest?
+    double dist = GetSqrDistanceBetween(point, node->location);
+    if (dist < best.second) {
+        best.first = node;
+        best.second = dist;
+    }
+
+    auto splitPlaneValue = node->location[axis];
+    auto pointCoordVal = point[axis];
+    auto distFromSplitPlane = abs(pointCoordVal - splitPlaneValue);
+
+    // We square distFromSplitPlane here because we avoided computing square roots for the distance computation above, and squaring
+    // distFromSplitPlane is less work than sqrting dist
+    if (distFromSplitPlane * distFromSplitPlane < best.second) {  // Closest could be on the other side of the split plane
+        // So take the path we didn't take before
+        if (point[axis] <= node->location[axis]) {
+            GetNearestNeighbors(point, n, node->right, best, depth + 1);
+        } else {
+            GetNearestNeighbors(point, n, node->left, best, depth + 1);
+        }
+    }
+
+    vector<T> result = {best.first->location};
+    return result;
+}
+
+template <class T>
+double KDTree<T>::GetSqrDistanceBetween(const T& a, const T& b) {
+    double sqrDistance = 0;
+    for (int i = 0; i < _k; i++) {
+        sqrDistance += pow(b[i] - a[i], 2);
+    }
+
+    return sqrDistance;
 }
 
 // Necessary because of weird C++ template linking stuff.
