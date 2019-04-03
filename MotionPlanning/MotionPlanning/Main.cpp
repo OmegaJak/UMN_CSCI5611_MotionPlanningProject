@@ -7,13 +7,13 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include "AnimatedObject.h"
 #include "Camera.h"
 #include "ClothManager.h"
 #include "Constants.h"
 #include "DebugManager.h"
 #include "Environment.h"
 #include "GameObject.h"
-#include "AnimatedObject.h"
 #include "MotionPlanner.h"
 #include "ShaderManager.h"
 #include "SphereObstacle.h"
@@ -204,8 +204,7 @@ int main(int argc, char* argv[]) {
 
     Camera camera = Camera();
 
-    ModelManager::InitModels(); 
-
+    ModelManager::InitModels();
 
     Environment environment = Environment();
     ConfigurationSpace cSpace = ConfigurationSpace(new SphereObstacle(glm::vec3(0, 0, 0), 5));

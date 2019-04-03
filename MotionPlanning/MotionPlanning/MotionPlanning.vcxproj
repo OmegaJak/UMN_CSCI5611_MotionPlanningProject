@@ -168,7 +168,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\..\Kieran%27s Stuff 2.0\Graphics\Csci5611\CSCI5611MotionPlanning\MotionPlanning\MotionPlanning\AnimatedObject.cpp" />
+    <ClCompile Include="AnimatedObject.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="ConfigurationSpace.cpp" />
     <ClCompile Include="DebugManager.cpp" />
@@ -186,9 +186,10 @@
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="SphereObstacle.cpp" />
     <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\..\Kieran%27s Stuff 2.0\Graphics\Csci5611\CSCI5611MotionPlanning\MotionPlanning\MotionPlanning\AnimatedObject.h" />
+    <ClInclude Include="AnimatedObject.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConfigurationSpace.h" />
     <ClInclude Include="Constants.h" />
@@ -209,6 +210,7 @@
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="SphereObstacle.h" />
     <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>

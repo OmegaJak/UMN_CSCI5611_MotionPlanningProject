@@ -65,7 +65,7 @@ bool Search::A_Star(Node* start, Node* goal, std::vector<Node*>* solution) {
             *solution = Reconstruct_Solution(current);
             return true;
         }
-        printf("FRINGE SIZE %d \n", fringe.size());
+
         fringe.pop();
         current->explored = true;
         for (auto neighbor : current->connections) {

@@ -1,7 +1,12 @@
-#include "ClothManager.h"
+#include <chrono>
+#include <iostream>
 #include "ModelManager.h"
 #include "MotionPlanner.h"
+#include "Timer.h"
 #include "Utils.h"
+
+using namespace std;
+using namespace std::chrono;
 
 MotionPlanner::MotionPlanner(ConfigurationSpace cSpace) {
     _cSpace = cSpace;
@@ -14,6 +19,9 @@ void MotionPlanner::CreateMotionPlanner() {
     const float elevation = 0.5f;
     GameObject gameObject;
     int currentNodeId = 0;
+
+    // Begin PRM construction //
+    Timer::StartTimer("PRMConstruction");
 
     Node* start = new Node();
     start->id = currentNodeId++;
@@ -53,16 +61,24 @@ void MotionPlanner::CreateMotionPlanner() {
         }
     }
 
-    // Depth First Search
+    Timer::EndTimingAndPrintResult("PRMConstruction");
+    // End PRM Construction //
+
+    // Begin Solution Finding //
+    Timer::StartTimer("Solution");
+
     if (start->connections.size() == 0) {
         printf("FAILED to find Solution");
         return;
     }
     if (Search::Solve(start, end, &solution)) {
-        printf("FOUND SOLUTION\n");
+        // printf("FOUND SOLUTION\n");
     } else {
         printf("FAILED to find Solution");
     }
+
+    Timer::EndTimingAndPrintResult("Solution");
+    // End Solution Finding //
 }
 
 void MotionPlanner::Update() {
