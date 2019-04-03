@@ -212,6 +212,7 @@ int main(int argc, char* argv[]) {
     cSpace.AddObstacle(new SphereObstacle(glm::vec3(8, -2, 5), 2));
 
     MotionPlanner motionPlanner = MotionPlanner(cSpace);
+    return 0;
     std::vector<Node*> nodes = motionPlanner.pbr;
     int numLines = 0;
 

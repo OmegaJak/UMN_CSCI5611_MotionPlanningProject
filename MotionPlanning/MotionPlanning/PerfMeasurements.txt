@@ -1,0 +1,7 @@
+Before, A*, PRM w/ no accel:
+100 nodes, : 
+	PRM Con: ~16-17ms
+	Solution: ~1ms
+1000 nodes:
+	PRM Con: ~1300ms
+	Solution: ~15-30ms

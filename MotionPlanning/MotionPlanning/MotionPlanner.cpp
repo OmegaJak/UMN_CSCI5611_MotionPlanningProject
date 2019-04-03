@@ -1,5 +1,6 @@
 #include <chrono>
 #include <iostream>
+#include "KDTree.h"
 #include "ModelManager.h"
 #include "MotionPlanner.h"
 #include "Timer.h"
@@ -7,12 +8,17 @@
 
 using namespace std;
 using namespace std::chrono;
+using namespace glm;
 
 MotionPlanner::MotionPlanner(ConfigurationSpace cSpace) {
     _cSpace = cSpace;
 
     numsamples = 100;
     CreateMotionPlanner();
+
+    // vector<vec3> points = {vec3(0, 0, 0), vec3(1, 3, 5), vec3(-2, 10, 4), vec3(9, 10, 20), vec3(9, 8, 7), vec3(12, 0, 3)};
+    vector<vec2> points = {vec2(2, 3), vec2(5, 4), vec2(9, 6), vec2(4, 7), vec2(8, 1), vec2(7, 2)};
+    auto tree = KDTree(points);
 }
 
 void MotionPlanner::CreateMotionPlanner() {

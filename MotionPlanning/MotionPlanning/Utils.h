@@ -1,5 +1,7 @@
 #pragma once
 #include <cstdlib>
+#include <gtx/string_cast.hpp>
+#include <iostream>
 #include "MotionPlanner.h"
 
 class Utils {
@@ -28,5 +30,23 @@ class Utils {
         float z = (Random() * 2.0f) - 1.0f;
 
         return glm::vec3(x, y, z);
+    }
+
+    static void PrintPoints(const std::vector<glm::vec3>& points) {
+        std::cout << "[";
+        for (const glm::vec3& point : points) {
+            std::cout << glm::to_string(point) << ", ";
+        }
+
+        std::cout << "]" << std::endl;
+    }
+
+    static void PrintPoints(const std::vector<glm::vec2>& points) {
+        std::cout << "[";
+        for (const glm::vec2& point : points) {
+            std::cout << glm::to_string(point) << ", ";
+        }
+
+        std::cout << "]" << std::endl;
     }
 };
