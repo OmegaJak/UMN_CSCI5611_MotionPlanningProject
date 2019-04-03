@@ -19,10 +19,15 @@ class GameObject {
 
     void Update();
 
+    glm::vec3 getPosition() {
+        return position_;
+    }
+
     Material material_;
 
    private:
     Model* model_;
     TEXTURE texture_index_;
     glm::mat4 transform_;
+    glm::vec3 position_;
 };

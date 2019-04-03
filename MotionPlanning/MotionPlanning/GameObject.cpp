@@ -39,6 +39,7 @@ void GameObject::Update() {
 }
 
 void GameObject::SetPosition(const glm::vec3& position) {
+    position_ = position; 
     transform_[3] = glm::vec4(position, transform_[3][3]);
 }
 
