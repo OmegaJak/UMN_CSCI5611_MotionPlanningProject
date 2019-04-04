@@ -17,15 +17,11 @@ class GameObject {
     void SetColor(const glm::vec3& color);
     void SetTextureIndex(TEXTURE texture_index);
 
-    void Update();
-
-    glm::vec3 getPosition() {
-        return position_;
-    }
+    virtual void Update();
 
     Material material_;
 
-   private:
+   protected:
     Model* model_;
     TEXTURE texture_index_;
     glm::mat4 transform_;

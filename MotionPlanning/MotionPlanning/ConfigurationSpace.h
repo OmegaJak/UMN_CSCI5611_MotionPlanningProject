@@ -7,6 +7,7 @@ class ConfigurationSpace {
     ConfigurationSpace() = default;
     explicit ConfigurationSpace(Obstacle* obstacle);
     explicit ConfigurationSpace(std::vector<Obstacle*> obstacles);
+    ~ConfigurationSpace();
 
     void AddObstacle(Obstacle* obstacle);
     bool PointIsInsideObstacle(const glm::vec3& point) const;

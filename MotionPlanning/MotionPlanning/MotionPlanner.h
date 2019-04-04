@@ -1,26 +1,29 @@
 #pragma once
+#include <detail/type_mat.hpp>
 #include "ConfigurationSpace.h"
 #include "DebugManager.h"
 #include "GameObject.h"
+#include "KDTree.h"
 #include "Search.h"
 
 class MotionPlanner {
    public:
     explicit MotionPlanner(ConfigurationSpace cSpace);
-    void Update();
-    void MoveObject(GameObject* object, float speed, float dt);
-    void MoveObjectSmooth(GameObject* object, float speed, float dt);
+    ~MotionPlanner();
 
-    int numsamples;
-    std::vector<Node*> pbr;
-    std::vector<Node*> solution;
+    std::vector<Node*> PlanPath(Node* start, Node* goal) const;
+    glm::vec3 GetFarthestVisiblePointAlongPath(const glm::vec3& currentPos, const std::vector<Node*>& path) const;
+    std::vector<Node*> GetNNearestVisiblePoints(const glm::vec3& pos, int n);
+
+    void Update();
 
    private:
-    void CreateMotionPlanner();
+    void InitializePRM(int numSamples);
     void Connect(Node* n1, Node* n2) const;
-    glm::vec3 getFurthestVisiblePoint(glm::vec3 pos);
     void SetupDebugLines();
 
+    std::vector<Node*> _prm;
+    KDTree<Node*, glm::vec3> _prmKDTree;
     std::vector<GameObject> _gameObjects;
     ConfigurationSpace _cSpace;
 };

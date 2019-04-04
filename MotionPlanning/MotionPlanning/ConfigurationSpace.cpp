@@ -10,6 +10,10 @@ ConfigurationSpace::ConfigurationSpace(std::vector<Obstacle*> obstacles) {
     }
 }
 
+ConfigurationSpace::~ConfigurationSpace() {
+    _obstacles.clear();
+}
+
 void ConfigurationSpace::AddObstacle(Obstacle* obstacle) {
     obstacle->InflateToCSpaceObstacleForSphericalAgent(_agentRadius);
     _obstacles.push_back(obstacle);

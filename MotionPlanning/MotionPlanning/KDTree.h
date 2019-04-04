@@ -7,13 +7,16 @@
 template <class nodeType, class vecType>
 class KDTree {
    public:
+    KDTree() = default;
     // Constructs a KD tree, where K is the number of dimensions the tree exists in
     KDTree(std::vector<nodeType> nodes, std::function<vecType(nodeType)> nodeToLocation, int k);
     KDTree(std::vector<nodeType> nodes, std::function<vecType(nodeType)> nodeToLocation, int k, int depth);
 
+    typedef std::function<bool(const vecType&, const vecType&)> ValidConnectionPred;
+
     // Gets the n nearest neighbors in the KD tree to the given point.
     // If n is less than K, this will only return a vector of size k
-    std::vector<nodeType> GetNearestNeighbors(const vecType& point, int n);
+    std::vector<nodeType> GetNearestNeighbors(const vecType& point, int n, ValidConnectionPred isValidConnection);
 
    private:
     struct KDNode {
@@ -27,7 +30,8 @@ class KDTree {
     typedef std::priority_queue<Candidate, std::vector<Candidate>, CandidateComparePred> BestCandidateQueue;
 
     KDNode* CreateKDTree(std::vector<nodeType> nodes, int depth);
-    void GetNearestNeighbors(const vecType& point, KDNode* node, BestCandidateQueue& best, int depth);
+    void GetNearestNeighbors(const vecType& point, KDNode* node, BestCandidateQueue& best, ValidConnectionPred isValidConnection,
+                             int depth);
     double GetSqrDistanceBetween(const vecType& a, const vecType& b);
 
     KDNode* _root;

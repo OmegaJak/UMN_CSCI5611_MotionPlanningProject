@@ -40,12 +40,12 @@ typename KDTree<nodeType, vecType>::KDNode* KDTree<nodeType, vecType>::CreateKDT
 }
 
 template <class nodeType, class vecType>
-vector<nodeType> KDTree<nodeType, vecType>::GetNearestNeighbors(const vecType& point, int n) {
+vector<nodeType> KDTree<nodeType, vecType>::GetNearestNeighbors(const vecType& point, int n, ValidConnectionPred isValidConnection) {
     auto bestInit = vector<Candidate>(n, Candidate(nullptr, INFINITY));
     BestCandidateQueue best = BestCandidateQueue([](const Candidate& a, const Candidate& b) { return a.second < b.second; }, bestInit);
 
     // Calling this puts the results into the best queue
-    GetNearestNeighbors(point, _root, best, 0);
+    GetNearestNeighbors(point, _root, best, isValidConnection, 0);
 
     vector<nodeType> result = {};
     while (!best.empty()) {
@@ -58,7 +58,8 @@ vector<nodeType> KDTree<nodeType, vecType>::GetNearestNeighbors(const vecType& p
 }
 
 template <class nodeType, class vecType>
-void KDTree<nodeType, vecType>::GetNearestNeighbors(const vecType& point, KDNode* node, BestCandidateQueue& best, int depth) {
+void KDTree<nodeType, vecType>::GetNearestNeighbors(const vecType& point, KDNode* node, BestCandidateQueue& best,
+                                                    ValidConnectionPred isValidConnection, int depth) {
     if (node == nullptr) return;
     int axis = depth % _k;
 
@@ -67,14 +68,14 @@ void KDTree<nodeType, vecType>::GetNearestNeighbors(const vecType& point, KDNode
 
     // Traverse the tree
     if (pointAxisValue <= nodeAxisValue) {
-        GetNearestNeighbors(point, node->left, best, depth + 1);
+        GetNearestNeighbors(point, node->left, best, isValidConnection, depth + 1);
     } else {
-        GetNearestNeighbors(point, node->right, best, depth + 1);
+        GetNearestNeighbors(point, node->right, best, isValidConnection, depth + 1);
     }
 
     // Are we closer than the currently known closest? (and aren't at the same point)
     double dist = GetSqrDistanceBetween(point, node->location);
-    if (dist > 0 && dist < best.top().second) {
+    if (dist > 0 && dist < best.top().second && (best.top().first == nullptr || isValidConnection(point, best.top().first->location))) {
         best.pop();
         best.push(Candidate(node, dist));
     }
@@ -85,9 +86,9 @@ void KDTree<nodeType, vecType>::GetNearestNeighbors(const vecType& point, KDNode
     if (distFromSplitPlane * distFromSplitPlane < best.top().second) {  // Closest could be on the other side of the split plane
         // So take the path we didn't take before
         if (pointAxisValue <= nodeAxisValue) {
-            GetNearestNeighbors(point, node->right, best, depth + 1);
+            GetNearestNeighbors(point, node->right, best, isValidConnection, depth + 1);
         } else {
-            GetNearestNeighbors(point, node->left, best, depth + 1);
+            GetNearestNeighbors(point, node->left, best, isValidConnection, depth + 1);
         }
     }
 }

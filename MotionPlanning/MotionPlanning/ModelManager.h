@@ -10,12 +10,13 @@ class ModelManager {
 
     static void InitVBO();
     static void Cleanup();
-    static Model* GetModel(int index);
 
     static int NumElements();
 
     static Model* SphereModel;
     static Model* CubeModel;
+    static Model* BirdModel;
+    static Model* ChildModel;
 
    private:
     static std::vector<Model*> models_;

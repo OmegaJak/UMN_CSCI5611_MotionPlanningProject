@@ -1,11 +1,9 @@
 #include <gtc/type_ptr.hpp>
 #include <queue>
-#include <set>
-#include <unordered_set>
 #include "Search.h"
 
-bool Search::Solve(Node* start, Node* goal, std::vector<Node*>* solution) {
-    return A_Star(start, goal, solution);
+bool Search::Solve(Node* start, Node* goal, const std::vector<Node*>& roadMap, std::vector<Node*>* solution) {
+    return A_Star(start, goal, roadMap, solution);
 }
 
 // Always goes to the node with the best heuristic. Not guaranteed to find a solution
@@ -44,7 +42,7 @@ float Heuristic(Node* a, Node* b) {
 }
 
 // This is closely based on the pseudocode here: https://en.wikipedia.org/wiki/A*_search_algorithm
-bool Search::A_Star(Node* start, Node* goal, std::vector<Node*>* solution) {
+bool Search::A_Star(Node* start, Node* goal, const std::vector<Node*>& roadMap, std::vector<Node*>* solution) {
     // Defining this here is questionable
     class NodeCompare {
        public:

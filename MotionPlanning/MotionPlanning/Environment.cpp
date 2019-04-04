@@ -30,12 +30,6 @@ void Environment::CreateEnvironment() {
     gameObject->material_.specFactor_ = 0.2;
     _gameObjects.push_back(gameObject);
 
-    gameObject = new GameObject(ModelManager::GetModel(3));  // Bird
-    gameObject->SetTextureIndex(TEX0);
-    gameObject->SetScale(1, 1, -1);
-    gameObject->SetPosition(glm::vec3(-10, -10, -10));
-    _gameObjects.push_back(gameObject);
-
     gameObject = new GameObject(ModelManager::SphereModel);  // Start
     gameObject->SetTextureIndex(UNTEXTURED);
     gameObject->SetColor(glm::vec3(.5f, .2f, 1.f));
@@ -50,7 +44,7 @@ void Environment::CreateEnvironment() {
     gameObject->SetScale(1, 1, 1);
     _gameObjects.push_back(gameObject);
 
-    gameObject = new GameObject(ModelManager::GetModel(2));
+    gameObject = new GameObject(ModelManager::ChildModel);
     gameObject->SetTextureIndex(TEX0);
     gameObject->SetScale(5, 5, 5);
     _gameObjects.push_back(gameObject);

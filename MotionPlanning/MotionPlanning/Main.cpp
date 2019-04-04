@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include "Agent.h"
 #include "AnimatedObject.h"
 #include "Camera.h"
 #include "Constants.h"
@@ -17,9 +18,10 @@
 #include "ShaderManager.h"
 #include "SphereObstacle.h"
 #include "TextureManager.h"
+#include "Utils.h"
 const char* INSTRUCTIONS =
     "***************\n"
-    "INSTRUCTIONS"
+    "INSTRUCTIONS\n"
     "***************\n";
 
 #include "glad.h"  //Include order can matter here
@@ -117,6 +119,10 @@ int main(int argc, char* argv[]) {
 
     MotionPlanner motionPlanner = MotionPlanner(cSpace);
 
+    std::vector<Agent> agents = {};
+    agents.push_back(Agent(glm::vec3(-10, -10, -10), glm::vec3(10, 10, 10), &motionPlanner));
+    agents.push_back(Agent(glm::vec3(10, -10, 10), glm::vec3(-10, 10, -10), &motionPlanner));
+
     ShaderManager::InitShaders();
     TextureManager::InitTextures();
 
@@ -202,12 +208,6 @@ int main(int argc, char* argv[]) {
             [proj](ShaderAttributes attributes) -> void { glUniformMatrix4fv(attributes.projection, 1, GL_FALSE, glm::value_ptr(proj)); },
             PROJ_SHADER_FUNCTION_ID);
 
-        /// MOVEMENT OF PLACEHOLDER GUY ///
-        GameObject* guy = environment.getObject();
-        motionPlanner.MoveObjectSmooth(guy, 5, time);
-
-        /// END MOVEMENT OF PLACEHOLDER GUY ///
-
         stringstream debugText;
         debugText << fixed << setprecision(3) << lastAverageFrameTime << "ms per frame (" << lastFramerate << "FPS) average over "
                   << framesPerSample << " frames "
@@ -219,6 +219,9 @@ int main(int argc, char* argv[]) {
         glBindBuffer(GL_ARRAY_BUFFER, ShaderManager::EnvironmentShader.VBO);
         TextureManager::Update(ShaderManager::EnvironmentShader.Program);
         environment.UpdateAll();
+        for (auto& agent : agents) {
+            agent.Update();
+        }
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         // Render the PBR (DEBUG ONLY)

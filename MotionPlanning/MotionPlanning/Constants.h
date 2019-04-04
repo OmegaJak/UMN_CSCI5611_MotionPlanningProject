@@ -23,3 +23,5 @@ const float ABSOLUTE_TOLERANCE = 0.00001f;
 
 const int VIEW_SHADER_FUNCTION_ID = 1;
 const int PROJ_SHADER_FUNCTION_ID = 2;
+
+const int PRM_CONNECTIONS_PER_NODE = 5;
