@@ -16,10 +16,10 @@ MotionPlanner::MotionPlanner(ConfigurationSpace cSpace) {
     numsamples = 100;
     CreateMotionPlanner();
 
-    vector<vec2> points = {vec2(2, 3), vec2(5, 4), vec2(9, 6), vec2(4, 7), vec2(8, 1), vec2(7, 2)};
+    /*vector<vec2> points = {vec2(2, 3), vec2(5, 4), vec2(9, 6), vec2(4, 7), vec2(8, 1), vec2(7, 2)};
     auto tree = KDTree<vec2>(points, 2);
 
-    auto closest = tree.GetNearestNeighbors(vec2(9, 7), 1);
+    auto closest = tree.GetNearestNeighbors(vec2(8, 2), 4);*/
 
     /*vector<vec3> points3D = {vec3(0, 0, 0), vec3(1, 3, 5), vec3(-2, 10, 4), vec3(9, 10, 20), vec3(9, 8, 7), vec3(12, 0, 3)};
     auto tree3D = KDTree<vec3>(points3D, 3);*/
@@ -128,17 +128,16 @@ void MotionPlanner::MoveObject(GameObject* object, float speed, float time) {
     }
 }
 void MotionPlanner::MoveObjectSmooth(GameObject* object, float velocity, float dt) {
-	
     glm::vec3 pos = object->getPosition();
-	// If object is near the goal, don't move
+    // If object is near the goal, don't move
     if (glm::distance(pos, solution.back()->position) < .1) {
-		return;
-	}
+        return;
+    }
     // Find furthest visible point (fvp) along path that the object can see
     glm::vec3 fvp = getFurthestVisiblePoint(pos);
     glm::vec3 dir = glm::normalize(fvp - pos);
 
-	//Move towards that point
+    // Move towards that point
     glm::vec3 newpos = pos + .1f * dir;
     object->SetPosition(newpos);
 }
@@ -147,6 +146,6 @@ glm::vec3 MotionPlanner::getFurthestVisiblePoint(glm::vec3 pos) {
     int solutionsize = solution.size() - 1;
     for (int i = solutionsize; i >= 0; i--) {
         if (!(_cSpace.SegmentIntersectsObstacle(pos, solution[i]->position))) return solution[i]->position;
-	}
+    }
     return pos;
 }

@@ -221,19 +221,19 @@ int main(int argc, char* argv[]) {
     }
     printf("NUMBER OF LINES: %d \n", numLines);
 
-	/// ALL PRM LINES
+    /// ALL PRM LINES
     LineIndexRange lineIndices = DebugManager::RequestLines(numLines);
     int curline = lineIndices.firstIndex;
     for (int i = 0; i < nodes.size(); i++) {
         Node* n1 = nodes[i];
         for (int j = 0; j < n1->connections.size(); j++) {
             Node* n2 = n1->connections[j];
-            //DebugManager::SetLine(curline, n1->position, n2->position, glm::vec3(0, 0, 1));
+            // DebugManager::SetLine(curline, n1->position, n2->position, glm::vec3(0, 0, 1));
             curline++;
         }
     }
 
-	/// JUST SOLUTION LINES
+    /// JUST SOLUTION LINES
     std::vector<Node*> solutions = motionPlanner.solution;
     LineIndexRange lineIndices2 = DebugManager::RequestLines(solutions.size() - 1);
     for (int i = 1; i < solutions.size(); i++) {

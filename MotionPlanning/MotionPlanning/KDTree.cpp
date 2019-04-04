@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <functional>
 #include "KDTree.h"
 #include "Utils.h"
 
@@ -42,27 +41,29 @@ typename KDTree<T>::KDNode* KDTree<T>::CreateKDTree(vector<T> points, int depth)
 
 template <class T>
 vector<T> KDTree<T>::GetNearestNeighbors(const T& point, int n) {
-    auto best = pair<KDNode*, double>(nullptr, INFINITY);
-    return GetNearestNeighbors(point, n, _root, best, 0);
+    auto bestInit = vector<Candidate>(n, Candidate(nullptr, INFINITY));
+    BestCandidateQueue best = BestCandidateQueue([](const Candidate& a, const Candidate& b) { return a.second < b.second; }, bestInit);
+
+    return GetNearestNeighbors(point, _root, best, 0);
 }
 
 template <class T>
-vector<T> KDTree<T>::GetNearestNeighbors(const T& point, int n, KDNode* node, pair<KDNode*, double>& best, int depth) {
+vector<T> KDTree<T>::GetNearestNeighbors(const T& point, KDNode* node, BestCandidateQueue& best, int depth) {
     if (node == nullptr) return vector<T>();
     int axis = depth % _k;
 
     // Traverse the tree
     if (point[axis] <= node->location[axis]) {
-        GetNearestNeighbors(point, n, node->left, best, depth + 1);
+        GetNearestNeighbors(point, node->left, best, depth + 1);
     } else {
-        GetNearestNeighbors(point, n, node->right, best, depth + 1);
+        GetNearestNeighbors(point, node->right, best, depth + 1);
     }
 
     // Are we closer than the currently known closest?
     double dist = GetSqrDistanceBetween(point, node->location);
-    if (dist < best.second) {
-        best.first = node;
-        best.second = dist;
+    if (dist < best.top().second) {
+        best.pop();
+        best.push(Candidate(node, dist));
     }
 
     auto splitPlaneValue = node->location[axis];
@@ -71,16 +72,24 @@ vector<T> KDTree<T>::GetNearestNeighbors(const T& point, int n, KDNode* node, pa
 
     // We square distFromSplitPlane here because we avoided computing square roots for the distance computation above, and squaring
     // distFromSplitPlane is less work than sqrting dist
-    if (distFromSplitPlane * distFromSplitPlane < best.second) {  // Closest could be on the other side of the split plane
+    if (distFromSplitPlane * distFromSplitPlane < best.top().second) {  // Closest could be on the other side of the split plane
         // So take the path we didn't take before
         if (point[axis] <= node->location[axis]) {
-            GetNearestNeighbors(point, n, node->right, best, depth + 1);
+            GetNearestNeighbors(point, node->right, best, depth + 1);
         } else {
-            GetNearestNeighbors(point, n, node->left, best, depth + 1);
+            GetNearestNeighbors(point, node->left, best, depth + 1);
         }
     }
 
-    vector<T> result = {best.first->location};
+    vector<T> result = {};
+    if (depth == 0) {
+        while (!best.empty()) {
+            Candidate currentCandidate = best.top();
+            best.pop();
+            if (currentCandidate.first != nullptr) result.push_back(currentCandidate.first->location);
+        }
+    }
+
     return result;
 }
 
