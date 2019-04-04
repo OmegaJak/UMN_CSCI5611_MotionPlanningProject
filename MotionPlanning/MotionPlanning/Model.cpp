@@ -230,14 +230,14 @@ void Model::LoadObj2(const std::string& filename) {
 }
 
 void Model::LoadDae(const std::string& filename) {
-    std::vector<glm::vec3> out_vertices;
-    std::vector<glm::vec2> out_uvs;
-    std::vector<glm::vec3> out_normals;
-    std::vector<unsigned int> indices, uvs, normals;
-    std::vector<float> data;
-    std::vector<glm::vec3> temp_vertices;
-    std::vector<glm::vec2> temp_uvs;
-    std::vector<glm::vec3> temp_normals;
+    std::vector<float> vertdata;
+    std::vector<float> uvdata;
+    std::vector<float> normaldata;
+    std::vector<int> tridata;
+    glm::vec3* temp_vertices = NULL;
+    glm::vec2* temp_uvs = NULL;
+    glm::vec3* temp_normals = NULL;
+    glm::ivec3* faces;
 
 	xmlDoc* doc = NULL;
 	xmlNode* root = NULL;
@@ -257,29 +257,62 @@ void Model::LoadDae(const std::string& filename) {
 	if (nodeFound != NULL) {
         nodeFound = searchNode(nodeFound, (char*)"float_array");
 	}
+
+	printf("Name is: %s\n", nodeFound->name);
+	printf("Name is: %s\n", nodeFound->next->next->name);
+	printf("Name is: %s\n", nodeFound->parent->name);
+	printf("Name is: %s\n", nodeFound->parent->next->next->name);
+	printf("Name is: %s\n", nodeFound->parent->next->next->next->next->name);
+    printf("Name is: %s\n", nodeFound->parent->parent->next->next);
     
 	if (nodeFound != NULL) {
-            xmlChar* key;
-            nodeFound = nodeFound->xmlChildrenNode;
-            while (nodeFound != NULL) {
-                key = xmlNodeListGetString(doc, nodeFound, 1);
-                string input = (char*)key;
-                std::istringstream ss(input);
-                string token;
-                printf("-----\n");
-                int xyz = 0;
-                while (std::getline(ss, token, ' ')) {
-                    data.push_back(std::stoi(token));
-                }
-                printf("-----\n");
-                xmlFree(key);
-                nodeFound = nodeFound->next;
-            }
-
-
-		//parseNode(doc, nodeFound);
+        parsefloatNode(doc, nodeFound, &vertdata);
+		temp_vertices = reinterpret_cast<glm::vec3*>(vertdata.data());
+        nodeFound = nodeFound->parent->next->next;
+        nodeFound = searchNode(nodeFound, (char*)"float_array");
 	}
-    printf("-------------------------------------------\n");
+
+	if (nodeFound != NULL) {
+        parsefloatNode(doc, nodeFound, &normaldata);
+        temp_normals = reinterpret_cast<glm::vec3*>(normaldata.data());
+        nodeFound = nodeFound->parent->next;
+        nodeFound = searchNode(nodeFound, (char*)"float_array");
+	}
+
+	if (nodeFound != NULL) {
+        parsefloatNode(doc, nodeFound, &uvdata);    
+		temp_uvs = reinterpret_cast<glm::vec2*>(uvdata.data());
+        nodeFound = nodeFound->parent->next;
+        nodeFound = searchNode(nodeFound, (char*)"p");
+	}
+    
+	if (nodeFound != NULL) {
+        parseintNode(doc, nodeFound, &tridata);
+        faces = reinterpret_cast<glm::ivec3*>(tridata.data());
+        printf("First face: %d %d %d", faces[1].x, faces[1].y, faces[1].z);
+
+		model_ = new float[tridata.size() / 3 * 8];
+		for (int i = 0; i < tridata.size() / 3; i++) {
+            int posindex = faces[i].x;
+            int normalindex = faces[i].y;
+            int uvindex = faces[i].z;
+            model_[i * 8 + POSITION_OFFSET] = temp_vertices[posindex].x;
+            model_[i * 8 + POSITION_OFFSET + 1] = temp_vertices[posindex].y;
+            model_[i * 8 + POSITION_OFFSET + 2] = temp_vertices[posindex].z;
+            model_[i * 8 + TEXCOORD_OFFSET] = temp_uvs[uvindex].x;
+            model_[i * 8 + TEXCOORD_OFFSET + 1] = temp_uvs[uvindex].y;
+            model_[i * 8 + NORMAL_OFFSET] = temp_normals[normalindex].x;
+            model_[i * 8 + NORMAL_OFFSET + 1] = temp_normals[normalindex].y;
+            model_[i * 8 + NORMAL_OFFSET + 2] = temp_normals[normalindex].z;
+		}
+        num_verts_ = tridata.size() / 3;
+	}
+	
+	
+    
+    
+
+    printf("-----------Finished Parsing DAE file------------\n");
 
 	xmlFreeDoc(doc);
 	xmlCleanupParser();
@@ -336,7 +369,7 @@ xmlNode* Model::searchNode(xmlNode* a_node, char target[]) {
     return nodeFound;
 }
 
-void Model::parseNode(xmlDocPtr doc, xmlNodePtr cur) {
+void Model::parsefloatNode(xmlDocPtr doc, xmlNodePtr cur, std::vector<float>* data) {
 
     xmlChar* key;
     cur = cur->xmlChildrenNode;
@@ -345,11 +378,28 @@ void Model::parseNode(xmlDocPtr doc, xmlNodePtr cur) {
         string input = (char*)key;
         std::istringstream ss(input);
         string token;
-        printf("-----\n");
         while (std::getline(ss, token, ' ')) {
-            std::cout << token << ' ';
+            data->push_back(std::stof(token));
 		}
-        printf("-----\n");
+        
+        xmlFree(key);
+        cur = cur->next;
+    }
+    return;
+}
+
+void Model::parseintNode(xmlDocPtr doc, xmlNodePtr cur, std::vector<int>* data) {
+    xmlChar* key;
+    cur = cur->xmlChildrenNode;
+    while (cur != NULL) {
+        key = xmlNodeListGetString(doc, cur, 1);
+        string input = (char*)key;
+        std::istringstream ss(input);
+        string token;
+        while (std::getline(ss, token, ' ')) {
+            data->push_back(std::stoi(token));
+        }
+
         xmlFree(key);
         cur = cur->next;
     }

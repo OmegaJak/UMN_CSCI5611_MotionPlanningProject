@@ -18,7 +18,8 @@ class Model {
 
 	static void print_xmlfile(xmlNode* a_node, int level);
     static xmlNode* searchNode(xmlNode* a_node, char target[]);
-    static void parseNode(xmlDocPtr doc, xmlNodePtr cur);
+    static void parsefloatNode(xmlDocPtr doc, xmlNodePtr cur, std::vector<float>* data);
+    static void parseintNode(xmlDocPtr doc, xmlNodePtr cur, std::vector<int>* data);
 
     int NumElements() const;
     int NumVerts() const;

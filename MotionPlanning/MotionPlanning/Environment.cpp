@@ -31,7 +31,7 @@ void Environment::CreateEnvironment() {
     gameObject->material_.specFactor_ = 0.2;
     _gameObjects.push_back(gameObject);
 
-    gameObject = new GameObject(ModelManager::GetModel(2));  // Bird
+    gameObject = new GameObject(ModelManager::GetModel(3));  // Bird
     gameObject->SetTextureIndex(TEX0);
     gameObject->SetScale(1, 1, -1);
     gameObject->SetPosition(glm::vec3(-10, -10, -10));
