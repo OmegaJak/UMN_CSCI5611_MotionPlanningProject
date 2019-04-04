@@ -1,4 +1,3 @@
-#include "ClothManager.h"
 #include "Environment.h"
 #include "ModelManager.h"
 #include "Utils.h"
@@ -13,7 +12,7 @@ void Environment::UpdateAll() {
     }
     for (auto animatedObject : _animatedObjects) {
         animatedObject->Update();
-	}
+    }
 }
 void Environment::SetGravityCenterPosition(const glm::vec3& position) {
     _gameObjects[_gravityCenterIndex]->SetPosition(position);
@@ -51,14 +50,12 @@ void Environment::CreateEnvironment() {
     gameObject->SetScale(1, 1, 1);
     _gameObjects.push_back(gameObject);
 
-	gameObject = new GameObject(ModelManager::GetModel(2));
+    gameObject = new GameObject(ModelManager::GetModel(2));
     gameObject->SetTextureIndex(TEX0);
     gameObject->SetScale(5, 5, 5);
     _gameObjects.push_back(gameObject);
 
-
-
-	animatedObject = new AnimatedObject(ModelManager::SphereModel);
+    animatedObject = new AnimatedObject(ModelManager::SphereModel);
     animatedObject->SetTextureIndex(UNTEXTURED);
     animatedObject->SetColor(glm::vec3(.5f, 1.f, .5f));
     animatedObject->SetPosition(glm::vec3(20, 10, 10));

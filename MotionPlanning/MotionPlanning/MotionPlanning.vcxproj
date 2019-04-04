@@ -178,7 +178,6 @@
     <ClCompile Include="KDTree.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Model.cpp" />
-    <ClCompile Include="ClothManager.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ModelManager.cpp" />
     <ClCompile Include="MotionPlanner.cpp" />
@@ -203,7 +202,6 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelManager.h" />
-    <ClInclude Include="ClothManager.h" />
     <ClInclude Include="MotionPlanner.h" />
     <ClInclude Include="Obstacle.h" />
     <ClInclude Include="pch.h" />
@@ -217,8 +215,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
-    <None Include="clothComputeShader.glsl" />
-    <None Include="computeShader.glsl" />
     <None Include="debug-Fragment.glsl" />
     <None Include="environment-Fragment.glsl" />
     <None Include="environment-Vertex.glsl" />

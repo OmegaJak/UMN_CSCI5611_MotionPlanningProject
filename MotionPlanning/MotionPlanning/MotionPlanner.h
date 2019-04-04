@@ -19,6 +19,7 @@ class MotionPlanner {
     void CreateMotionPlanner();
     void Connect(Node* n1, Node* n2) const;
     glm::vec3 getFurthestVisiblePoint(glm::vec3 pos);
+    void SetupDebugLines();
 
     std::vector<GameObject> _gameObjects;
     ConfigurationSpace _cSpace;

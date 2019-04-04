@@ -4,7 +4,7 @@
 
 struct Node {
     struct AStarNodeData {
-        AStarNodeData() {}
+        AStarNodeData() = default;
 
         AStarNodeData(float gCost, float fCost, bool _opened) {
             g_cost = gCost;
@@ -21,7 +21,6 @@ struct Node {
     std::vector<Node*> connections;
     glm::vec3 position;
     bool explored;
-    int id;
     AStarNodeData aStarData;
 };
 

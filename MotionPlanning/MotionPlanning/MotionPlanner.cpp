@@ -14,30 +14,27 @@ MotionPlanner::MotionPlanner(ConfigurationSpace cSpace) {
 
     numsamples = 1000;
     CreateMotionPlanner();
+    SetupDebugLines();
 }
 
 void MotionPlanner::CreateMotionPlanner() {
     const float elevation = 0.5f;
-    GameObject gameObject;
     int currentNodeId = 0;
 
     // Begin PRM construction //
     Timer::StartTimer("PRMConstruction");
 
-    Node* start = new Node();
-    start->id = currentNodeId++;
-    start->position = glm::vec3(-10, -10, -10);
-    Node* end = new Node();
-    end->id = currentNodeId++;
-    end->position = glm::vec3(10, 10, 10);
+    auto* start = new Node();
+    start->position = vec3(-10, -10, -10);
+    auto* end = new Node();
+    end->position = vec3(10, 10, 10);
     pbr.push_back(start);
     pbr.push_back(end);
 
     for (int i = 0; i < numsamples; i++) {
-        Node* n = new Node();
-        n->id = currentNodeId++;
+        auto* n = new Node();
 
-        glm::vec3 pos = Utils::RandomVector() * 10.f;
+        vec3 pos = Utils::RandomVector() * 10.f;
         while (_cSpace.PointIsInsideObstacle(pos)) {  // Ensure we don't collide with any obstacles
             pos = Utils::RandomVector() * 10.f;
         }
@@ -45,9 +42,9 @@ void MotionPlanner::CreateMotionPlanner() {
         n->position = pos;
         pbr.push_back(n);
 
-        gameObject = GameObject(ModelManager::SphereModel);  // PBR individual point
+        GameObject gameObject = GameObject(ModelManager::SphereModel);  // PBR individual point
         gameObject.SetTextureIndex(UNTEXTURED);
-        gameObject.SetColor(glm::vec3(.5f, .5f, .5f));
+        gameObject.SetColor(vec3(.5f, .5f, .5f));
         gameObject.SetPosition(n->position);
         gameObject.SetScale(.25, .25, .25);
         _gameObjects.push_back(gameObject);
@@ -82,9 +79,7 @@ void MotionPlanner::CreateMotionPlanner() {
         printf("FAILED to find Solution");
         return;
     }
-    if (Search::Solve(start, end, &solution)) {
-        // printf("FOUND SOLUTION\n");
-    } else {
+    if (!Search::Solve(start, end, &solution)) {
         printf("FAILED to find Solution");
     }
 
@@ -125,29 +120,57 @@ void MotionPlanner::MoveObject(GameObject* object, float speed, float time) {
     distanceToTravel += distToNextNode;
 
     if (solutionsize > 0 && currentNode < solutionsize - 1) {
-        glm::vec3 dir = glm::normalize(solution[currentNode + 1]->position - solution[currentNode]->position);
+        vec3 dir = normalize(solution[currentNode + 1]->position - solution[currentNode]->position);
         object->SetPosition(solution[currentNode]->position + distanceToTravel * dir);
     }
 }
 void MotionPlanner::MoveObjectSmooth(GameObject* object, float velocity, float dt) {
-    glm::vec3 pos = object->getPosition();
+    vec3 pos = object->getPosition();
     // If object is near the goal, don't move
     if (glm::distance(pos, solution.back()->position) < .1) {
         return;
     }
     // Find furthest visible point (fvp) along path that the object can see
-    glm::vec3 fvp = getFurthestVisiblePoint(pos);
-    glm::vec3 dir = glm::normalize(fvp - pos);
+    vec3 fvp = getFurthestVisiblePoint(pos);
+    vec3 dir = normalize(fvp - pos);
 
     // Move towards that point
-    glm::vec3 newpos = pos + .1f * dir;
+    vec3 newpos = pos + .1f * dir;
     object->SetPosition(newpos);
 }
 
-glm::vec3 MotionPlanner::getFurthestVisiblePoint(glm::vec3 pos) {
+vec3 MotionPlanner::getFurthestVisiblePoint(vec3 pos) {
     int solutionsize = solution.size() - 1;
     for (int i = solutionsize; i >= 0; i--) {
         if (!(_cSpace.SegmentIntersectsObstacle(pos, solution[i]->position))) return solution[i]->position;
     }
     return pos;
+}
+
+void MotionPlanner::SetupDebugLines() {
+    int numLines = 0;
+    for (auto& node : pbr) {
+        numLines += node->connections.size();
+    }
+    printf("Number of PRM edges: %d \n", numLines);
+
+    // Render all PRM edges
+    LineIndexRange lineIndices = DebugManager::RequestLines(numLines);
+    int curline = lineIndices.firstIndex;
+    for (auto n1 : pbr) {
+        for (unsigned int j = 0; j < n1->connections.size(); j++) {
+            Node* n2 = n1->connections[j];
+            DebugManager::SetLine(curline, n1->position, n2->position, vec3(0, 0, 1));
+            curline++;
+        }
+    }
+
+    // Render solution path
+    std::vector<Node*> solutions = solution;
+    LineIndexRange lineIndices2 = DebugManager::RequestLines(solutions.size() - 1);
+    for (unsigned int i = 1; i < solutions.size(); i++) {
+        Node* n1 = solutions[i];
+        Node* n2 = solutions[i - 1];
+        DebugManager::SetLine(lineIndices.firstIndex + i - 1, n1->position, n2->position, vec3(0, 1, 0));
+    }
 }

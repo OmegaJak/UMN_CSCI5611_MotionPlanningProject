@@ -1,37 +1,27 @@
 #include <fstream>
-#include "ClothManager.h"
 #include "Constants.h"
 #include "DebugManager.h"
 #include "ModelManager.h"
 #include "ShaderManager.h"
 
-GLuint ShaderManager::ClothComputeShader;
-GLuint ShaderManager::ClothComputeStage;
 RenderShader ShaderManager::EnvironmentShader;
-RenderShader ShaderManager::ClothShader;
 RenderShader ShaderManager::DebugShader;
 
 std::map<int, std::function<void(ShaderAttributes)>> ShaderManager::ShaderFunctions;
 
 void ShaderManager::InitShaders() {
-    ClothShader.Program = EnvironmentShader.Program = CompileRenderShader("environment-Vertex.glsl", "environment-Fragment.glsl");
+    EnvironmentShader.Program = CompileRenderShader("environment-Vertex.glsl", "environment-Fragment.glsl");
     DebugShader.Program = CompileRenderShader("debug-Vertex.glsl", "debug-Fragment.glsl");
-    ClothComputeShader = CompileComputeShaderProgram("clothComputeShader.glsl");
-    ClothComputeStage = glGetUniformLocation(ClothComputeShader, "computationStage");
 
     InitEnvironmentShaderAttributes();
-    InitClothShaderAttributes();
     InitDebugShaderAttributes();
 }
 
 void ShaderManager::Cleanup() {
     glDeleteProgram(EnvironmentShader.Program);
     glDeleteProgram(DebugShader.Program);
-    glDeleteProgram(ClothComputeShader);
-    glDeleteProgram(ClothShader.Program);
 
     glDeleteVertexArrays(1, &EnvironmentShader.VAO);
-    glDeleteVertexArrays(1, &ClothShader.VAO);
     glDeleteVertexArrays(1, &DebugShader.VAO);
 }
 
@@ -81,38 +71,6 @@ void ShaderManager::InitEnvironmentShaderAttributes() {
 
     glBindVertexArray(0);  // Unbind the VAO in case we want to create a new one
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
-
-void ShaderManager::InitClothShaderAttributes() {
-    // First build a Vertex Array Object (VAO) to store mapping of shader attributes to VBO
-    glGenVertexArrays(1, &ClothShader.VAO);  // Create a VAO
-    glBindVertexArray(ClothShader.VAO);      // Bind the above created VAO to the current context
-
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ClothManager::posSSbo);
-    glBindBuffer(GL_ARRAY_BUFFER, ClothManager::posSSbo);
-    GLint posAttrib = glGetAttribLocation(ClothShader.Program, "position");
-    glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, sizeof(position), (void*)0);
-    // Attribute, vals/attrib., type, isNormalized, stride, offset
-    glEnableVertexAttribArray(posAttrib);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ClothManager::normSSbo);
-    glBindBuffer(GL_ARRAY_BUFFER, ClothManager::normSSbo);
-    GLint normAttrib = glGetAttribLocation(ClothShader.Program, "inNormal");
-    glVertexAttribPointer(normAttrib, 3, GL_FLOAT, GL_FALSE, sizeof(normal), (void*)0);
-    glEnableVertexAttribArray(normAttrib);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    ClothManager::InitClothTexcoords();
-
-    ClothShader.Attributes.position = posAttrib;
-    ClothShader.Attributes.normals = normAttrib;
-    // ClothShader.Attributes.texCoord = texAttrib;
-
-    InitShaderUniforms(ClothShader);
-    ClothManager::InitClothIBO();
-
-    glBindVertexArray(0);  // Unbind the VAO in case we want to create a new one
 }
 
 void ShaderManager::InitDebugShaderAttributes() {
@@ -182,17 +140,17 @@ GLuint ShaderManager::CompileRenderShader(const std::string& vertex_shader_file,
         printf("Failed to read from vertex shader file %s\n", vertex_shader_file.c_str());
         exit(1);
     } else if (DEBUG_ON) {
-        //printf("Vertex Shader (%s):\n=====================\n", vertex_shader_file.c_str());
-        //printf("%s\n", vs_text);
-        //printf("=====================\n\n");
+        // printf("Vertex Shader (%s):\n=====================\n", vertex_shader_file.c_str());
+        // printf("%s\n", vs_text);
+        // printf("=====================\n\n");
     }
     if (fs_text == NULL) {
         printf("Failed to read from fragment shader file %s\n", fragment_shader_file.c_str());
         exit(1);
     } else if (DEBUG_ON) {
-        //printf("\nFragment Shader (%s):\n=====================\n", fragment_shader_file.c_str());
-        //printf("%s\n", fs_text);
-        //printf("=====================\n\n");
+        // printf("\nFragment Shader (%s):\n=====================\n", fragment_shader_file.c_str());
+        // printf("%s\n", fs_text);
+        // printf("=====================\n\n");
     }
 
     // Load Vertex Shader
@@ -254,9 +212,9 @@ GLuint ShaderManager::CompileComputeShaderProgram(const std::string& compute_sha
         printf("Failed to read from compute shader file %s\n", compute_shader_file.c_str());
         exit(1);
     } else if (DEBUG_ON) {
-        //printf("Compute Shader (%s):\n=====================\n", compute_shader_file.c_str());
-        //printf("%s\n", vs_text);
-        //printf("=====================\n\n");
+        // printf("Compute Shader (%s):\n=====================\n", compute_shader_file.c_str());
+        // printf("%s\n", vs_text);
+        // printf("=====================\n\n");
     }
 
     // Load Compute Shader
