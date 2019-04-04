@@ -1,59 +1,64 @@
 #include <algorithm>
 #include "KDTree.h"
+#include "Search.h"
 #include "Utils.h"
 
 using namespace std;
 using namespace glm;
 
-template <class T>
-KDTree<T>::KDTree(vector<T> points, int k) : KDTree(points, k, 0) {}
+template <class nodeType, class vecType>
+KDTree<nodeType, vecType>::KDTree(std::vector<nodeType> nodes, std::function<vecType(nodeType)> nodeToLocation, int k)
+    : KDTree(nodes, nodeToLocation, k, 0) {}
 
-template <class T>
-KDTree<T>::KDTree(vector<T> points, int k, int depth) {
+template <class nodeType, class vecType>
+KDTree<nodeType, vecType>::KDTree(std::vector<nodeType> nodes, std::function<vecType(nodeType)> nodeToLocation, int k, int depth) {
     _k = k;
-    _root = CreateKDTree(points, depth);
+    _nodeToLocation = nodeToLocation;
+
+    _root = CreateKDTree(nodes, depth);
 }
 
-template <class T>
-typename KDTree<T>::KDNode* KDTree<T>::CreateKDTree(vector<T> points, int depth) {
-    if (points.empty()) return nullptr;
+template <class nodeType, class vecType>
+typename KDTree<nodeType, vecType>::KDNode* KDTree<nodeType, vecType>::CreateKDTree(vector<nodeType> nodes, int depth) {
+    if (nodes.empty()) return nullptr;
 
     int axis = depth % _k;
 
-    sort(points.begin(), points.end(), [axis](const T& v1, const T& v2) { return v1[axis] < v2[axis]; });
-    Utils::PrintPoints(points);
+    sort(nodes.begin(), nodes.end(),
+         [axis, this](const nodeType& n1, const nodeType& n2) { return _nodeToLocation(n1)[axis] < _nodeToLocation(n2)[axis]; });
+    // Utils::PrintPoints(nodes);
 
-    int medianIndex = points.size() / 2;
-    auto median = points[medianIndex];
+    int medianIndex = nodes.size() / 2;
+    nodeType median = nodes[medianIndex];
 
-    auto medianIterator = points.begin() + medianIndex;
-    if (points.size() == 1) {
-        return new KDNode{median, nullptr, nullptr};
+    auto medianIterator = nodes.begin() + medianIndex;
+    if (nodes.size() == 1) {
+        return new KDNode{median, _nodeToLocation(median), nullptr, nullptr};
     }
-    return new KDNode{median, CreateKDTree(vector<T>(points.begin(), medianIterator), depth + 1),
-                      CreateKDTree(vector<T>(medianIterator + 1, points.end()), depth + 1)};
+    return new KDNode{median, _nodeToLocation(median), CreateKDTree(vector<nodeType>(nodes.begin(), medianIterator), depth + 1),
+                      CreateKDTree(vector<nodeType>(medianIterator + 1, nodes.end()), depth + 1)};
 }
 
-template <class T>
-vector<T> KDTree<T>::GetNearestNeighbors(const T& point, int n) {
+template <class nodeType, class vecType>
+vector<nodeType> KDTree<nodeType, vecType>::GetNearestNeighbors(const vecType& point, int n) {
     auto bestInit = vector<Candidate>(n, Candidate(nullptr, INFINITY));
     BestCandidateQueue best = BestCandidateQueue([](const Candidate& a, const Candidate& b) { return a.second < b.second; }, bestInit);
 
     // Calling this puts the results into the best queue
     GetNearestNeighbors(point, _root, best, 0);
 
-    vector<T> result = {};
+    vector<nodeType> result = {};
     while (!best.empty()) {
         Candidate currentCandidate = best.top();
         best.pop();
-        if (currentCandidate.first != nullptr) result.push_back(currentCandidate.first->location);
+        if (currentCandidate.first != nullptr) result.push_back(currentCandidate.first->nodeData);
     }
 
     return result;
 }
 
-template <class T>
-void KDTree<T>::GetNearestNeighbors(const T& point, KDNode* node, BestCandidateQueue& best, int depth) {
+template <class nodeType, class vecType>
+void KDTree<nodeType, vecType>::GetNearestNeighbors(const vecType& point, KDNode* node, BestCandidateQueue& best, int depth) {
     if (node == nullptr) return;
     int axis = depth % _k;
 
@@ -67,9 +72,9 @@ void KDTree<T>::GetNearestNeighbors(const T& point, KDNode* node, BestCandidateQ
         GetNearestNeighbors(point, node->right, best, depth + 1);
     }
 
-    // Are we closer than the currently known closest?
+    // Are we closer than the currently known closest? (and aren't at the same point)
     double dist = GetSqrDistanceBetween(point, node->location);
-    if (dist < best.top().second) {
+    if (dist > 0 && dist < best.top().second) {
         best.pop();
         best.push(Candidate(node, dist));
     }
@@ -87,8 +92,8 @@ void KDTree<T>::GetNearestNeighbors(const T& point, KDNode* node, BestCandidateQ
     }
 }
 
-template <class T>
-double KDTree<T>::GetSqrDistanceBetween(const T& a, const T& b) {
+template <class nodeType, class vecType>
+double KDTree<nodeType, vecType>::GetSqrDistanceBetween(const vecType& a, const vecType& b) {
     double sqrDistance = 0;
     for (int i = 0; i < _k; i++) {
         sqrDistance += pow(b[i] - a[i], 2);
@@ -99,5 +104,5 @@ double KDTree<T>::GetSqrDistanceBetween(const T& a, const T& b) {
 
 // Necessary because of weird C++ template linking stuff.
 // https://isocpp.org/wiki/faq/templates#templates-defn-vs-decl
-template class KDTree<vec2>;
-template class KDTree<vec3>;
+template class KDTree<Node*, vec2>;
+template class KDTree<Node*, vec3>;

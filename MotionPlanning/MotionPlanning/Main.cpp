@@ -212,7 +212,7 @@ int main(int argc, char* argv[]) {
     cSpace.AddObstacle(new SphereObstacle(glm::vec3(8, -2, 5), 2));
 
     MotionPlanner motionPlanner = MotionPlanner(cSpace);
-    return 0;
+
     std::vector<Node*> nodes = motionPlanner.pbr;
     int numLines = 0;
 
@@ -228,7 +228,7 @@ int main(int argc, char* argv[]) {
         Node* n1 = nodes[i];
         for (int j = 0; j < n1->connections.size(); j++) {
             Node* n2 = n1->connections[j];
-            // DebugManager::SetLine(curline, n1->position, n2->position, glm::vec3(0, 0, 1));
+            DebugManager::SetLine(curline, n1->position, n2->position, glm::vec3(0, 0, 1));
             curline++;
         }
     }

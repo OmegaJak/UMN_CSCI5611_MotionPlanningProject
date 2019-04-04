@@ -12,16 +12,8 @@ using namespace glm;
 MotionPlanner::MotionPlanner(ConfigurationSpace cSpace) {
     _cSpace = cSpace;
 
-    numsamples = 100;
+    numsamples = 1000;
     CreateMotionPlanner();
-
-    vector<vec2> points = {vec2(2, 3), vec2(5, 4), vec2(9, 6), vec2(4, 7), vec2(8, 1), vec2(7, 2)};
-    auto tree = KDTree<vec2>(points, 2);
-
-    auto closest = tree.GetNearestNeighbors(vec2(8, 2), 4);
-
-    /*vector<vec3> points3D = {vec3(0, 0, 0), vec3(1, 3, 5), vec3(-2, 10, 4), vec3(9, 10, 20), vec3(9, 8, 7), vec3(12, 0, 3)};
-    auto tree3D = KDTree<vec3>(points3D, 3);*/
 }
 
 void MotionPlanner::CreateMotionPlanner() {
@@ -61,13 +53,23 @@ void MotionPlanner::CreateMotionPlanner() {
         _gameObjects.push_back(gameObject);
     }
 
+    Timer::StartTimer("KDTree Construction");
+    auto kdTree = KDTree<Node*, vec3>(
+        pbr, [](Node* n) { return n->position; }, 3);
+    Timer::EndTimingAndPrintResult("KDTree Construction");
+
     // Make Valid Connections.
     for (int i = 0; i < pbr.size(); i++) {
-        for (int j = i + 1; j < pbr.size(); j++) {
+        auto neighbors = kdTree.GetNearestNeighbors(pbr[i]->position, 5);
+        for (auto& neighbor : neighbors) {
+            Connect(pbr[i], neighbor);
+        }
+
+        /*for (int j = i + 1; j < pbr.size(); j++) {
             if (i == j) continue;
 
             Connect(pbr[i], pbr[j]);
-        }
+        }*/
     }
 
     Timer::EndTimingAndPrintResult("PRMConstruction");
@@ -99,7 +101,8 @@ void MotionPlanner::Update() {
 }
 
 void MotionPlanner::Connect(Node* n1, Node* n2) const {
-    if (n1 != n2 && glm::distance(n1->position, n2->position) < 10) {  // Only allow connections that are somewhat close to each other.
+    if (n1 != n2 &&
+        glm::distance(n1->position, n2->position) < INFINITY) {  // Only allow connections that are somewhat close to each other.
         if (!_cSpace.SegmentIntersectsObstacle(n1->position, n2->position)) {
             n1->connections.push_back(n2);
             n2->connections.push_back(n1);

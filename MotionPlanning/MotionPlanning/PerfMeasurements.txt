@@ -1,7 +1,17 @@
-Before, A*, PRM w/ no accel:
-100 nodes, : 
+A*, PRM w/ no accel:
+100 nodes: 
 	PRM Con: ~16-17ms
 	Solution: ~1ms
 1000 nodes:
 	PRM Con: ~1300ms
 	Solution: ~15-30ms
+	
+A*, PRM using KDTree & linking to 5 nearest neighbors:
+100 nodes:
+	PRM Con: ~40-50ms
+		Of this, KDTree construction is ~8-11ms
+	Solution: ~1ms
+1000 nodes:
+	PRM Con: ~500ms
+		Of this, KDTree construction is ~160ms
+	Solution: ~5-7ms
