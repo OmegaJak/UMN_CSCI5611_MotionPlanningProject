@@ -6,11 +6,6 @@ using namespace std;
 using namespace glm;
 
 template <class T>
-function<bool(const T&, const T&)> GetComparePoints(const int axis) {
-    return [axis](const T& v1, const T& v2) { return v1[axis] < v2[axis]; };
-}
-
-template <class T>
 KDTree<T>::KDTree(vector<T> points, int k) : KDTree(points, k, 0) {}
 
 template <class T>
@@ -25,7 +20,7 @@ typename KDTree<T>::KDNode* KDTree<T>::CreateKDTree(vector<T> points, int depth)
 
     int axis = depth % _k;
 
-    sort(points.begin(), points.end(), GetComparePoints<T>(axis));
+    sort(points.begin(), points.end(), [axis](const T& v1, const T& v2) { return v1[axis] < v2[axis]; });
     Utils::PrintPoints(points);
 
     int medianIndex = points.size() / 2;
@@ -44,16 +39,29 @@ vector<T> KDTree<T>::GetNearestNeighbors(const T& point, int n) {
     auto bestInit = vector<Candidate>(n, Candidate(nullptr, INFINITY));
     BestCandidateQueue best = BestCandidateQueue([](const Candidate& a, const Candidate& b) { return a.second < b.second; }, bestInit);
 
-    return GetNearestNeighbors(point, _root, best, 0);
+    // Calling this puts the results into the best queue
+    GetNearestNeighbors(point, _root, best, 0);
+
+    vector<T> result = {};
+    while (!best.empty()) {
+        Candidate currentCandidate = best.top();
+        best.pop();
+        if (currentCandidate.first != nullptr) result.push_back(currentCandidate.first->location);
+    }
+
+    return result;
 }
 
 template <class T>
-vector<T> KDTree<T>::GetNearestNeighbors(const T& point, KDNode* node, BestCandidateQueue& best, int depth) {
-    if (node == nullptr) return vector<T>();
+void KDTree<T>::GetNearestNeighbors(const T& point, KDNode* node, BestCandidateQueue& best, int depth) {
+    if (node == nullptr) return;
     int axis = depth % _k;
 
+    auto nodeAxisValue = node->location[axis];
+    auto pointAxisValue = point[axis];
+
     // Traverse the tree
-    if (point[axis] <= node->location[axis]) {
+    if (pointAxisValue <= nodeAxisValue) {
         GetNearestNeighbors(point, node->left, best, depth + 1);
     } else {
         GetNearestNeighbors(point, node->right, best, depth + 1);
@@ -66,31 +74,17 @@ vector<T> KDTree<T>::GetNearestNeighbors(const T& point, KDNode* node, BestCandi
         best.push(Candidate(node, dist));
     }
 
-    auto splitPlaneValue = node->location[axis];
-    auto pointCoordVal = point[axis];
-    auto distFromSplitPlane = abs(pointCoordVal - splitPlaneValue);
-
     // We square distFromSplitPlane here because we avoided computing square roots for the distance computation above, and squaring
     // distFromSplitPlane is less work than sqrting dist
+    auto distFromSplitPlane = abs(pointAxisValue - nodeAxisValue);
     if (distFromSplitPlane * distFromSplitPlane < best.top().second) {  // Closest could be on the other side of the split plane
         // So take the path we didn't take before
-        if (point[axis] <= node->location[axis]) {
+        if (pointAxisValue <= nodeAxisValue) {
             GetNearestNeighbors(point, node->right, best, depth + 1);
         } else {
             GetNearestNeighbors(point, node->left, best, depth + 1);
         }
     }
-
-    vector<T> result = {};
-    if (depth == 0) {
-        while (!best.empty()) {
-            Candidate currentCandidate = best.top();
-            best.pop();
-            if (currentCandidate.first != nullptr) result.push_back(currentCandidate.first->location);
-        }
-    }
-
-    return result;
 }
 
 template <class T>
