@@ -23,7 +23,7 @@
     <ProjectGuid>{0E4A80E2-E717-4644-BE15-CC29F27CBA1A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>MazeGame</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
     <ProjectName>MotionPlanning</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -90,7 +90,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
@@ -168,6 +168,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\..\Kieran%27s Stuff 2.0\Graphics\Csci5611\CSCI5611MotionPlanning\MotionPlanning\MotionPlanning\Skybox.cpp" />
     <ClCompile Include="Agent.cpp" />
     <ClCompile Include="AnimatedObject.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -190,6 +191,7 @@
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\Kieran%27s Stuff 2.0\Graphics\Csci5611\CSCI5611MotionPlanning\MotionPlanning\MotionPlanning\Skybox.h" />
     <ClInclude Include="Agent.h" />
     <ClInclude Include="AnimatedObject.h" />
     <ClInclude Include="Camera.h" />
@@ -216,6 +218,8 @@
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\..\..\Kieran%27s Stuff 2.0\Graphics\Csci5611\CSCI5611MotionPlanning\MotionPlanning\MotionPlanning\Sky_Fragment.glsl" />
+    <None Include="..\..\..\..\..\..\Kieran%27s Stuff 2.0\Graphics\Csci5611\CSCI5611MotionPlanning\MotionPlanning\MotionPlanning\Sky_Vertex.glsl" />
     <None Include=".clang-format" />
     <None Include="debug-Fragment.glsl" />
     <None Include="environment-Fragment.glsl" />

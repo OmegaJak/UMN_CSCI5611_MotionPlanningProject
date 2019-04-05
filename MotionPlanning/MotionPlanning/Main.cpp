@@ -15,6 +15,7 @@
 #include "Environment.h"
 #include "GameObject.h"
 #include "MotionPlanner.h"
+#include "Skybox.h"
 #include "ShaderManager.h"
 #include "SphereObstacle.h"
 #include "TextureManager.h"
@@ -119,6 +120,11 @@ int main(int argc, char* argv[]) {
 
     MotionPlanner motionPlanner = MotionPlanner(cSpace);
 
+	vector<std::string> faces = {"images/right2.png",  "images/left2.png", "images/top2.png",
+                                 "images/bottom2.png", "images/back2.png", "images/front2.png"};
+
+	Skybox skybox = Skybox(faces);
+
     std::vector<Agent> agents = {};
     agents.push_back(Agent(glm::vec3(-10, -10, -10), glm::vec3(10, 10, 10), &motionPlanner));
     agents.push_back(Agent(glm::vec3(10, -10, 10), glm::vec3(-10, 10, -10), &motionPlanner));
@@ -215,6 +221,7 @@ int main(int argc, char* argv[]) {
         SDL_SetWindowTitle(window, debugText.str().c_str());
 
         // Render the environment
+        skybox.Update(camera.GetView(), proj);
         ShaderManager::ActivateShader(ShaderManager::EnvironmentShader);
         glBindBuffer(GL_ARRAY_BUFFER, ShaderManager::EnvironmentShader.VBO);
         TextureManager::Update(ShaderManager::EnvironmentShader.Program);

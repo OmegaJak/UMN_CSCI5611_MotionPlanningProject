@@ -11,6 +11,9 @@ class Camera {
     glm::vec3 GetPosition();
     glm::vec3 GetMousePosition(float normalizedMouseX, float normalizedMouseY, const glm::mat4& proj, float distanceFromCamera);
     glm::vec3 GetForward();
+    glm::mat4 GetView() {
+      return _view;
+	};
     void Update();
 
    private:
