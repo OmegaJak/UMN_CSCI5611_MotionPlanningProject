@@ -29,6 +29,15 @@ std::vector<Node*> MotionPlanner::PlanPath(Node* start, Node* goal) const {
         printf("FAILED to find Solution\n");
     }
 
+    Timer::StartTimer("SolutionCleanup");
+    // Because we store A*'s relevant data in the nodes themselves, they must be reset after use
+    // as multiple agent may search over this graph again
+    for (auto& node : _prm) {
+        node->aStarData = Node::AStarNodeData();
+        node->explored = false;
+    }
+    Timer::EndTimingAndPrintResult("SolutionCleanup");
+
     Timer::EndTimingAndPrintResult("Solution");
 
     return solution;

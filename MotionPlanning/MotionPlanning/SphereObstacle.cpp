@@ -13,7 +13,7 @@ SphereObstacle::SphereObstacle(const glm::vec3& position, float radius) {
 }
 
 void SphereObstacle::InflateToCSpaceObstacleForSphericalAgent(float agentRadius) {
-    _cSpaceRadius = _worldRadius + agentRadius * 0.5f;
+    _cSpaceRadius = _worldRadius + agentRadius;
 }
 
 bool SphereObstacle::IsPointInside(glm::vec3 point) const {
