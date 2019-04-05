@@ -11,7 +11,11 @@ class Agent : GameObject {
     void Update() override;
 
    private:
-    void Move(const float velocity);
+    void Move(float velocity);
+    void ChooseNewGoal();
+
+    void InitializeStartAndGoal(const glm::vec3& startPosition, const glm::vec3& goalPosition);
+    void PlanPath();
 
     Node* _start;
     Node* _goal;

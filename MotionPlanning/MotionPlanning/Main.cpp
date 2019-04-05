@@ -114,7 +114,8 @@ int main(int argc, char* argv[]) {
     ModelManager::InitModels();
 
     Environment environment = Environment();
-    ConfigurationSpace cSpace = ConfigurationSpace(new SphereObstacle(glm::vec3(0, 0, 0), 5));
+    ConfigurationSpace cSpace =
+        ConfigurationSpace(new SphereObstacle(glm::vec3(0, 0, 0), 5), Extents(glm::vec3(-10, -10, -10), glm::vec3(10, 10, 10)));
     cSpace.AddObstacle(new SphereObstacle(glm::vec3(0, 0, 10), 4));
     cSpace.AddObstacle(new SphereObstacle(glm::vec3(8, -2, 5), 2));
 
@@ -125,8 +126,10 @@ int main(int argc, char* argv[]) {
     Skybox skybox = Skybox(faces);
 
     std::vector<Agent> agents = {};
-    agents.push_back(Agent(glm::vec3(-10, -10, -10), glm::vec3(10, 10, 10), &motionPlanner));
-    agents.push_back(Agent(glm::vec3(10, -10, 10), glm::vec3(-10, 10, -10), &motionPlanner));
+    for (int i = 0; i < 10; i++) {
+        agents.push_back(Agent(glm::vec3(-10, -10, -10), glm::vec3(10, 10, 10), &motionPlanner));
+        agents.push_back(Agent(glm::vec3(10, -10, 10), glm::vec3(-10, 10, -10), &motionPlanner));
+    }
 
     ShaderManager::InitShaders();
     TextureManager::InitTextures();

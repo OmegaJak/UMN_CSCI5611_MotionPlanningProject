@@ -54,7 +54,11 @@ void MotionPlanner::Update() {
 vec3 MotionPlanner::GetFarthestVisiblePointAlongPath(const vec3& currentPos, const std::vector<Node*>& path) const {
     int solutionSize = path.size() - 1;
     for (int i = solutionSize; i >= 0; i--) {
-        if (!(_cSpace.SegmentIntersectsObstacle(currentPos, path[i]->position))) return path[i]->position;
+        if (!_cSpace.SegmentIntersectsObstacle(currentPos, path[i]->position)) {
+            return path[i]->position;
+        } else if (!_cSpace.SegmentIntersectsObstacle(path[i]->position, currentPos)) {
+            return path[i]->position;
+        }
     }
 
     return currentPos;
@@ -63,6 +67,10 @@ vec3 MotionPlanner::GetFarthestVisiblePointAlongPath(const vec3& currentPos, con
 std::vector<Node*> MotionPlanner::GetNNearestVisiblePoints(const vec3& pos, int n) {
     return _prmKDTree.GetNearestNeighbors(pos, n,
                                           [this](const vec3& a, const vec3& b) { return !_cSpace.SegmentIntersectsObstacle(a, b); });
+}
+
+vec3 MotionPlanner::GetRandomGoal() const {
+    return _cSpace.GetRandomGoal();
 }
 
 void MotionPlanner::InitializePRM(int numSamples) {

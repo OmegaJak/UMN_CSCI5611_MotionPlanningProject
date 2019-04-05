@@ -75,7 +75,7 @@ void KDTree<nodeType, vecType>::GetNearestNeighbors(const vecType& point, KDNode
 
     // Are we closer than the currently known closest? (and aren't at the same point)
     double dist = GetSqrDistanceBetween(point, node->location);
-    if (dist > 0 && dist < best.top().second && (best.top().first == nullptr || isValidConnection(point, best.top().first->location))) {
+    if (dist > 0 && dist < best.top().second && isValidConnection(point, node->location)) {
         best.pop();
         best.push(Candidate(node, dist));
     }

@@ -25,11 +25,12 @@ class Utils {
 
     // Returns a random vector whose coordinates are all between -1 and 1 (inclusive)
     static glm::vec3 RandomVector() {
-        float x = (Random() * 2.0f) - 1.0f;
-        float y = (Random() * 2.0f) - 1.0f;
-        float z = (Random() * 2.0f) - 1.0f;
+        return ((RandomVector01() * 2.0f) - 1.0f);
+    }
 
-        return glm::vec3(x, y, z);
+    // Returns a random vector whose coordinates all between 0 and 1
+    static glm::vec3 RandomVector01() {
+        return glm::vec3(Random(), Random(), Random());
     }
 
     static void PrintPoints(const std::vector<glm::vec3>& points) {
