@@ -29,6 +29,9 @@ Agent::Agent(const vec3& start, const vec3& goal, MotionPlanner* motionPlanner) 
     for (Node* node : _goal->connections) {
         node->connections.pop_back();
     }
+
+    // Get debug line indices
+    _debugLines = DebugManager::RequestLines(1);
 }
 
 Agent::~Agent() {
@@ -53,4 +56,7 @@ void Agent::Move(const float velocity) {
     // Move towards that point
     vec3 newPos = position_ + velocity * toCurrentGoal;
     SetPosition(newPos);
+
+    // Update the debug line
+    DebugManager::SetLine(_debugLines.firstIndex, newPos, fvp, vec3(1, 0, 0));
 }

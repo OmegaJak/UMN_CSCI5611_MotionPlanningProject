@@ -18,4 +18,5 @@ class Agent : GameObject {
 
     MotionPlanner* _motionPlanner;
     std::vector<Node*> _solutionPath;
+    LineIndexRange _debugLines;
 };

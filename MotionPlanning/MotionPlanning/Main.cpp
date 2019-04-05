@@ -15,8 +15,8 @@
 #include "Environment.h"
 #include "GameObject.h"
 #include "MotionPlanner.h"
-#include "Skybox.h"
 #include "ShaderManager.h"
+#include "Skybox.h"
 #include "SphereObstacle.h"
 #include "TextureManager.h"
 #include "Utils.h"
@@ -120,10 +120,9 @@ int main(int argc, char* argv[]) {
 
     MotionPlanner motionPlanner = MotionPlanner(cSpace);
 
-	vector<std::string> faces = {"images/right2.png",  "images/left2.png", "images/top2.png",
+    vector<std::string> faces = {"images/right2.png",  "images/left2.png", "images/top2.png",
                                  "images/bottom2.png", "images/back2.png", "images/front2.png"};
-
-	Skybox skybox = Skybox(faces);
+    Skybox skybox = Skybox(faces);
 
     std::vector<Agent> agents = {};
     agents.push_back(Agent(glm::vec3(-10, -10, -10), glm::vec3(10, 10, 10), &motionPlanner));
