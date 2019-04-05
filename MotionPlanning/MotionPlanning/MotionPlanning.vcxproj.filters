@@ -75,7 +75,7 @@
     <ClCompile Include="Agent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\..\Kieran%27s Stuff 2.0\Graphics\Csci5611\CSCI5611MotionPlanning\MotionPlanning\MotionPlanning\Skybox.cpp">
+    <ClCompile Include="Skybox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -152,7 +152,7 @@
     <ClInclude Include="Agent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\..\Kieran%27s Stuff 2.0\Graphics\Csci5611\CSCI5611MotionPlanning\MotionPlanning\MotionPlanning\Skybox.h">
+    <ClInclude Include="Skybox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -170,10 +170,10 @@
     <None Include="debug-Vertex.glsl">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="..\..\..\..\..\..\Kieran%27s Stuff 2.0\Graphics\Csci5611\CSCI5611MotionPlanning\MotionPlanning\MotionPlanning\Sky_Fragment.glsl">
+    <None Include="Sky_Fragment.glsl">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="..\..\..\..\..\..\Kieran%27s Stuff 2.0\Graphics\Csci5611\CSCI5611MotionPlanning\MotionPlanning\MotionPlanning\Sky_Vertex.glsl">
+    <None Include="Sky_Vertex.glsl">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
