@@ -58,7 +58,7 @@ void Agent::Move(float velocity) {
 }
 
 void Agent::ChooseNewGoal() {
-    InitializeStartAndGoal(position_, _motionPlanner->GetRandomGoal());
+    InitializeStartAndGoal(position_, _motionPlanner->GetRandomValidPoint());
     PlanPath();
 }
 

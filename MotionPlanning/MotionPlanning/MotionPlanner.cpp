@@ -69,8 +69,8 @@ std::vector<Node*> MotionPlanner::GetNNearestVisiblePoints(const vec3& pos, int 
                                           [this](const vec3& a, const vec3& b) { return !_cSpace.SegmentIntersectsObstacle(a, b); });
 }
 
-vec3 MotionPlanner::GetRandomGoal() const {
-    return _cSpace.GetRandomGoal();
+vec3 MotionPlanner::GetRandomValidPoint() const {
+    return _cSpace.GetRandomValidPoint();
 }
 
 void MotionPlanner::InitializePRM(int numSamples) {
@@ -79,12 +79,7 @@ void MotionPlanner::InitializePRM(int numSamples) {
     for (int i = 0; i < numSamples; i++) {
         auto* n = new Node();
 
-        vec3 pos = Utils::RandomVector() * 10.f;
-        while (_cSpace.PointIsInsideObstacle(pos)) {  // Ensure we don't collide with any obstacles
-            pos = Utils::RandomVector() * 10.f;
-        }
-
-        n->position = pos;
+        n->position = GetRandomValidPoint();
         _prm.push_back(n);
 
         GameObject gameObject = GameObject(ModelManager::SphereModel);  // PBR individual point

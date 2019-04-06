@@ -40,7 +40,7 @@ bool ConfigurationSpace::SegmentIntersectsObstacle(const glm::vec3& segmentStart
     }
 }
 
-glm::vec3 ConfigurationSpace::GetRandomGoal() const {
+glm::vec3 ConfigurationSpace::GetRandomValidPoint() const {
     glm::vec3 goal = Utils::RandomVector01();
     while (PointIsInsideObstacle(goal)) {
         goal = _extents.minExtent + Utils::RandomVector01() * glm::vec3(_extents.xLength, _extents.yLength, _extents.zLength);
