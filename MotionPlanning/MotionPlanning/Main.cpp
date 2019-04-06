@@ -131,6 +131,12 @@ int main(int argc, char* argv[]) {
         agents.push_back(Agent(glm::vec3(10, -10, 10), glm::vec3(-10, 10, -10), &motionPlanner));
     }
 
+    // Render the axes
+    LineIndexRange lineIndices = DebugManager::RequestLines(3);
+    DebugManager::SetLine(lineIndices.firstIndex, glm::vec3(0, 0, 0), glm::vec3(0, 0, 1), glm::vec3(0, 0, 1));
+    DebugManager::SetLine(1, glm::vec3(0, 0, 0), glm::vec3(1, 0, 0), glm::vec3(1, 0, 0));
+    DebugManager::SetLine(lineIndices.lastIndex, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0));
+
     ShaderManager::InitShaders();
     TextureManager::InitTextures();
 

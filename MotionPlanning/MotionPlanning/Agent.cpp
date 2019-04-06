@@ -27,20 +27,20 @@ void Agent::Update() {
 
 void Agent::Move(float velocity) {
     // If no solution was found or we're near the goal, don't move
-    if (_solutionPath.empty() || distance(position_, _solutionPath.back()->position) < .1) {
+    if (_solutionPath.empty() || distance(_position, _solutionPath.back()->position) < .1) {
         ChooseNewGoal();
         return;
     }
 
     // Find furthest visible point (fvp) along path that the object can see
-    vec3 fvp = _motionPlanner->GetFarthestVisiblePointAlongPath(position_, _solutionPath);
-    vec3 toCurrentGoal = fvp - position_;
+    vec3 fvp = _motionPlanner->GetFarthestVisiblePointAlongPath(_position, _solutionPath);
+    vec3 toCurrentGoal = fvp - _position;
     float distToCurrentGoal = length(toCurrentGoal);
     if (distToCurrentGoal < velocity) {
         SetPosition(fvp);
         velocity -= distToCurrentGoal;
         fvp = _motionPlanner->GetFarthestVisiblePointAlongPath(fvp, _solutionPath);
-        toCurrentGoal = fvp - position_;
+        toCurrentGoal = fvp - _position;
         distToCurrentGoal = length(toCurrentGoal);
 
         if (distToCurrentGoal == 0) return;
@@ -49,24 +49,25 @@ void Agent::Move(float velocity) {
     toCurrentGoal /= distToCurrentGoal;
 
     // Move towards that point
-    vec3 newPos = position_ + velocity * toCurrentGoal;
+    vec3 newPos = _position + velocity * toCurrentGoal;
     SetPosition(newPos);
+    LookAt(fvp, vec3(0, -1, 0));
 
     // Update the debug line
-    DebugManager::SetLine(_debugLines.firstIndex, position_, fvp, vec3(0, 1, 0));
-    DebugManager::SetLine(_debugLines.firstIndex + 1, position_, _goal->position, vec3(0.9, 0.37, 0.1));
+    DebugManager::SetLine(_debugLines.firstIndex, _position, fvp, vec3(0, 1, 0));
+    DebugManager::SetLine(_debugLines.firstIndex + 1, _position, _goal->position, vec3(0.9, 0.37, 0.1));
 }
 
 void Agent::ChooseNewGoal() {
-    InitializeStartAndGoal(position_, _motionPlanner->GetRandomValidPoint());
+    InitializeStartAndGoal(_position, _motionPlanner->GetRandomValidPoint());
     PlanPath();
 }
 
 void Agent::InitializeStartAndGoal(const vec3& startPosition, const vec3& goalPosition) {
     SetPosition(startPosition);
     _start = new Node();
-    _start->position = position_;
-    _start->connections = _motionPlanner->GetNNearestVisiblePoints(position_, PRM_CONNECTIONS_PER_NODE);
+    _start->position = _position;
+    _start->connections = _motionPlanner->GetNNearestVisiblePoints(_position, PRM_CONNECTIONS_PER_NODE);
 
     _goal = new Node();
     _goal->position = goalPosition;

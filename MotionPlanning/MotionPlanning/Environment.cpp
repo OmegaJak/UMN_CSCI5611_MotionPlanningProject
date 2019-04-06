@@ -27,7 +27,7 @@ void Environment::CreateEnvironment() {
     gameObject->SetColor(glm::vec3(0, 77 / 255.0, 26 / 255.0));
     gameObject->SetScale(20, 20, 1);
     gameObject->SetPosition(glm::vec3(0, 0, -10.5));
-    gameObject->material_.specFactor_ = 0.2;
+    gameObject->_material.specFactor_ = 0.2;
     _gameObjects.push_back(gameObject);
 
     gameObject = new GameObject(ModelManager::SphereModel);  // Start

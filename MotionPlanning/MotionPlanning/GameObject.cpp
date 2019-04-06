@@ -6,54 +6,70 @@
 #include "GameObject.h"
 #include "ShaderManager.h"
 #include "glad.h"
+#include "gtx/rotate_vector.hpp"
 
 GameObject::GameObject() : GameObject(nullptr) {}
 
-GameObject::GameObject(Model* model) : model_(model), texture_index_(UNTEXTURED) {
-    transform_ = glm::mat4();
-    material_ = Material(glm::vec3(1, 0, 1));
+GameObject::GameObject(Model* model) : _model(model), _texture_index(UNTEXTURED) {
+    _transform = _scale = _rotation = glm::mat4();
+    _material = Material(glm::vec3(1, 0, 1));
 }
 
 GameObject::~GameObject() = default;
 
 void GameObject::SetTextureIndex(TEXTURE texture_index) {
-    texture_index_ = texture_index;
+    _texture_index = texture_index;
 }
 
 void GameObject::Update() {
-    if (model_ == nullptr) {
+    if (_model == nullptr) {
         printf("GameObject must be given a valid model before calling Update()\n");
         exit(1);
     }
 
     glUniformMatrix4fv(ShaderManager::EnvironmentShader.Attributes.model, 1, GL_FALSE,
-                       glm::value_ptr(transform_));                                  // pass model matrix to shader
-    glUniform1i(ShaderManager::EnvironmentShader.Attributes.texID, texture_index_);  // Set which texture to use
-    glUniform1f(ShaderManager::EnvironmentShader.Attributes.specFactor, material_.specFactor_);
-    if (texture_index_ == UNTEXTURED) {
+                       glm::value_ptr(_transform));                                  // pass model matrix to shader
+    glUniform1i(ShaderManager::EnvironmentShader.Attributes.texID, _texture_index);  // Set which texture to use
+    glUniform1f(ShaderManager::EnvironmentShader.Attributes.specFactor, _material.specFactor_);
+    if (_texture_index == UNTEXTURED) {
         glUniform3fv(ShaderManager::EnvironmentShader.Attributes.color, 1,
-                     glm::value_ptr(material_.color_));  // Update the color, if necessary
+                     glm::value_ptr(_material.color_));  // Update the color, if necessary
     }
 
-    glDrawArrays(GL_TRIANGLES, model_->vbo_vertex_start_index_, model_->NumVerts());
+    glDrawArrays(GL_TRIANGLES, _model->vbo_vertex_start_index_, _model->NumVerts());
+}
+
+void GameObject::CalculateTransform() {
+    _transform = _scale * _rotation;
+    _transform[3] = glm::vec4(_position, _scale[3][3]);  // This seems wrong but it fixes things
 }
 
 void GameObject::SetPosition(const glm::vec3& position) {
-    position_ = position; 
-    transform_[3] = glm::vec4(position, transform_[3][3]);
+    _position = position;
+    CalculateTransform();
 }
 
 void GameObject::SetScale(float x, float y, float z) {
-    transform_[0][0] = x;
-    transform_[1][1] = y;
-    transform_[2][2] = z;
+    _scale[0][0] = x;
+    _scale[1][1] = y;
+    _scale[2][2] = z;
+    CalculateTransform();
+}
+
+void GameObject::SetScale(float n) {
+    SetScale(n, n, n);
 }
 
 void GameObject::EulerRotate(float yawDeg, float pitchDeg, float rollDeg) {
-    auto mat = glm::eulerAngleYXZ(glm::radians(yawDeg), glm::radians(pitchDeg), glm::radians(rollDeg));
-    transform_ = mat * transform_;
+    _rotation = glm::eulerAngleYXZ(glm::radians(yawDeg), glm::radians(pitchDeg), glm::radians(rollDeg));
+    CalculateTransform();
+}
+
+void GameObject::LookAt(const glm::vec3& position, const glm::vec3& up) {
+    _rotation = glm::lookAt(_position, position, up);
+    CalculateTransform();
 }
 
 void GameObject::SetColor(const glm::vec3& color) {
-    material_.color_ = color;
+    _material.color_ = color;
 }

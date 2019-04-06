@@ -13,7 +13,7 @@
 Camera::Camera() {
     _position = glm::vec3(13, -11, 5.5);
     _forward = glm::vec3(1, 0, 0);
-    _worldUp = _up = glm::vec3(0, 0, 1);
+    _worldUp = _up = UP;
 
     _yaw = 138.f;
     _pitch = -21.f;

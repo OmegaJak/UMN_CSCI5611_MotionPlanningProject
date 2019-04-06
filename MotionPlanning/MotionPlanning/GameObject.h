@@ -1,5 +1,6 @@
 #pragma once
 #include <detail/type_mat.hpp>
+#include "Constants.h"
 #include "Material.h"
 #include "Model.h"
 #include "TextureManager.h"
@@ -13,17 +14,23 @@ class GameObject {
 
     void SetPosition(const glm::vec3& position);
     void SetScale(float x, float y, float z);
-    void EulerRotate(float yaw, float pitch, float roll);
+    void SetScale(float n);
+    void EulerRotate(float yawDeg, float pitchDeg, float rollDeg);
+    void LookAt(const glm::vec3& position, const glm::vec3& up = UP);
     void SetColor(const glm::vec3& color);
     void SetTextureIndex(TEXTURE texture_index);
 
     virtual void Update();
 
-    Material material_;
+    Material _material;
 
    protected:
-    Model* model_;
-    TEXTURE texture_index_;
-    glm::mat4 transform_;
-    glm::vec3 position_;
+    void CalculateTransform();
+
+    Model* _model;
+    TEXTURE _texture_index;
+    glm::mat4 _transform;
+    glm::mat4 _scale;
+    glm::mat4 _rotation;
+    glm::vec3 _position;
 };

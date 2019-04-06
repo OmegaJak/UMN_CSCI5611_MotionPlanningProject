@@ -1,4 +1,5 @@
 #pragma once
+#include <glm.hpp>
 
 const bool DEBUG_ON = true;
 const int NUM_RENDER_SHADERS = 2;
@@ -25,3 +26,5 @@ const int VIEW_SHADER_FUNCTION_ID = 1;
 const int PROJ_SHADER_FUNCTION_ID = 2;
 
 const int PRM_CONNECTIONS_PER_NODE = 5;
+
+const glm::vec3 UP = glm::vec3(0, 0, 1);
