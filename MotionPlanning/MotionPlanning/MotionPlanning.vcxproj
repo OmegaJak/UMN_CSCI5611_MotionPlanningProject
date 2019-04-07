@@ -168,6 +168,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AgentManager.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Agent.cpp" />
     <ClCompile Include="AnimatedObject.cpp" />
@@ -191,6 +192,7 @@
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AgentManager.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Agent.h" />
     <ClInclude Include="AnimatedObject.h" />

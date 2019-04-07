@@ -20,6 +20,8 @@ class GameObject {
     void SetColor(const glm::vec3& color);
     void SetTextureIndex(TEXTURE texture_index);
 
+    float DistanceFrom(GameObject* other) const;
+
     virtual void Update();
 
     Material _material;

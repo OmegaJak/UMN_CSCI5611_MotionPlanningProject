@@ -21,6 +21,10 @@ void GameObject::SetTextureIndex(TEXTURE texture_index) {
     _texture_index = texture_index;
 }
 
+float GameObject::DistanceFrom(GameObject* other) const {
+    return glm::distance(_position, other->_position);
+}
+
 void GameObject::Update() {
     if (_model == nullptr) {
         printf("GameObject must be given a valid model before calling Update()\n");

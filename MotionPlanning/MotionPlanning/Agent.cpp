@@ -1,19 +1,29 @@
+#include <map>
 #include "Agent.h"
+#include "AgentManager.h"
 #include "Constants.h"
 #include "ModelManager.h"
 
 using namespace glm;
 
-Agent::Agent(const vec3& start, const vec3& goal, MotionPlanner* motionPlanner) : GameObject(ModelManager::BirdModel) {
+Agent::EffectParams Agent::SeparationParams = {3.0f, 0.001f};
+Agent::EffectParams Agent::CohesionParams = {5.0f, 0.0008f};
+Agent::EffectParams Agent::AlignmentParams = {5.0f, 0.0007f};
+float Agent::Damping = 0.999;
+
+Agent::Agent(const vec3& start, const vec3& goal, MotionPlanner* motionPlanner, AgentManager* agentManager)
+    : GameObject(ModelManager::BirdModel) {
     SetTextureIndex(TEX0);
 
     _motionPlanner = motionPlanner;
+    _agentManager = agentManager;
 
     InitializeStartAndGoal(start, goal);
+    InitializeVelocity();
     PlanPath();
 
     // Get debug line indices
-    _debugLines = DebugManager::RequestLines(2);
+    _debugLines = DebugManager::RequestLines(3);
 }
 
 Agent::~Agent() {
@@ -21,11 +31,21 @@ Agent::~Agent() {
 }
 
 void Agent::Update() {
-    Move(0.1f);
+    // FollowPath(0.1f);
+    if (AgentManager::AgentsRunning) {
+        _velocity += GetSeparationVelocity() + GetCohesionVelocity() + GetAlignmentVelocity();
+        _velocity *= Damping;
+        Move();
+    }
     GameObject::Update();
 }
 
-void Agent::Move(float velocity) {
+void Agent::Reset() {
+    SetPosition(_start->position);
+    InitializeVelocity();
+}
+
+void Agent::FollowPath(float speed) {
     // If no solution was found or we're near the goal, don't move
     if (_solutionPath.empty() || distance(_position, _solutionPath.back()->position) < .1) {
         ChooseNewGoal();
@@ -36,9 +56,9 @@ void Agent::Move(float velocity) {
     vec3 fvp = _motionPlanner->GetFarthestVisiblePointAlongPath(_position, _solutionPath);
     vec3 toCurrentGoal = fvp - _position;
     float distToCurrentGoal = length(toCurrentGoal);
-    if (distToCurrentGoal < velocity) {
+    if (distToCurrentGoal < speed) {
         SetPosition(fvp);
-        velocity -= distToCurrentGoal;
+        speed -= distToCurrentGoal;
         fvp = _motionPlanner->GetFarthestVisiblePointAlongPath(fvp, _solutionPath);
         toCurrentGoal = fvp - _position;
         distToCurrentGoal = length(toCurrentGoal);
@@ -47,20 +67,71 @@ void Agent::Move(float velocity) {
     }
 
     toCurrentGoal /= distToCurrentGoal;
+    _velocity = speed * toCurrentGoal;
 
-    // Move towards that point
-    vec3 newPos = _position + velocity * toCurrentGoal;
-    SetPosition(newPos);
-    LookAt(fvp, vec3(0, -1, 0));
-
-    // Update the debug line
+    // Update the debug lines
     DebugManager::SetLine(_debugLines.firstIndex, _position, fvp, vec3(0, 1, 0));
     DebugManager::SetLine(_debugLines.firstIndex + 1, _position, _goal->position, vec3(0.9, 0.37, 0.1));
+}
+
+void Agent::Move() {
+    // Move towards that point
+    vec3 newPos = _position + _velocity;
+    if (newPos.x > 25) newPos.x = -25;
+    if (newPos.x < -25) newPos.x = 25;
+    if (newPos.y > 25) newPos.y = -25;
+    if (newPos.y < -25) newPos.y = 25;
+    if (newPos.z > 25) newPos.z = -25;
+    if (newPos.z < -25) newPos.z = 25;
+
+    SetPosition(newPos);
+
+    DebugManager::SetLine(_debugLines.firstIndex + 2, _position, _position + _velocity * 5.0f, vec3(0.2, 0.2, 0.9));
 }
 
 void Agent::ChooseNewGoal() {
     InitializeStartAndGoal(_position, _motionPlanner->GetRandomValidPoint());
     PlanPath();
+}
+
+vec3 Agent::GetSeparationVelocity() {
+    auto toSeparateFrom = _agentManager->GetAllAgentsWithinDistanceOf(this, SeparationParams.radius);
+    vec3 vel = vec3(0);
+    for (auto other : toSeparateFrom) {
+        vel += _position - other->_position;
+    }
+
+    return vel * SeparationParams.strength;
+}
+
+vec3 Agent::GetCohesionVelocity() {
+    auto neighbors = _agentManager->GetAllAgentsWithinDistanceOf(this, CohesionParams.radius);
+
+    vec3 positionTotal = vec3(0);
+    if (neighbors.empty()) return positionTotal;
+
+    for (auto neighbor : neighbors) {
+        positionTotal += neighbor->_position;
+    }
+
+    vec3 averagePosition = positionTotal / float(neighbors.size());
+
+    return (averagePosition - _position) * CohesionParams.strength;
+}
+
+vec3 Agent::GetAlignmentVelocity() {
+    auto neighbors = _agentManager->GetAllAgentsWithinDistanceOf(this, AlignmentParams.radius);
+
+    vec3 velocityTotal = vec3(0);
+    if (neighbors.empty()) return velocityTotal;
+
+    for (auto neighbor : neighbors) {
+        velocityTotal += neighbor->_velocity;
+    }
+
+    vec3 averageVelocity = velocityTotal / float(neighbors.size());
+
+    return (averageVelocity - _velocity) * AlignmentParams.strength;
 }
 
 void Agent::InitializeStartAndGoal(const vec3& startPosition, const vec3& goalPosition) {
@@ -72,6 +143,10 @@ void Agent::InitializeStartAndGoal(const vec3& startPosition, const vec3& goalPo
     _goal = new Node();
     _goal->position = goalPosition;
     _goal->connections = _motionPlanner->GetNNearestVisiblePoints(goalPosition, PRM_CONNECTIONS_PER_NODE);
+}
+
+void Agent::InitializeVelocity() {
+    _velocity = vec3(0, 1, 0) * 0.05f;
 }
 
 void Agent::PlanPath() {

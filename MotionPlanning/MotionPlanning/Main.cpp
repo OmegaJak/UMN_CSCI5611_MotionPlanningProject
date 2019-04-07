@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 #include "Agent.h"
+#include "AgentManager.h"
 #include "AnimatedObject.h"
 #include "Camera.h"
 #include "Constants.h"
@@ -58,6 +59,7 @@ std::ostream& operator<<(std::ostream& out, glm::vec3 const& vec) {
 
 void GLAPIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message,
                               const void* userParam);
+float* GetParameterToTweak(SDL_Keycode keycode);
 
 int main(int argc, char* argv[]) {
     SDL_Init(SDL_INIT_VIDEO);  // Initialize Graphics (for OpenGL)
@@ -120,16 +122,11 @@ int main(int argc, char* argv[]) {
     cSpace.AddObstacle(new SphereObstacle(glm::vec3(8, -2, 5), 2));
 
     MotionPlanner motionPlanner = MotionPlanner(cSpace);
+    AgentManager agentManager = AgentManager(&motionPlanner);
 
     vector<std::string> faces = {"images/right2.png",  "images/left2.png", "images/top2.png",
                                  "images/bottom2.png", "images/back2.png", "images/front2.png"};
     Skybox skybox = Skybox(faces);
-
-    std::vector<Agent> agents = {};
-    for (int i = 0; i < 10; i++) {
-        agents.push_back(Agent(glm::vec3(-10, -10, -10), glm::vec3(10, 10, 10), &motionPlanner));
-        agents.push_back(Agent(glm::vec3(10, -10, 10), glm::vec3(-10, 10, -10), &motionPlanner));
-    }
 
     // Render the axes
     LineIndexRange lineIndices = DebugManager::RequestLines(3);
@@ -157,7 +154,8 @@ int main(int argc, char* argv[]) {
     float lastFramerate = 0;
     int framesPerSample = 20;
     float lastAverageFrameTime = 0;
-    float gravityCenterDistance = 10;
+    float* lastSelectedParam = nullptr;
+    float modAmount = 0.1;
     while (!quit) {
         while (SDL_PollEvent(&windowEvent)) {  // inspect all events in the queue
             if (windowEvent.type == SDL_QUIT) quit = true;
@@ -170,14 +168,29 @@ int main(int argc, char* argv[]) {
                     fullscreen = !fullscreen;
                     SDL_SetWindowFullscreen(window, fullscreen ? SDL_WINDOW_FULLSCREEN : 0);  // Toggle fullscreen
                 } else if (windowEvent.key.keysym.sym == SDLK_EQUALS || windowEvent.key.keysym.sym == SDLK_MINUS) {
-                    float modAmount = 1;
+                    if (windowEvent.key.keysym.mod & KMOD_ALT) {
+                        if (windowEvent.key.keysym.sym == SDLK_EQUALS) {
+                            modAmount *= 10;
+                        } else if (windowEvent.key.keysym.sym == SDLK_MINUS) {
+                            modAmount *= 0.1;
+                        }
+                    } else {
+                        float tempMod = modAmount;
+                        if (windowEvent.key.keysym.sym == SDLK_MINUS) tempMod *= -1;
+                        if (windowEvent.key.keysym.mod & KMOD_SHIFT) tempMod *= 10;
+                        if (windowEvent.key.keysym.mod & KMOD_CTRL) tempMod *= 0.1;
 
-                    if (windowEvent.key.keysym.sym == SDLK_MINUS) modAmount *= -1;
-
-                    gravityCenterDistance += modAmount;
+                        if (lastSelectedParam != nullptr) *lastSelectedParam += tempMod;
+                    }
+                } else if (windowEvent.key.keysym.sym == SDLK_r) {
+                    agentManager.Reset();
                 }
+
+                if (GetParameterToTweak(windowEvent.key.keysym.sym) != nullptr)
+                    lastSelectedParam = GetParameterToTweak(windowEvent.key.keysym.sym);
             } else if (windowEvent.type == SDL_KEYDOWN) {
                 if (windowEvent.key.keysym.sym == SDLK_SPACE) {
+                    AgentManager::AgentsRunning = !AgentManager::AgentsRunning;
                 }
             }
 
@@ -193,6 +206,8 @@ int main(int argc, char* argv[]) {
                 case SDL_WINDOWEVENT_FOCUS_GAINED:
                     SDL_Log("Window focus gained");
                     SDL_SetRelativeMouseMode(SDL_TRUE);
+                    break;
+                default:
                     break;
             }
         }
@@ -223,9 +238,15 @@ int main(int argc, char* argv[]) {
             PROJ_SHADER_FUNCTION_ID);
 
         stringstream debugText;
-        debugText << fixed << setprecision(3) << lastAverageFrameTime << "ms per frame (" << lastFramerate << "FPS) average over "
-                  << framesPerSample << " frames "
-                  << " | cameraPosition: " << camera.GetPosition();
+        debugText << fixed << setprecision(4) << lastAverageFrameTime << "ms per frame (" << lastFramerate << "FPS) average over "
+                  << framesPerSample
+                  << " frames "
+                  //<< " | cameraPosition: " << camera.GetPosition();
+                  << " | mod: " << modAmount        //
+                  << " | damp: " << Agent::Damping  //
+                  << " | Separation: " << Agent::SeparationParams.radius << ", " << Agent::SeparationParams.strength
+                  << " | Cohesion: " << Agent::CohesionParams.radius << ", " << Agent::CohesionParams.strength
+                  << " | Alignment: " << Agent::AlignmentParams.radius << ", " << Agent::AlignmentParams.strength;
         SDL_SetWindowTitle(window, debugText.str().c_str());
 
         // Render the environment
@@ -234,9 +255,7 @@ int main(int argc, char* argv[]) {
         glBindBuffer(GL_ARRAY_BUFFER, ShaderManager::EnvironmentShader.VBO);
         TextureManager::Update(ShaderManager::EnvironmentShader.Program);
         environment.UpdateAll();
-        for (auto& agent : agents) {
-            agent.Update();
-        }
+        agentManager.Update();
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         // Render the PBR (DEBUG ONLY)
@@ -339,4 +358,25 @@ void GLAPIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum seve
     }
     std::cout << std::endl;
     std::cout << std::endl;
+}
+
+float* GetParameterToTweak(SDL_Keycode keycode) {
+    switch (keycode) {
+        case SDLK_1:
+            return &Agent::SeparationParams.radius;
+        case SDLK_2:
+            return &Agent::SeparationParams.strength;
+        case SDLK_3:
+            return &Agent::CohesionParams.radius;
+        case SDLK_4:
+            return &Agent::CohesionParams.strength;
+        case SDLK_5:
+            return &Agent::AlignmentParams.radius;
+        case SDLK_6:
+            return &Agent::AlignmentParams.strength;
+        case SDLK_BACKQUOTE:
+            return &Agent::Damping;
+        default:
+            return nullptr;
+    }
 }
