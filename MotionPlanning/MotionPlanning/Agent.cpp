@@ -9,6 +9,7 @@ using namespace glm;
 Agent::EffectParams Agent::SeparationParams = {3.0f, 0.001f};
 Agent::EffectParams Agent::CohesionParams = {5.0f, 0.0008f};
 Agent::EffectParams Agent::AlignmentParams = {5.0f, 0.0007f};
+Agent::EffectParams Agent::ObstacleParams = {1.0f, 0.0005f};
 float Agent::Damping = 0.999;
 
 Agent::Agent(const vec3& start, const vec3& goal, MotionPlanner* motionPlanner, AgentManager* agentManager)
@@ -33,7 +34,7 @@ Agent::~Agent() {
 void Agent::Update() {
     // FollowPath(0.1f);
     if (AgentManager::AgentsRunning) {
-        _velocity += GetSeparationVelocity() + GetCohesionVelocity() + GetAlignmentVelocity();
+        _velocity += GetSeparationVelocity() + GetCohesionVelocity() + GetAlignmentVelocity() + GetObstacleAvoidanceVelocity();
         _velocity *= Damping;
         Move();
     }
@@ -132,6 +133,12 @@ vec3 Agent::GetAlignmentVelocity() {
     vec3 averageVelocity = velocityTotal / float(neighbors.size());
 
     return (averageVelocity - _velocity) * AlignmentParams.strength;
+}
+
+vec3 Agent::GetObstacleAvoidanceVelocity() {
+    auto velocity = _motionPlanner->GetObstaclesRepulsionVelocity(_position, ObstacleParams.radius);
+
+    return velocity * ObstacleParams.strength;
 }
 
 void Agent::InitializeStartAndGoal(const vec3& startPosition, const vec3& goalPosition) {

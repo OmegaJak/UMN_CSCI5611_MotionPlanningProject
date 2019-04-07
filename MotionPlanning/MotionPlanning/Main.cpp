@@ -10,6 +10,7 @@
 #include "Agent.h"
 #include "AgentManager.h"
 #include "AnimatedObject.h"
+#include "BoxObstacle.h"
 #include "Camera.h"
 #include "Constants.h"
 #include "DebugManager.h"
@@ -116,8 +117,8 @@ int main(int argc, char* argv[]) {
     ModelManager::InitModels();
 
     Environment environment = Environment();
-    ConfigurationSpace cSpace =
-        ConfigurationSpace(new SphereObstacle(glm::vec3(0, 0, 0), 5), Extents(glm::vec3(-10, -10, -10), glm::vec3(10, 10, 10)));
+    Extents envExtents = Extents(glm::vec3(-10, -10, -10), glm::vec3(10, 10, 10));
+    ConfigurationSpace cSpace = ConfigurationSpace(new AABoxObstacle(glm::vec3(0, 0, 0), 5, 5, 5), envExtents);
     cSpace.AddObstacle(new SphereObstacle(glm::vec3(0, 0, 10), 4));
     cSpace.AddObstacle(new SphereObstacle(glm::vec3(8, -2, 5), 2));
 
@@ -246,7 +247,8 @@ int main(int argc, char* argv[]) {
                   << " | damp: " << Agent::Damping  //
                   << " | Separation: " << Agent::SeparationParams.radius << ", " << Agent::SeparationParams.strength
                   << " | Cohesion: " << Agent::CohesionParams.radius << ", " << Agent::CohesionParams.strength
-                  << " | Alignment: " << Agent::AlignmentParams.radius << ", " << Agent::AlignmentParams.strength;
+                  << " | Alignment: " << Agent::AlignmentParams.radius << ", " << Agent::AlignmentParams.strength
+                  << " | Obstacle: " << Agent::ObstacleParams.radius << ", " << Agent::ObstacleParams.strength;
         SDL_SetWindowTitle(window, debugText.str().c_str());
 
         // Render the environment
@@ -374,6 +376,10 @@ float* GetParameterToTweak(SDL_Keycode keycode) {
             return &Agent::AlignmentParams.radius;
         case SDLK_6:
             return &Agent::AlignmentParams.strength;
+        case SDLK_7:
+            return &Agent::ObstacleParams.radius;
+        case SDLK_8:
+            return &Agent::ObstacleParams.strength;
         case SDLK_BACKQUOTE:
             return &Agent::Damping;
         default:

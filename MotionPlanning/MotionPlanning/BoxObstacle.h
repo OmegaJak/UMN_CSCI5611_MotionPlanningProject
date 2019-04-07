@@ -1,9 +1,10 @@
 #pragma once
 #include "Obstacle.h"
 
-class SphereObstacle : public Obstacle {
+class AABoxObstacle : public Obstacle {
    public:
-    explicit SphereObstacle(const glm::vec3& position, float radius);
+    AABoxObstacle(const glm::vec3& center, float xLength, float yLength, float zLength);
+    AABoxObstacle(const glm::vec3& min, const glm::vec3& max);
 
     void InflateToCSpaceObstacleForSphericalAgent(float agentRadius) override;
     bool IsPointInside(glm::vec3 point) const override;
@@ -12,9 +13,7 @@ class SphereObstacle : public Obstacle {
     glm::vec3 GetRepulsionNormalToPoint(const glm::vec3& point) const override;
 
    private:
-    static bool SegmentSphereIntersect(const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& sphere_pos, const float sphere_radius);
-    glm::vec3 _center;
+    void InitRendering();
 
-    float _worldRadius;
-    float _cSpaceRadius;
+    glm::vec3 _min, _max, _center, _halfSideLength;
 };

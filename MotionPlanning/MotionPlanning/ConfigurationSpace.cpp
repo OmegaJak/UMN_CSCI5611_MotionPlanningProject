@@ -40,6 +40,19 @@ bool ConfigurationSpace::SegmentIntersectsObstacle(const glm::vec3& segmentStart
     }
 }
 
+glm::vec3 ConfigurationSpace::GetObstaclesRepulsionVelocity(const glm::vec3& point, float maxDistFromSurface) {
+    glm::vec3 velocity = glm::vec3(0, 0, 0);
+    for (Obstacle* obstacle : _obstacles) {
+        auto dist = obstacle->GetDistanceFromPointToSurface(point);
+        if (dist < 0.01) dist = 0.01;
+        if (dist < maxDistFromSurface) {
+            velocity += (obstacle->GetRepulsionNormalToPoint(point) / dist);
+        }
+    }
+
+    return velocity;
+}
+
 glm::vec3 ConfigurationSpace::GetRandomValidPoint() const {
     glm::vec3 goal = Utils::RandomVector01();
     while (PointIsInsideObstacle(goal)) {

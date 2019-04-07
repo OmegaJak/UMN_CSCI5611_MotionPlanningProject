@@ -15,6 +15,7 @@ class Agent : public GameObject {
     static EffectParams SeparationParams;
     static EffectParams CohesionParams;
     static EffectParams AlignmentParams;
+    static EffectParams ObstacleParams;
     static float Damping;
 
     Agent(const glm::vec3& start, const glm::vec3& goal, MotionPlanner* motionPlanner, AgentManager* agentManager);
@@ -31,6 +32,7 @@ class Agent : public GameObject {
     glm::vec3 GetSeparationVelocity();
     glm::vec3 GetCohesionVelocity();
     glm::vec3 GetAlignmentVelocity();
+    glm::vec3 GetObstacleAvoidanceVelocity();
 
     void InitializeStartAndGoal(const glm::vec3& startPosition, const glm::vec3& goalPosition);
     void InitializeVelocity();

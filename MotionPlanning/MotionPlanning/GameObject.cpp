@@ -64,6 +64,10 @@ void GameObject::SetScale(float n) {
     SetScale(n, n, n);
 }
 
+void GameObject::SetScale(glm::vec3 scale) {
+    SetScale(scale.x, scale.y, scale.z);
+}
+
 void GameObject::EulerRotate(float yawDeg, float pitchDeg, float rollDeg) {
     _rotation = glm::eulerAngleYXZ(glm::radians(yawDeg), glm::radians(pitchDeg), glm::radians(rollDeg));
     CalculateTransform();

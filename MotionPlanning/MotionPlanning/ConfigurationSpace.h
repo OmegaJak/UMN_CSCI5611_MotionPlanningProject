@@ -33,6 +33,7 @@ class ConfigurationSpace {
     void AddObstacle(Obstacle* obstacle);
     bool PointIsInsideObstacle(const glm::vec3& point) const;
     bool SegmentIntersectsObstacle(const glm::vec3& segmentStart, const glm::vec3& segmentEnd) const;
+    glm::vec3 GetObstaclesRepulsionVelocity(const glm::vec3& point, float maxDistFromSurface);
     glm::vec3 GetRandomValidPoint() const;
 
     void Update();

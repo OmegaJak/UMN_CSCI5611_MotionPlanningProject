@@ -73,6 +73,10 @@ vec3 MotionPlanner::GetRandomValidPoint() const {
     return _cSpace.GetRandomValidPoint();
 }
 
+vec3 MotionPlanner::GetObstaclesRepulsionVelocity(const glm::vec3& point, float maxDistanceFromSurface) {
+    return _cSpace.GetObstaclesRepulsionVelocity(point, maxDistanceFromSurface);
+}
+
 void MotionPlanner::InitializePRM(int numSamples) {
     Timer::StartTimer("PRMConstruction");
 

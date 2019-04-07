@@ -169,6 +169,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AgentManager.cpp" />
+    <ClCompile Include="BoxObstacle.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Agent.cpp" />
     <ClCompile Include="AnimatedObject.cpp" />
@@ -193,6 +194,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AgentManager.h" />
+    <ClInclude Include="BoxObstacle.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Agent.h" />
     <ClInclude Include="AnimatedObject.h" />

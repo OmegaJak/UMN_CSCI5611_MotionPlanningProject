@@ -15,6 +15,7 @@ class MotionPlanner {
     glm::vec3 GetFarthestVisiblePointAlongPath(const glm::vec3& currentPos, const std::vector<Node*>& path) const;
     std::vector<Node*> GetNNearestVisiblePoints(const glm::vec3& pos, int n);
     glm::vec3 GetRandomValidPoint() const;
+    glm::vec3 GetObstaclesRepulsionVelocity(const glm::vec3& point, float maxDistanceFromSurface);
 
     void Update();
 

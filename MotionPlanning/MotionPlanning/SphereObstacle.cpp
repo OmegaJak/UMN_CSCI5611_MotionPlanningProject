@@ -24,6 +24,20 @@ bool SphereObstacle::DoesSegmentIntersect(glm::vec3 segmentStart, glm::vec3 segm
     return SegmentSphereIntersect(segmentStart, segmentEnd, _center, _cSpaceRadius);
 }
 
+float SphereObstacle::GetDistanceFromPointToSurface(const glm::vec3& point) const {
+    auto toPointFromCenter = point - _center;
+    auto len = glm::length(toPointFromCenter);
+    if (len > _cSpaceRadius) {
+        return len - _cSpaceRadius;
+    }
+
+    return 0;
+}
+
+glm::vec3 SphereObstacle::GetRepulsionNormalToPoint(const glm::vec3& point) const {
+    return glm::normalize(point - _center);
+}
+
 bool SphereObstacle::SegmentSphereIntersect(const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& sphere_pos,
                                             const float sphere_radius) {
     glm::vec3 d = (p2 - p1);
