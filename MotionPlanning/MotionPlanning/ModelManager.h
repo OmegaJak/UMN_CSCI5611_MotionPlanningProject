@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "Landscape.h"
 #include "Model.h"
 #include "glad.h"
 
@@ -18,7 +19,8 @@ class ModelManager {
     static Model* BirdModel;
     static Model* DudeModel;
     static Model* SeedModel;
-    static Model* LandscapeModel;
+    static LandScape* landscape;
+	static Model* LandscapeModel;
     static Model* TreeModel;
 
    private:

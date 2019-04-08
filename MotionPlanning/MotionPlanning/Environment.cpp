@@ -10,6 +10,10 @@ Environment::Environment(ConfigurationSpace* cSpace) {
 
 void Environment::UpdateAll() {
     main_character->Update();
+    glm::vec3 pos = main_character->getPosition();
+    pos.z = ModelManager::landscape->get_height_at(glm::vec3((pos.x) / 3 + 33.3333, (pos.y) / 3 + 33.333, pos.z)) * 3.f - 4.3f;
+    main_character->SetPosition(pos - glm::vec3(0, 0, 11));
+
     for (auto gameObject : _gameObjects) {
         gameObject->Update();
     }
@@ -21,8 +25,9 @@ void Environment::UpdateAll() {
     for (auto& seedattrib : _seedattribs) {
         GameObject* seedGameObject = seedattrib->gameObject;
         glm::vec3 seedpos = seedGameObject->getPosition();
-        if (seedpos.z < -10) {
-            seedpos.z = -10;
+        float h = ModelManager::landscape->get_height_at(glm::vec3((seedpos.x) / 3 + 33.3333, (seedpos.y) / 3 + 33.333, seedpos.z)) * 3.f - 15.f;
+        if (seedpos.z < h) {
+            seedpos.z = h - 0.3f;
             seedGameObject->SetPosition(seedpos);
             seedattrib->velocity = glm::vec3(0, 0, 0);
             if (_cSpace->PointIsInsideObstacle(seedattrib->position)) {
@@ -90,7 +95,7 @@ void Environment::CreateEnvironment() {
     gameObject = new GameObject(ModelManager::LandscapeModel);  // ground
     gameObject->SetTextureIndex(TEX2);
     gameObject->SetScale(1, 1, 1);
-    gameObject->SetPosition(glm::vec3(-100, -100, -13.3));
+    gameObject->SetPosition(glm::vec3(-100, -100, -15.3));
     gameObject->_material.specFactor_ = 0.01;
     _gameObjects.push_back(gameObject);
 
@@ -108,17 +113,17 @@ void Environment::addSeed(glm::vec3 pos) {
     GameObject* seed;
     Seed* seedatt;
     glm::vec3 newpos;
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 12; i++) {
         seed = new GameObject(ModelManager::SeedModel);
         seed->SetTextureIndex(TEX1);
-        seed->SetScale(.2, .2, .2);
+        seed->SetScale(.06, .06, .06);
         seed->_material.specFactor_ = .3;
         seedatt = new Seed();
         newpos = pos + .1f * Utils::RandomVector();
         seedatt->position = newpos;
         seedatt->velocity = .1f * Utils::RandomVector();
         seedatt->gameObject = seed;
-        seed->SetPosition(newpos);
+        seed->SetPosition(newpos + glm::vec3(0, 0, 2));
 
         _seedattribs.push_back(seedatt);
     }

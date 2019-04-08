@@ -9,6 +9,7 @@ Model* ModelManager::BirdModel;
 Model* ModelManager::DudeModel;
 Model* ModelManager::SeedModel;
 Model* ModelManager::TreeModel;
+LandScape* ModelManager::landscape;
 Model* ModelManager::LandscapeModel;
 std::vector<Model*> ModelManager::models_;
 int ModelManager::num_verts_;
@@ -19,7 +20,12 @@ void ModelManager::InitModels() {
     BirdModel = new Model("models/bird.dae");
     DudeModel = new Model("models/Dude.obj");
     SeedModel = new Model("models/seed.obj");
-    LandscapeModel = new Model("Landscape1.lan");
+    landscape = new LandScape(100, 100, 3);
+    //LandscapeModel = new Model("landscape.lan");  // landscape->model;
+    LandscapeModel = landscape->model;
+    printf("\n\n Land size is: %d\n\n", landscape->model->NumElements());
+    printf("\n\n Model size is: %d\n\n", LandscapeModel->model_[0]);
+
     TreeModel = new Model("models/Tree1.obj");
 }
 

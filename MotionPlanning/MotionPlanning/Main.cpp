@@ -121,11 +121,11 @@ int main(int argc, char* argv[]) {
     Environment environment = Environment(&cSpace);
 
     // Cup
-    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-7, -7, -7), glm::vec3(7, -6, 7)));
-    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-7, -6, -7), glm::vec3(-6, 3, 7)));
-    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(6, -6, -7), glm::vec3(7, 3, 7)));
-    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6, -6, 6), glm::vec3(6, 3, 7)));
-    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6, -6, -7), glm::vec3(6, 3, -6)));
+    //cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-7, -7, -7), glm::vec3(7, -6, 7)));
+    //cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-7, -6, -7), glm::vec3(-6, 3, 7)));
+    //cSpace.AddObstacle(new AABoxObstacle(glm::vec3(6, -6, -7), glm::vec3(7, 3, 7)));
+    //cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6, -6, 6), glm::vec3(6, 3, 7)));
+    //cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6, -6, -7), glm::vec3(6, 3, -6)));
 
     // Cup lid where PRM isn't dense enough
     // cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6, 2, -4), glm::vec3(6, 3, 6)));
@@ -158,9 +158,9 @@ int main(int argc, char* argv[]) {
     cSpace.AddObstacle(new AABoxObstacle(glm::vec3(1, 3, 0), xLen, yLen, zLen));*/
 
     // Cross
-    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(0, 0, 0), 5, 5, 20));
-    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(6.25, 0, 0), 7.5, 5, 10));
-    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6.25, 0, 0), 7.5, 5, 10));
+    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(0, 0, 0), 2, 2, 2));
+    //cSpace.AddObstacle(new AABoxObstacle(glm::vec3(6.25, 0, 0), 7.5, 5, 10));
+    //cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6.25, 0, 0), 7.5, 5, 10));
 
     // cSpace.AddObstacle(new SphereObstacle(glm::vec3(0, 0, 10), 4));
     // cSpace.AddObstacle(new SphereObstacle(glm::vec3(8, -2, 5), 2));

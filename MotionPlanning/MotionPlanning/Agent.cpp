@@ -47,7 +47,7 @@ void Agent::SetGoal(const vec3& newGoal, Seed* seed) {
 
 void Agent::Update() {
     // FollowPath(0.1f);
-    if (AgentManager::AgentsRunning) {
+    if (AgentManager::AgentsRunning && !eating) {
         _velocity += GetSeparationVelocity() + GetCohesionVelocity() + GetAlignmentVelocity() + GetObstacleAvoidanceVelocity() +
                      GetFollowPathVelocity();
         _velocity *= Damping;
@@ -206,6 +206,18 @@ void Agent::PlanPath() {
 }
 
 void Agent::HandleSeedReached() {
+    printf("I ate a seed!");
     _agentManager->_environment->RemoveSeed(_seedGoal);
     _agentManager->SetNewGroupGoal(this);
+    eating = true;
+}
+
+void Agent::CheckEating(glm::vec3 pos) {
+    glm::vec3 pos2 = getPosition();
+
+    //printf("Person is at: %f %f %f\n", pos.x, pos.y, pos.z);
+    //printf("Bird is at: %f %f %f\n", pos2.x, pos2.y, pos2.z);
+    if (glm::distance(glm::vec3(pos2.x, pos2.y, 0),glm::vec3(pos.x, pos.y, 0)) < 5) {
+        eating = false;
+	}
 }

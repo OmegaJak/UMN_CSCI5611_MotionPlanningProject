@@ -19,7 +19,7 @@ class Agent : public GameObject {
     static EffectParams ObstacleParams;
     static EffectParams PathParams;
     static float Damping;
-
+    void CheckEating(glm::vec3 pos);
     Agent(const glm::vec3& start, const glm::vec3& goal, MotionPlanner* motionPlanner, AgentManager* agentManager);
     ~Agent();
 
@@ -32,7 +32,7 @@ class Agent : public GameObject {
 
    private:
     void Move();
-
+    bool eating;
     glm::vec3 GetSeparationVelocity();
     glm::vec3 GetCohesionVelocity();
     glm::vec3 GetAlignmentVelocity();

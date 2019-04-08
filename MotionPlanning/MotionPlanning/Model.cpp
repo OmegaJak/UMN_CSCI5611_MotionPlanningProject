@@ -41,6 +41,12 @@ Model::Model(const string& file) {
     ModelManager::RegisterModel(this);
 }
 
+Model::Model(float* model, int verts) {
+    model_ = model;
+    num_verts_ = verts;
+    ModelManager::RegisterModel(this);
+};
+
 void Model::LoadTxt(const std::string& file) {
     std::ifstream modelFile;
     modelFile.open(file);

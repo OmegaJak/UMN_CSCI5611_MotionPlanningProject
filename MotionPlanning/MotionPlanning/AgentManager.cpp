@@ -11,6 +11,7 @@ AgentManager::AgentManager(MotionPlanner* motionPlanner, Environment* environmen
 void AgentManager::Update() {
     for (const auto& agentGroup : _agentGroups) {
         for (const auto& agent : agentGroup) {
+            agent->CheckEating(_environment->getObject()->getPosition());
             agent->Update();
         }
     }
@@ -63,7 +64,6 @@ void AgentManager::InitializeAgents() {
         _agentGroups.emplace_back();
         glm::vec3 groupGoal = _motionPlanner->GetRandomValidPoint();
         glm::vec3 groupStart = _motionPlanner->GetRandomValidPoint();
-        // glm::vec3 groupStart = glm::vec3(0, 0, 0);
         auto color = Utils::RandomVector01();
 
         for (int j = 0; j < 5; j++) {

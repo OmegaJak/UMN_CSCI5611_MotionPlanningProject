@@ -18,7 +18,7 @@ void Timer::StartTimer(const std::string& timerName) {
 void Timer::EndTimingAndPrintResult(const std::string& timerName) {
     auto runtime = EndTimer(timerName);
 
-    std::cout << "->TIMER: \"" << timerName << "\" took " << runtime << "ms to run." << std::endl;
+    //std::cout << "->TIMER: \"" << timerName << "\" took " << runtime << "ms to run." << std::endl;
 }
 
 double Timer::EndTimer(const std::string& timerName) {

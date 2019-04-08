@@ -193,6 +193,7 @@
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\Kieran%27s Stuff 2.0\Graphics\Csci5611\CSCI5611MotionPlanning\MotionPlanning\MotionPlanning\LandScape.h" />
     <ClInclude Include="AgentManager.h" />
     <ClInclude Include="BoxObstacle.h" />
     <ClInclude Include="Skybox.h" />

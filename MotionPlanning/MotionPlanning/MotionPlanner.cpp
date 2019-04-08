@@ -26,7 +26,7 @@ std::vector<Node*> MotionPlanner::PlanPath(Node* start, Node* goal) const {
 
     auto solution = std::vector<Node*>();
     if (!Search::Solve(start, goal, _prm, &solution)) {
-        printf("FAILED to find Solution\n");
+        //printf("FAILED to find Solution\n");
     }
 
     Timer::StartTimer("SolutionCleanup");
