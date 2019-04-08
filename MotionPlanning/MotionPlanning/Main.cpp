@@ -118,17 +118,47 @@ int main(int argc, char* argv[]) {
 
     Environment environment = Environment();
     Extents envExtents = Extents(glm::vec3(-10, -10, -10), glm::vec3(10, 10, 10));
-    ConfigurationSpace cSpace = ConfigurationSpace(new AABoxObstacle(glm::vec3(0, 0, 0), 5, 5, 20), envExtents);
-    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(6.25, 0, 0), 7.5, 5, 10));
-    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6.25, 0, 0), 7.5, 5, 10));
+    ConfigurationSpace cSpace = ConfigurationSpace(envExtents);
+
+    auto xLen = 0.5f;
+    auto yLen = 0.5f;
+    auto zLen = 20.0f;
+    for (int i = 0; i < 8; i++) {
+        cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-7, 9 - i * 2, 0), xLen, yLen, zLen));
+    }
+    for (int i = 0; i < 7; i++) {
+        cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-5 + i * 2, -5, 0), xLen, yLen, zLen));
+    }
+    for (int i = 0; i < 6; i++) {
+        cSpace.AddObstacle(new AABoxObstacle(glm::vec3(7, -3 + i * 2, 0), xLen, yLen, zLen));
+    }
+    for (int i = 0; i < 5; i++) {
+        cSpace.AddObstacle(new AABoxObstacle(glm::vec3(5 - i * 2, 7, 0), xLen, yLen, zLen));
+    }
+    for (int i = 0; i < 4; i++) {
+        cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-3, 5 - i * 2, 0), xLen, yLen, zLen));
+    }
+    for (int i = 0; i < 3; i++) {
+        cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-1 + i * 2, -1, 0), xLen, yLen, zLen));
+    }
+    for (int i = 0; i < 2; i++) {
+        cSpace.AddObstacle(new AABoxObstacle(glm::vec3(3, 1 + i * 2, 0), xLen, yLen, zLen));
+    }
+    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(1, 3, 0), xLen, yLen, zLen));
+
+    // Cross
+    // cSpace.AddObstacle(new AABoxObstacle(glm::vec3(0, 0, 0), 5, 5, 20));
+    // cSpace.AddObstacle(new AABoxObstacle(glm::vec3(6.25, 0, 0), 7.5, 5, 10));
+    // cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6.25, 0, 0), 7.5, 5, 10));
+
     // cSpace.AddObstacle(new SphereObstacle(glm::vec3(0, 0, 10), 4));
     // cSpace.AddObstacle(new SphereObstacle(glm::vec3(8, -2, 5), 2));
 
     MotionPlanner motionPlanner = MotionPlanner(cSpace);
     AgentManager agentManager = AgentManager(&motionPlanner);
 
-    vector<std::string> faces = {"images/right2.png",  "images/left2.png", "images/bottom2.png",
-                                 "images/top2.png", "images/back2.png", "images/front2.png"};
+    vector<std::string> faces = {"images/right2.png", "images/left2.png", "images/bottom2.png",
+                                 "images/top2.png",   "images/back2.png", "images/front2.png"};
     Skybox skybox = Skybox(faces);
 
     // Render the axes

@@ -50,6 +50,9 @@ void Agent::Update() {
         _velocity += GetSeparationVelocity() + GetCohesionVelocity() + GetAlignmentVelocity() + GetObstacleAvoidanceVelocity() +
                      GetFollowPathVelocity();
         _velocity *= Damping;
+        if (length(_velocity) > 1) {
+            _velocity = normalize(_velocity);
+        }
         Move();
     }
     GameObject::Update();
@@ -124,6 +127,7 @@ vec3 Agent::GetObstacleAvoidanceVelocity() {
 vec3 Agent::GetFollowPathVelocity() {
     // If no solution was found, continue trying to find a new one while drifting
     if (_solutionPath.empty()) {
+        InitializeStartAndGoal(_position, _goal->position);
         return vec3(0, 0, 0);
     }
 

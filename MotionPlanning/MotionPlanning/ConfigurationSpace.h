@@ -26,6 +26,7 @@ struct Extents {
 class ConfigurationSpace {
    public:
     ConfigurationSpace() = default;
+    explicit ConfigurationSpace(Extents extents);
     explicit ConfigurationSpace(Obstacle* obstacle, Extents extents);
     explicit ConfigurationSpace(std::vector<Obstacle*> obstacles, Extents extents);
     ~ConfigurationSpace();
@@ -43,5 +44,5 @@ class ConfigurationSpace {
 
     Extents _extents;
     std::vector<Obstacle*> _obstacles;
-    float _agentRadius = 1;
+    float _agentRadius = 0.75f;
 };

@@ -37,10 +37,10 @@ std::vector<Agent*> AgentManager::GetAllAgentsWithinDistanceOf(Agent* me, float 
 }
 
 void AgentManager::SetNewGroupGoal(Agent* agent) {
-    if (_agentGroups.size() == 1) {
+    /*if (_agentGroups.size() == 1) {
         agent->SetGoal(_motionPlanner->GetRandomValidPoint());
         return;
-    }
+    }*/
 
     for (const auto& agentGroup : _agentGroups) {
         if (std::find(agentGroup.begin(), agentGroup.end(), agent) != agentGroup.end()) {
@@ -57,7 +57,7 @@ void AgentManager::SetNewGroupGoal(Agent* agent) {
 }
 
 void AgentManager::InitializeAgents() {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 1; i++) {
         _agentGroups.emplace_back();
         glm::vec3 groupGoal = _motionPlanner->GetRandomValidPoint();
         glm::vec3 groupStart = _motionPlanner->GetRandomValidPoint();
@@ -65,7 +65,7 @@ void AgentManager::InitializeAgents() {
 
         for (int j = 0; j < 5; j++) {
             auto newAgent = new Agent(groupStart, groupGoal, _motionPlanner, this);
-            newAgent->SetColor(color);
+            // newAgent->SetColor(color);
             _agentGroups[i].push_back(newAgent);
         }
     }

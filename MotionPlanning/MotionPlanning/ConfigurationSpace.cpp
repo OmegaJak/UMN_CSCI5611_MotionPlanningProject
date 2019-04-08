@@ -1,6 +1,8 @@
 #include "ConfigurationSpace.h"
 #include "Utils.h"
 
+ConfigurationSpace::ConfigurationSpace(Extents extents) : _extents(extents) {}
+
 ConfigurationSpace::ConfigurationSpace(Obstacle* obstacle, Extents extents) : _extents(extents) {
     AddObstacle(obstacle);
 }
@@ -55,9 +57,9 @@ glm::vec3 ConfigurationSpace::GetObstaclesRepulsionVelocity(const glm::vec3& poi
 
 glm::vec3 ConfigurationSpace::GetRandomValidPoint() const {
     glm::vec3 goal = Utils::RandomVector01();
-    while (PointIsInsideObstacle(goal)) {
+    do {
         goal = _extents.minExtent + Utils::RandomVector01() * glm::vec3(_extents.xLength, _extents.yLength, _extents.zLength);
-    }
+    } while (PointIsInsideObstacle(goal));
 
     return goal;
 }
