@@ -11,10 +11,11 @@ class AgentManager {
     void Reset();
 
     std::vector<Agent*> GetAllAgentsWithinDistanceOf(Agent* me, float distance);
+    void SetNewGroupGoal(Agent* agent);
 
    private:
     void InitializeAgents();
 
-    std::vector<Agent*> _agents;
+    std::vector<std::vector<Agent*>> _agentGroups;
     MotionPlanner* _motionPlanner;
 };

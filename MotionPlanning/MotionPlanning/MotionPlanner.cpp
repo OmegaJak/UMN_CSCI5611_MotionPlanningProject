@@ -13,7 +13,7 @@ using namespace glm;
 MotionPlanner::MotionPlanner(ConfigurationSpace cSpace) {
     _cSpace = cSpace;
 
-    InitializePRM(100);
+    InitializePRM(500);
     SetupDebugLines();
 }
 
@@ -46,8 +46,10 @@ std::vector<Node*> MotionPlanner::PlanPath(Node* start, Node* goal) const {
 void MotionPlanner::Update() {
     _cSpace.Update();
 
-    for (auto gameObject : _gameObjects) {
-        gameObject.Update();
+    if (DebugManager::ShouldRenderDebugLines) {
+        for (auto gameObject : _gameObjects) {
+            gameObject.Update();
+        }
     }
 }
 

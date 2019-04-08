@@ -19,6 +19,8 @@ class MotionPlanner {
 
     void Update();
 
+    ConfigurationSpace _cSpace;
+
    private:
     void InitializePRM(int numSamples);
     void Connect(Node* n1, Node* n2) const;
@@ -27,5 +29,4 @@ class MotionPlanner {
     std::vector<Node*> _prm;
     KDTree<Node*, glm::vec3> _prmKDTree;
     std::vector<GameObject> _gameObjects;
-    ConfigurationSpace _cSpace;
 };

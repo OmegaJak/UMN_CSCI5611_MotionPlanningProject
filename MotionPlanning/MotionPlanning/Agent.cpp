@@ -6,24 +6,31 @@
 
 using namespace glm;
 
-Agent::EffectParams Agent::SeparationParams = {0.9f, 0.05f};
-Agent::EffectParams Agent::CohesionParams = {2.1f, 0.007f};
-Agent::EffectParams Agent::AlignmentParams = {3.5f, 0.2f};
-Agent::EffectParams Agent::ObstacleParams = {1.0f, 0.00015f};
+// Decent settings for agents without groups, picking their own goals
+// Agent::EffectParams Agent::SeparationParams = {0.9f, 0.05f};
+// Agent::EffectParams Agent::CohesionParams = {2.1f, 0.007f};
+// Agent::EffectParams Agent::AlignmentParams = {3.5f, 0.2f};
+// Agent::EffectParams Agent::ObstacleParams = {1.0f, 0.00015f};
+// Agent::EffectParams Agent::PathParams = {0.13f, 0.2f};  // The first value is actually used as desired speed
+
+// Decent settings for group navigation
+Agent::EffectParams Agent::SeparationParams = {1.0f, 0.05f};
+Agent::EffectParams Agent::CohesionParams = {2.0f, 0.003f};
+Agent::EffectParams Agent::AlignmentParams = {4.0f, 0.3f};
+Agent::EffectParams Agent::ObstacleParams = {0.75f, 0.001f};
 Agent::EffectParams Agent::PathParams = {0.13f, 0.2f};  // The first value is actually used as desired speed
 
 float Agent::Damping = 0.999;
 
 Agent::Agent(const vec3& start, const vec3& goal, MotionPlanner* motionPlanner, AgentManager* agentManager)
     : GameObject(ModelManager::BirdModel) {
-    SetTextureIndex(TEX0);
+    SetTextureIndex(UNTEXTURED);
 
     _motionPlanner = motionPlanner;
     _agentManager = agentManager;
 
-    InitializeStartAndGoal(start, goal);
     InitializeVelocity();
-    PlanPath();
+    InitializeStartAndGoal(start, goal);
 
     // Get debug line indices
     _debugLines = DebugManager::RequestLines(3);
@@ -31,6 +38,10 @@ Agent::Agent(const vec3& start, const vec3& goal, MotionPlanner* motionPlanner, 
 
 Agent::~Agent() {
     _solutionPath.clear();
+}
+
+void Agent::SetGoal(const vec3& newGoal) {
+    InitializeStartAndGoal(_position, newGoal);
 }
 
 void Agent::Update() {
@@ -62,11 +73,6 @@ void Agent::Move() {
     SetPosition(newPos);
 
     DebugManager::SetLine(_debugLines.firstIndex + 2, _position, _position + _velocity * 5.0f, vec3(0.2, 0.2, 0.9));
-}
-
-void Agent::ChooseNewGoal() {
-    InitializeStartAndGoal(_position, _motionPlanner->GetRandomValidPoint());
-    PlanPath();
 }
 
 vec3 Agent::GetSeparationVelocity() {
@@ -116,10 +122,14 @@ vec3 Agent::GetObstacleAvoidanceVelocity() {
 }
 
 vec3 Agent::GetFollowPathVelocity() {
-    // If no solution was found or we 're near the goal, find a new goal
-    if (_solutionPath.empty() || distance(_position, _solutionPath.back()->position) < _goalRadius) {
-        ChooseNewGoal();
+    // If no solution was found, continue trying to find a new one while drifting
+    if (_solutionPath.empty()) {
         return vec3(0, 0, 0);
+    }
+
+    if (distance(_position, _solutionPath.back()->position) < _goalRadius) {
+        _agentManager->SetNewGroupGoal(this);
+        return GetFollowPathVelocity();
     }
 
     // Find furthest visible point (fvp) along path that the object can see
@@ -129,7 +139,6 @@ vec3 Agent::GetFollowPathVelocity() {
     float distToCurrentGoal = length(toCurrentGoal);
     if (distToCurrentGoal == 0) {
         InitializeStartAndGoal(_position, _goal->position);
-        PlanPath();
         return GetFollowPathVelocity();
     }
 
@@ -144,6 +153,8 @@ vec3 Agent::GetFollowPathVelocity() {
 }
 
 void Agent::InitializeStartAndGoal(const vec3& startPosition, const vec3& goalPosition) {
+    bool didSomething = false;
+
     if (_start == nullptr || _start->position != startPosition) {
         delete _start;
 
@@ -151,6 +162,7 @@ void Agent::InitializeStartAndGoal(const vec3& startPosition, const vec3& goalPo
         _start = new Node();
         _start->position = _position;
         _start->connections = _motionPlanner->GetNNearestVisiblePoints(_position, PRM_CONNECTIONS_PER_NODE);
+        didSomething = true;
     }
 
     if (_goal == nullptr || _goal->position != goalPosition) {
@@ -159,7 +171,10 @@ void Agent::InitializeStartAndGoal(const vec3& startPosition, const vec3& goalPo
         _goal = new Node();
         _goal->position = goalPosition;
         _goal->connections = _motionPlanner->GetNNearestVisiblePoints(goalPosition, PRM_CONNECTIONS_PER_NODE);
+        didSomething = true;
     }
+
+    if (didSomething) PlanPath();
 }
 
 void Agent::InitializeVelocity() {

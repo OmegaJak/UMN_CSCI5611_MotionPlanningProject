@@ -118,9 +118,11 @@ int main(int argc, char* argv[]) {
 
     Environment environment = Environment();
     Extents envExtents = Extents(glm::vec3(-10, -10, -10), glm::vec3(10, 10, 10));
-    ConfigurationSpace cSpace = ConfigurationSpace(new AABoxObstacle(glm::vec3(0, 0, 0), 5, 5, 5), envExtents);
-    cSpace.AddObstacle(new SphereObstacle(glm::vec3(0, 0, 10), 4));
-    cSpace.AddObstacle(new SphereObstacle(glm::vec3(8, -2, 5), 2));
+    ConfigurationSpace cSpace = ConfigurationSpace(new AABoxObstacle(glm::vec3(0, 0, 0), 5, 5, 20), envExtents);
+    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(6.25, 0, 0), 7.5, 5, 10));
+    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6.25, 0, 0), 7.5, 5, 10));
+    // cSpace.AddObstacle(new SphereObstacle(glm::vec3(0, 0, 10), 4));
+    // cSpace.AddObstacle(new SphereObstacle(glm::vec3(8, -2, 5), 2));
 
     MotionPlanner motionPlanner = MotionPlanner(cSpace);
     AgentManager agentManager = AgentManager(&motionPlanner);

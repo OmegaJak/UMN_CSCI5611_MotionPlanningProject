@@ -22,12 +22,13 @@ class Agent : public GameObject {
     Agent(const glm::vec3& start, const glm::vec3& goal, MotionPlanner* motionPlanner, AgentManager* agentManager);
     ~Agent();
 
+    void SetGoal(const glm::vec3& newGoal);
+
     void Update() override;
     void Reset();
 
    private:
     void Move();
-    void ChooseNewGoal();
 
     glm::vec3 GetSeparationVelocity();
     glm::vec3 GetCohesionVelocity();
@@ -41,7 +42,7 @@ class Agent : public GameObject {
 
     Node* _start = nullptr;
     Node* _goal = nullptr;
-    float _goalRadius = 0.25f;
+    float _goalRadius = 0.5f;
 
     MotionPlanner* _motionPlanner;
     AgentManager* _agentManager;
