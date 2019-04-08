@@ -6,10 +6,12 @@
 
 using namespace glm;
 
-Agent::EffectParams Agent::SeparationParams = {3.0f, 0.001f};
-Agent::EffectParams Agent::CohesionParams = {5.0f, 0.0008f};
-Agent::EffectParams Agent::AlignmentParams = {5.0f, 0.0007f};
-Agent::EffectParams Agent::ObstacleParams = {1.0f, 0.0005f};
+Agent::EffectParams Agent::SeparationParams = {0.9f, 0.05f};
+Agent::EffectParams Agent::CohesionParams = {2.1f, 0.007f};
+Agent::EffectParams Agent::AlignmentParams = {3.5f, 0.2f};
+Agent::EffectParams Agent::ObstacleParams = {1.0f, 0.00015f};
+Agent::EffectParams Agent::PathParams = {0.13f, 0.2f};  // The first value is actually used as desired speed
+
 float Agent::Damping = 0.999;
 
 Agent::Agent(const vec3& start, const vec3& goal, MotionPlanner* motionPlanner, AgentManager* agentManager)
@@ -34,7 +36,8 @@ Agent::~Agent() {
 void Agent::Update() {
     // FollowPath(0.1f);
     if (AgentManager::AgentsRunning) {
-        _velocity += GetSeparationVelocity() + GetCohesionVelocity() + GetAlignmentVelocity() + GetObstacleAvoidanceVelocity();
+        _velocity += GetSeparationVelocity() + GetCohesionVelocity() + GetAlignmentVelocity() + GetObstacleAvoidanceVelocity() +
+                     GetFollowPathVelocity();
         _velocity *= Damping;
         Move();
     }
@@ -44,35 +47,6 @@ void Agent::Update() {
 void Agent::Reset() {
     SetPosition(_start->position);
     InitializeVelocity();
-}
-
-void Agent::FollowPath(float speed) {
-    // If no solution was found or we're near the goal, don't move
-    if (_solutionPath.empty() || distance(_position, _solutionPath.back()->position) < .1) {
-        ChooseNewGoal();
-        return;
-    }
-
-    // Find furthest visible point (fvp) along path that the object can see
-    vec3 fvp = _motionPlanner->GetFarthestVisiblePointAlongPath(_position, _solutionPath);
-    vec3 toCurrentGoal = fvp - _position;
-    float distToCurrentGoal = length(toCurrentGoal);
-    if (distToCurrentGoal < speed) {
-        SetPosition(fvp);
-        speed -= distToCurrentGoal;
-        fvp = _motionPlanner->GetFarthestVisiblePointAlongPath(fvp, _solutionPath);
-        toCurrentGoal = fvp - _position;
-        distToCurrentGoal = length(toCurrentGoal);
-
-        if (distToCurrentGoal == 0) return;
-    }
-
-    toCurrentGoal /= distToCurrentGoal;
-    _velocity = speed * toCurrentGoal;
-
-    // Update the debug lines
-    DebugManager::SetLine(_debugLines.firstIndex, _position, fvp, vec3(0, 1, 0));
-    DebugManager::SetLine(_debugLines.firstIndex + 1, _position, _goal->position, vec3(0.9, 0.37, 0.1));
 }
 
 void Agent::Move() {
@@ -141,15 +115,51 @@ vec3 Agent::GetObstacleAvoidanceVelocity() {
     return velocity * ObstacleParams.strength;
 }
 
-void Agent::InitializeStartAndGoal(const vec3& startPosition, const vec3& goalPosition) {
-    SetPosition(startPosition);
-    _start = new Node();
-    _start->position = _position;
-    _start->connections = _motionPlanner->GetNNearestVisiblePoints(_position, PRM_CONNECTIONS_PER_NODE);
+vec3 Agent::GetFollowPathVelocity() {
+    // If no solution was found or we 're near the goal, find a new goal
+    if (_solutionPath.empty() || distance(_position, _solutionPath.back()->position) < _goalRadius) {
+        ChooseNewGoal();
+        return vec3(0, 0, 0);
+    }
 
-    _goal = new Node();
-    _goal->position = goalPosition;
-    _goal->connections = _motionPlanner->GetNNearestVisiblePoints(goalPosition, PRM_CONNECTIONS_PER_NODE);
+    // Find furthest visible point (fvp) along path that the object can see
+    vec3 vel = vec3(0, 0, 0);
+    vec3 fvp = _motionPlanner->GetFarthestVisiblePointAlongPath(_position, _solutionPath);
+    vec3 toCurrentGoal = fvp - _position;
+    float distToCurrentGoal = length(toCurrentGoal);
+    if (distToCurrentGoal == 0) {
+        InitializeStartAndGoal(_position, _goal->position);
+        PlanPath();
+        return GetFollowPathVelocity();
+    }
+
+    toCurrentGoal = toCurrentGoal * PathParams.radius / distToCurrentGoal;
+    vel = (toCurrentGoal - _velocity) * PathParams.strength;
+
+    // Update the debug lines
+    DebugManager::SetLine(_debugLines.firstIndex, _position, fvp, vec3(0, 1, 0));
+    DebugManager::SetLine(_debugLines.firstIndex + 1, _position, _goal->position, vec3(0.9, 0.37, 0.1));
+
+    return vel;
+}
+
+void Agent::InitializeStartAndGoal(const vec3& startPosition, const vec3& goalPosition) {
+    if (_start == nullptr || _start->position != startPosition) {
+        delete _start;
+
+        if (_position != startPosition) SetPosition(startPosition);
+        _start = new Node();
+        _start->position = _position;
+        _start->connections = _motionPlanner->GetNNearestVisiblePoints(_position, PRM_CONNECTIONS_PER_NODE);
+    }
+
+    if (_goal == nullptr || _goal->position != goalPosition) {
+        delete _goal;
+
+        _goal = new Node();
+        _goal->position = goalPosition;
+        _goal->connections = _motionPlanner->GetNNearestVisiblePoints(goalPosition, PRM_CONNECTIONS_PER_NODE);
+    }
 }
 
 void Agent::InitializeVelocity() {

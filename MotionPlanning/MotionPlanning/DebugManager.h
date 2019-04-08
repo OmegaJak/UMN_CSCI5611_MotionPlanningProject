@@ -16,6 +16,8 @@ struct Vertex {
 
 class DebugManager {
    public:
+    static bool ShouldRenderDebugLines;
+
     static void InitVBO();
     static void Draw();
 

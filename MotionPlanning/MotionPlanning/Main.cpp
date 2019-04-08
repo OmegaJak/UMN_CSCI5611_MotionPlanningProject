@@ -185,6 +185,8 @@ int main(int argc, char* argv[]) {
                     }
                 } else if (windowEvent.key.keysym.sym == SDLK_r) {
                     agentManager.Reset();
+                } else if (windowEvent.key.keysym.sym == SDLK_l) {
+                    DebugManager::ShouldRenderDebugLines = !DebugManager::ShouldRenderDebugLines;
                 }
 
                 if (GetParameterToTweak(windowEvent.key.keysym.sym) != nullptr)
@@ -248,7 +250,8 @@ int main(int argc, char* argv[]) {
                   << " | Separation: " << Agent::SeparationParams.radius << ", " << Agent::SeparationParams.strength
                   << " | Cohesion: " << Agent::CohesionParams.radius << ", " << Agent::CohesionParams.strength
                   << " | Alignment: " << Agent::AlignmentParams.radius << ", " << Agent::AlignmentParams.strength
-                  << " | Obstacle: " << Agent::ObstacleParams.radius << ", " << Agent::ObstacleParams.strength;
+                  << " | Obstacle: " << Agent::ObstacleParams.radius << ", " << Agent::ObstacleParams.strength
+                  << " | Path: " << Agent::PathParams.radius << ", " << Agent::PathParams.strength;
         SDL_SetWindowTitle(window, debugText.str().c_str());
 
         // Render the environment
@@ -380,6 +383,10 @@ float* GetParameterToTweak(SDL_Keycode keycode) {
             return &Agent::ObstacleParams.radius;
         case SDLK_8:
             return &Agent::ObstacleParams.strength;
+        case SDLK_9:
+            return &Agent::PathParams.radius;
+        case SDLK_0:
+            return &Agent::PathParams.strength;
         case SDLK_BACKQUOTE:
             return &Agent::Damping;
         default:

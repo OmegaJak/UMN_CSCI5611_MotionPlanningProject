@@ -3,6 +3,7 @@
 
 int DebugManager::_numLines = 0;
 bool DebugManager::_mustReuploadData = false;
+bool DebugManager::ShouldRenderDebugLines = true;
 std::vector<Vertex> DebugManager::_lineData = std::vector<Vertex>();
 
 void DebugManager::InitVBO() {
@@ -22,7 +23,7 @@ void DebugManager::Draw() {
         _mustReuploadData = false;
     }
 
-    glDrawArrays(GL_LINES, 0, NumVertices());
+    if (ShouldRenderDebugLines) glDrawArrays(GL_LINES, 0, NumVertices());
 }
 
 LineIndexRange DebugManager::RequestLines(int numLines) {

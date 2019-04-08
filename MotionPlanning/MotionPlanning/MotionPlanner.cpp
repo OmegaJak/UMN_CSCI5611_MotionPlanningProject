@@ -56,8 +56,6 @@ vec3 MotionPlanner::GetFarthestVisiblePointAlongPath(const vec3& currentPos, con
     for (int i = solutionSize; i >= 0; i--) {
         if (!_cSpace.SegmentIntersectsObstacle(currentPos, path[i]->position)) {
             return path[i]->position;
-        } else if (!_cSpace.SegmentIntersectsObstacle(path[i]->position, currentPos)) {
-            return path[i]->position;
         }
     }
 
