@@ -121,11 +121,14 @@ int main(int argc, char* argv[]) {
     Environment environment = Environment(&cSpace);
 
     // Cup
-    /*cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-7, -7, -7), glm::vec3(7, -6, 7)));
+    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-7, -7, -7), glm::vec3(7, -6, 7)));
     cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-7, -6, -7), glm::vec3(-6, 3, 7)));
     cSpace.AddObstacle(new AABoxObstacle(glm::vec3(6, -6, -7), glm::vec3(7, 3, 7)));
     cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6, -6, 6), glm::vec3(6, 3, 7)));
-    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6, -6, -7), glm::vec3(6, 3, -6)));*/
+    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6, -6, -7), glm::vec3(6, 3, -6)));
+
+    // Cup lid where PRM isn't dense enough
+    // cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6, 2, -4), glm::vec3(6, 3, 6)));
 
     // Maze
     /*auto xLen = 0.5f;
