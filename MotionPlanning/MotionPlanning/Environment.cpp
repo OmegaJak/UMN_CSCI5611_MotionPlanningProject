@@ -1,12 +1,14 @@
 #include "Environment.h"
 #include "ModelManager.h"
 #include "Utils.h"
+#include "Camera.h"
 
 Environment::Environment() {
     CreateEnvironment();
 }
 
 void Environment::UpdateAll() {
+    main_character->Update();
     for (auto gameObject : _gameObjects) {
         gameObject->Update();
     }
@@ -38,6 +40,12 @@ void Environment::SetGravityCenterPosition(const glm::vec3& position) {
 void Environment::CreateEnvironment() {
     GameObject* gameObject;
     AnimatedObject* animatedObject;
+
+	main_character = new GameObject(ModelManager::DudeModel);
+    main_character->SetTextureIndex(TEX4);
+    main_character->SetScale(.10, .10, .10);
+    main_character->SetPosition(glm::vec3(13, -12, 5.0));
+    main_character->_material.specFactor_ = 0.3;
 
     /*gameObject = new GameObject(ModelManager::CubeModel);  // ground
     gameObject->SetTextureIndex(UNTEXTURED);
@@ -82,5 +90,59 @@ void Environment::addSeed(glm::vec3 pos) {
 		_seeds.push_back(seed);
 		_seedattribs.push_back(seedatt);
 	}
+}
 
+void Environment::updateDude(glm::vec3 pos) {
+    main_character->SetPosition(pos - glm::vec3(0, 0, 1));
+}
+
+void Environment::ProcessKeyboardInput(Camera c) {
+    const Uint8* key_state = SDL_GetKeyboardState(NULL);
+
+    auto rotateSpeed = CAMERA_ROTATION_SPEED;
+    auto moveSpeed = CAMERA_MOVE_SPEED;
+    if (key_state[SDL_SCANCODE_LSHIFT]) {
+        moveSpeed = MAX_MOVE_SPEED;
+    }
+
+    // Look up/down
+    if (key_state[SDL_SCANCODE_UP]) {
+        //_pitch += rotateSpeed;
+    } else if (key_state[SDL_SCANCODE_DOWN]) {
+        //_pitch -= rotateSpeed;
+    }
+
+    // Look right/left
+    if (key_state[SDL_SCANCODE_RIGHT]) {
+        //_yaw -= rotateSpeed;
+    } else if (key_state[SDL_SCANCODE_LEFT]) {
+        //_yaw += rotateSpeed;
+    }
+    glm::vec3 pos = main_character->getPosition();
+    glm::vec3 _forward = c.getForward();
+    glm::vec3 _up = c.getUp();
+    glm::vec3 _right = c.getRight();
+
+    // Forward/back
+    if (key_state[SDL_SCANCODE_W]) {
+        pos += _forward * moveSpeed;
+    } else if (key_state[SDL_SCANCODE_S]) {
+        pos -= _forward * moveSpeed;
+    }
+
+    // Right/left
+    if (key_state[SDL_SCANCODE_D]) {
+        pos += _right * moveSpeed;
+    } else if (key_state[SDL_SCANCODE_A]) {
+        pos -= _right * moveSpeed;
+    }
+
+    // Up/down
+    if (key_state[SDL_SCANCODE_E]) {
+        pos += _up * moveSpeed;
+    } else if (key_state[SDL_SCANCODE_Q]) {
+        pos -= _up * moveSpeed;
+    }
+
+	main_character->SetPosition(pos);
 }

@@ -276,8 +276,9 @@ int main(int argc, char* argv[]) {
         float gray = 0.6f;
         glClearColor(gray, gray, gray, 1.0f);  // Clear the screen to default color
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        camera.Update();
+        
+        
+        
         glm::mat4 proj = glm::perspective(3.14f / 2, screenWidth / (float)screenHeight, 0.1f, 1000.0f);  // FOV, aspect, near, far
         ShaderManager::ApplyToEachRenderShader(
             [proj](ShaderAttributes attributes) -> void { glUniformMatrix4fv(attributes.projection, 1, GL_FALSE, glm::value_ptr(proj)); },
@@ -302,7 +303,16 @@ int main(int argc, char* argv[]) {
         ShaderManager::ActivateShader(ShaderManager::EnvironmentShader);
         glBindBuffer(GL_ARRAY_BUFFER, ShaderManager::EnvironmentShader.VBO);
         TextureManager::Update(ShaderManager::EnvironmentShader.Program);
+
+		//environment.updateDude(camera.GetPosition());
+        
+       
         environment.UpdateAll();
+        environment.ProcessKeyboardInput(camera);
+        camera.setPosition(environment.getObject()->getPosition());
+        
+        camera.Update();
+        
         agentManager.Update();
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 

@@ -16,7 +16,7 @@ class ModelManager {
     static Model* SphereModel;
     static Model* CubeModel;
     static Model* BirdModel;
-    static Model* ChildModel;
+    static Model* DudeModel;
     static Model* SeedModel;
     static Model* LandscapeModel;
     static Model* TreeModel;

@@ -59,7 +59,7 @@ void Camera::ProcessKeyboardInput() {
     } else if (key_state[SDL_SCANCODE_LEFT]) {
         _yaw += rotateSpeed;
     }
-
+    /*
     // Forward/back
     if (key_state[SDL_SCANCODE_W]) {
         _position += _forward * moveSpeed;
@@ -80,7 +80,7 @@ void Camera::ProcessKeyboardInput() {
     } else if (key_state[SDL_SCANCODE_Q]) {
         _position -= _up * moveSpeed;
     }
-
+	*/
     UpdateCameraVectors();
 }
 
@@ -105,7 +105,7 @@ glm::vec3 Camera::GetForward() {
 
 void Camera::Update() {
     ProcessKeyboardInput();
-    auto view = glm::lookAt(_position, _position + _forward, _up);
+    auto view = glm::lookAt(_position - _forward + glm::vec3(0, 0,1.0), _position + _forward, _up);
     _view = view;
 
     ShaderManager::ApplyToEachRenderShader(

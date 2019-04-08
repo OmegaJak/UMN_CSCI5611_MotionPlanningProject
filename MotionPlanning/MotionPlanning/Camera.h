@@ -11,10 +11,28 @@ class Camera {
     glm::vec3 GetPosition();
     glm::vec3 GetMousePosition(float normalizedMouseX, float normalizedMouseY, const glm::mat4& proj, float distanceFromCamera);
     glm::vec3 GetForward();
+	void setPosition(glm::vec3 pos) {
+        _position = pos;
+	}
     glm::mat4 GetView() {
       return _view;
 	};
     void Update();
+
+	glm::vec3 getForward() {
+        return _forward;
+	}
+	glm::vec3 getRight() {
+        return _right;
+	}
+	glm::vec3 getUp() {
+        return _up;
+	}
+
+
+
+
+
 
    private:
     void UpdateCameraVectors();
