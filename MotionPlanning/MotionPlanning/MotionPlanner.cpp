@@ -13,7 +13,7 @@ using namespace glm;
 MotionPlanner::MotionPlanner(ConfigurationSpace cSpace) {
     _cSpace = cSpace;
 
-    InitializePRM(500);
+    InitializePRM(100);
     SetupDebugLines();
 }
 
@@ -33,9 +33,12 @@ std::vector<Node*> MotionPlanner::PlanPath(Node* start, Node* goal) const {
     // Because we store A*'s relevant data in the nodes themselves, they must be reset after use
     // as multiple agent may search over this graph again
     for (auto& node : _prm) {
+        /*ResetNode(node);*/
         node->aStarData = Node::AStarNodeData();
         node->explored = false;
     }
+    ResetNode(start);
+    ResetNode(goal);
     Timer::EndTimingAndPrintResult("SolutionCleanup");
 
     Timer::EndTimingAndPrintResult("Solution");
@@ -151,4 +154,9 @@ void MotionPlanner::SetupDebugLines() {
         Node* n2 = solutions[i - 1];
         DebugManager::SetLine(lineIndices.firstIndex + i - 1, n1->position, n2->position, vec3(0, 1, 0));
     }*/
+}
+
+void MotionPlanner::ResetNode(Node* node) const {
+    node->aStarData = Node::AStarNodeData();
+    node->explored = false;
 }

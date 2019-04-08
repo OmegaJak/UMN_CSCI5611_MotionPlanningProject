@@ -25,6 +25,7 @@ class MotionPlanner {
     void InitializePRM(int numSamples);
     void Connect(Node* n1, Node* n2) const;
     void SetupDebugLines();
+    void ResetNode(Node* node) const;
 
     std::vector<Node*> _prm;
     KDTree<Node*, glm::vec3> _prmKDTree;
