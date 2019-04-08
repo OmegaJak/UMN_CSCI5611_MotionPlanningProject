@@ -120,7 +120,15 @@ int main(int argc, char* argv[]) {
     Extents envExtents = Extents(glm::vec3(-10, -10, -10), glm::vec3(10, 10, 10));
     ConfigurationSpace cSpace = ConfigurationSpace(envExtents);
 
-    auto xLen = 0.5f;
+    // Cup
+    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-7, -7, -7), glm::vec3(7, -6, 7)));
+    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-7, -6, -7), glm::vec3(-6, 3, 7)));
+    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(6, -6, -7), glm::vec3(7, 3, 7)));
+    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6, -6, 6), glm::vec3(6, 3, 7)));
+    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6, -6, -7), glm::vec3(6, 3, -6)));
+
+    // Maze
+    /*auto xLen = 0.5f;
     auto yLen = 0.5f;
     auto zLen = 20.0f;
     for (int i = 0; i < 8; i++) {
@@ -144,7 +152,7 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < 2; i++) {
         cSpace.AddObstacle(new AABoxObstacle(glm::vec3(3, 1 + i * 2, 0), xLen, yLen, zLen));
     }
-    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(1, 3, 0), xLen, yLen, zLen));
+    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(1, 3, 0), xLen, yLen, zLen));*/
 
     // Cross
     // cSpace.AddObstacle(new AABoxObstacle(glm::vec3(0, 0, 0), 5, 5, 20));

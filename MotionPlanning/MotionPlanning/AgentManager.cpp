@@ -60,7 +60,8 @@ void AgentManager::InitializeAgents() {
     for (int i = 0; i < 1; i++) {
         _agentGroups.emplace_back();
         glm::vec3 groupGoal = _motionPlanner->GetRandomValidPoint();
-        glm::vec3 groupStart = _motionPlanner->GetRandomValidPoint();
+        // glm::vec3 groupStart = _motionPlanner->GetRandomValidPoint();
+        glm::vec3 groupStart = glm::vec3(0, 0, 0);
         auto color = Utils::RandomVector01();
 
         for (int j = 0; j < 5; j++) {
