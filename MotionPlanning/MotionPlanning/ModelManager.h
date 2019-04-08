@@ -17,6 +17,8 @@ class ModelManager {
     static Model* CubeModel;
     static Model* BirdModel;
     static Model* ChildModel;
+    static Model* SeedModel;
+    static Model* LandscapeModel;
 
    private:
     static std::vector<Model*> models_;

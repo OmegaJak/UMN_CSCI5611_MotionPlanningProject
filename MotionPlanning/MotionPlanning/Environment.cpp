@@ -22,12 +22,19 @@ void Environment::CreateEnvironment() {
     GameObject* gameObject;
     AnimatedObject* animatedObject;
 
-    gameObject = new GameObject(ModelManager::CubeModel);  // ground
+    /*gameObject = new GameObject(ModelManager::CubeModel);  // ground
     gameObject->SetTextureIndex(UNTEXTURED);
     gameObject->SetColor(glm::vec3(0, 77 / 255.0, 26 / 255.0));
     gameObject->SetScale(20, 20, 1);
     gameObject->SetPosition(glm::vec3(0, 0, -10.5));
     gameObject->_material.specFactor_ = 0.2;
+    _gameObjects.push_back(gameObject);
+	*/
+    gameObject = new GameObject(ModelManager::LandscapeModel); // ground
+    gameObject->SetTextureIndex(TEX0);
+    gameObject->SetScale(1, 1, 1);
+    gameObject->SetPosition(glm::vec3(-100, -100, -10.5));
+    gameObject->_material.specFactor_ = 0.01;
     _gameObjects.push_back(gameObject);
 
     gameObject = new GameObject(ModelManager::SphereModel);  // Start
@@ -55,6 +62,14 @@ void Environment::CreateEnvironment() {
     animatedObject->SetPosition(glm::vec3(20, 10, 10));
     animatedObject->SetScale(5, 5, 5);
     _animatedObjects.push_back(animatedObject);
+
+	gameObject = new GameObject(ModelManager::SeedModel);
+    gameObject->SetTextureIndex(TEX1);
+    gameObject->SetScale(1, 1, 1);
+    gameObject->SetPosition(glm::vec3(5, 5, 5));
+    _gameObjects.push_back(gameObject);
+
+	
 
     _gravityCenterIndex = _gameObjects.size() - 1;
 }

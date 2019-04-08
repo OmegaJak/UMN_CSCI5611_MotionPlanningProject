@@ -7,6 +7,8 @@ Model* ModelManager::SphereModel;
 Model* ModelManager::CubeModel;
 Model* ModelManager::BirdModel;
 Model* ModelManager::ChildModel;
+Model* ModelManager::SeedModel;
+Model* ModelManager::LandscapeModel;
 std::vector<Model*> ModelManager::models_;
 int ModelManager::num_verts_;
 
@@ -15,6 +17,9 @@ void ModelManager::InitModels() {
     CubeModel = new Model("models/cube.txt");
     ChildModel = new Model("models/Bird2.obj");
     BirdModel = new Model("models/Bird.dae");
+    SeedModel = new Model("models/seed.obj");
+    LandscapeModel = new Model("Landscape1.lan");
+
 }
 
 void ModelManager::RegisterModel(Model* model) {

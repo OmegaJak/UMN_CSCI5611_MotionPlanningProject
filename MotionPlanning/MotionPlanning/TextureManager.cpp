@@ -15,16 +15,16 @@ void TextureManager::InitTextures() {
     glBindVertexArray(ShaderManager::EnvironmentShader.VAO);
 
     // Allocate Texture 0
-    SDL_Surface* surface = IMG_Load("images/Bird01.png");
+    SDL_Surface* surface = IMG_Load("images/grass.png");
     glActiveTexture(GL_TEXTURE0);
     InitTexture(&tex0, surface);
 
     glActiveTexture(GL_TEXTURE1);
-    surface = IMG_Load("person.png");
+    surface = IMG_Load("images/Seed.png");
     InitTexture(&tex1, surface);
 
     glActiveTexture(GL_TEXTURE2);
-    surface = IMG_Load("circle.png");
+    surface = IMG_Load("images/grass.png");
     InitTexture(&tex2, surface);
 
     glBindVertexArray(0);

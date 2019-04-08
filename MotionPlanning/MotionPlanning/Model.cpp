@@ -1,17 +1,18 @@
 #define _CRT_SECURE_NO_WARNINGS
 
+#include "model.h"
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+#include <libxml/xmlwriter.h>
 #include <detail/type_vec3.hpp>
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <vector>
 #include <string>
-#include <libxml/xmlwriter.h>
-#include <libxml/parser.h>
-#include <libxml/tree.h>
+#include <vector>
 #include "Constants.h"
-#include "model.h"
 #include "ModelManager.h"
+#include "Utils.h"
 
 using std::string;
 using std::vector;
@@ -30,7 +31,9 @@ Model::Model(const string& file) {
         LoadObj2(file);
     } else if (extension == "dae") {
         LoadDae(file);
-	} else {
+    } else if (extension == "lan") {
+        LoadLandScape(100, 100, 2);
+    } else {
         printf("Unrecognized file extension \"%s\" for file \"%s\". Exiting...\n", extension.c_str(), file.c_str());
         exit(1);
     }
@@ -223,7 +226,6 @@ void Model::LoadObj2(const std::string& filename) {
         model_[i * 8 + NORMAL_OFFSET] = out_normals[i].x;
         model_[i * 8 + NORMAL_OFFSET + 1] = out_normals[i].y;
         model_[i * 8 + NORMAL_OFFSET + 2] = out_normals[i].z;
-        
     }
     num_verts_ = out_vertices.size();
     modelFile.close();
@@ -239,60 +241,60 @@ void Model::LoadDae(const std::string& filename) {
     glm::vec3* temp_normals = NULL;
     glm::ivec3* faces;
 
-	xmlDoc* doc = NULL;
-	xmlNode* root = NULL;
-	LIBXML_TEST_VERSION
+    xmlDoc* doc = NULL;
+    xmlNode* root = NULL;
+    LIBXML_TEST_VERSION
 
-	doc = xmlReadFile(filename.c_str(), NULL, 0);
-	if (doc == NULL) {
-		printf("Error: could not parse file: %s\n", filename);
-	}
-	root = xmlDocGetRootElement(doc);
-	//print_xmlfile(root, 0);
+    doc = xmlReadFile(filename.c_str(), NULL, 0);
+    if (doc == NULL) {
+        printf("Error: could not parse file: %s\n", filename);
+    }
+    root = xmlDocGetRootElement(doc);
+    // print_xmlfile(root, 0);
 
-	xmlNode* nodeFound;
+    xmlNode* nodeFound;
     nodeFound = searchNode(root, (char*)"geometry");
     print_xmlfile(nodeFound->parent, 0);
 
-	if (nodeFound != NULL) {
+    if (nodeFound != NULL) {
         nodeFound = searchNode(nodeFound, (char*)"float_array");
-	}
+    }
 
-	printf("Name is: %s\n", nodeFound->name);
-	printf("Name is: %s\n", nodeFound->next->next->name);
-	printf("Name is: %s\n", nodeFound->parent->name);
-	printf("Name is: %s\n", nodeFound->parent->next->next->name);
-	printf("Name is: %s\n", nodeFound->parent->next->next->next->next->name);
+    printf("Name is: %s\n", nodeFound->name);
+    printf("Name is: %s\n", nodeFound->next->next->name);
+    printf("Name is: %s\n", nodeFound->parent->name);
+    printf("Name is: %s\n", nodeFound->parent->next->next->name);
+    printf("Name is: %s\n", nodeFound->parent->next->next->next->next->name);
     printf("Name is: %s\n", nodeFound->parent->parent->next->next);
-    
-	if (nodeFound != NULL) {
+
+    if (nodeFound != NULL) {
         parsefloatNode(doc, nodeFound, &vertdata);
-		temp_vertices = reinterpret_cast<glm::vec3*>(vertdata.data());
+        temp_vertices = reinterpret_cast<glm::vec3*>(vertdata.data());
         nodeFound = nodeFound->parent->next->next;
         nodeFound = searchNode(nodeFound, (char*)"float_array");
-	}
+    }
 
-	if (nodeFound != NULL) {
+    if (nodeFound != NULL) {
         parsefloatNode(doc, nodeFound, &normaldata);
         temp_normals = reinterpret_cast<glm::vec3*>(normaldata.data());
         nodeFound = nodeFound->parent->next;
         nodeFound = searchNode(nodeFound, (char*)"float_array");
-	}
+    }
 
-	if (nodeFound != NULL) {
-        parsefloatNode(doc, nodeFound, &uvdata);    
-		temp_uvs = reinterpret_cast<glm::vec2*>(uvdata.data());
+    if (nodeFound != NULL) {
+        parsefloatNode(doc, nodeFound, &uvdata);
+        temp_uvs = reinterpret_cast<glm::vec2*>(uvdata.data());
         nodeFound = nodeFound->parent->next;
         nodeFound = searchNode(nodeFound, (char*)"p");
-	}
-    
-	if (nodeFound != NULL) {
+    }
+
+    if (nodeFound != NULL) {
         parseintNode(doc, nodeFound, &tridata);
         faces = reinterpret_cast<glm::ivec3*>(tridata.data());
         printf("First face: %d %d %d", faces[1].x, faces[1].y, faces[1].z);
 
-		model_ = new float[tridata.size() / 3 * 8];
-		for (int i = 0; i < tridata.size() / 3; i++) {
+        model_ = new float[tridata.size() / 3 * 8];
+        for (int i = 0; i < tridata.size() / 3; i++) {
             int posindex = faces[i].x;
             int normalindex = faces[i].y;
             int uvindex = faces[i].z;
@@ -304,19 +306,14 @@ void Model::LoadDae(const std::string& filename) {
             model_[i * 8 + NORMAL_OFFSET] = temp_normals[normalindex].x;
             model_[i * 8 + NORMAL_OFFSET + 1] = temp_normals[normalindex].y;
             model_[i * 8 + NORMAL_OFFSET + 2] = temp_normals[normalindex].z;
-		}
+        }
         num_verts_ = tridata.size() / 3;
-	}
-	
-	
-    
-    
+    }
 
     printf("-----------Finished Parsing DAE file------------\n");
 
-	xmlFreeDoc(doc);
-	xmlCleanupParser();
-
+    xmlFreeDoc(doc);
+    xmlCleanupParser();
 }
 
 int Model::NumElements() const {
@@ -336,23 +333,23 @@ std::vector<glm::vec4> Model::Vertices() const {
     return verts;
 }
 
-//Recursively print xml file node names.
-//xmlsoft.org/examples/tree1.c
+// Recursively print xml file node names.
+// xmlsoft.org/examples/tree1.c
 void Model::print_xmlfile(xmlNode* a_node, int level) {
     level++;
-	xmlNode* cur_node = NULL;
-	for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
-		if (cur_node->type == XML_ELEMENT_NODE) {
+    xmlNode* cur_node = NULL;
+    for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
+        if (cur_node->type == XML_ELEMENT_NODE) {
             for (int i = 0; i < level; i++) {
-                printf(" +"); // Level
-			}
-			printf("%s\n", cur_node->name);
-		}
-		print_xmlfile(cur_node->children, level);
-	}
+                printf(" +");  // Level
+            }
+            printf("%s\n", cur_node->name);
+        }
+        print_xmlfile(cur_node->children, level);
+    }
 }
-//Searches for a node, returns NULL if not found
-//http://cse.csusb.edu/tongyu/courses/cs520/notes/cs520b.pdf
+// Searches for a node, returns NULL if not found
+// http://cse.csusb.edu/tongyu/courses/cs520/notes/cs520b.pdf
 xmlNode* Model::searchNode(xmlNode* a_node, char target[]) {
     xmlNode* nodeFound = NULL;
     for (xmlNode* cur = a_node; cur; cur = cur->next) {
@@ -370,7 +367,6 @@ xmlNode* Model::searchNode(xmlNode* a_node, char target[]) {
 }
 
 void Model::parsefloatNode(xmlDocPtr doc, xmlNodePtr cur, std::vector<float>* data) {
-
     xmlChar* key;
     cur = cur->xmlChildrenNode;
     while (cur != NULL) {
@@ -380,8 +376,8 @@ void Model::parsefloatNode(xmlDocPtr doc, xmlNodePtr cur, std::vector<float>* da
         string token;
         while (std::getline(ss, token, ' ')) {
             data->push_back(std::stof(token));
-		}
-        
+        }
+
         xmlFree(key);
         cur = cur->next;
     }
@@ -404,4 +400,75 @@ void Model::parseintNode(xmlDocPtr doc, xmlNodePtr cur, std::vector<int>* data) 
         cur = cur->next;
     }
     return;
+}
+
+void Model::LoadLandScape(int width, int depth, int height) {
+    printf("Starting Load Landscape: \n\n");
+    std::vector<glm::vec3> positions;
+    std::vector<glm::vec2> uvs;
+    std::vector<glm::vec3> normals;
+
+	glm::vec3** points = new glm::vec3*[width];
+    for (int i = 0; i < width; i++) {
+            points[i] = new glm::vec3[depth];
+	}
+    for (int i = 0; i < width; i++) {
+        for (int j = 0; j < depth; j++) {
+            points[i][j] = glm::vec3(i, j, Utils::randBetween(0, height));
+        }
+    }
+
+	
+    printf("Made points: ");
+	for (int i = 1; i < width - 1; i++) {  // Smoothens the terrain out by averaging nearby points together
+        for (int j = 1; j < depth - 1; j++) {
+            float h1 = points[i][j][2];
+            float h2 = points[i - 1][j][2] + points[i + 1][j][2] + points[i][j - 1][2] + points[i][j + 1][2];
+            float h3 = points[i - 1][j - 1][2] + points[i + 1][j - 1][2] + points[i - 1][j + 1][2] + points[i + 1][j + 1][2];
+            points[i][j][2] = h1 / 4 + h2 / 8 + h3 / 16;
+        }
+    }
+	
+        printf(" Smoothed triangles");
+	for (int i = 1; i < width; i++) {
+        for (int j = 0; j < depth - 1; j++) {  // Adds triangles between all generated points at the aprpriate places
+            positions.push_back(points[i][j]);
+            positions.push_back(points[i-1][j+1]);
+            positions.push_back(points[i][j+1]);
+            positions.push_back(points[i][j]);
+            positions.push_back(points[i-1][j]);
+            positions.push_back(points[i-1][j+1]);
+            uvs.push_back(glm::vec2(1, .5));
+            uvs.push_back(glm::vec2(.5, 1));
+            uvs.push_back(glm::vec2(1, 1));
+            uvs.push_back(glm::vec2(1, .5));
+            uvs.push_back(glm::vec2(.5, .5));
+            uvs.push_back(glm::vec2(.5, 1));
+            glm::vec3 norm1 =  - 1.f * glm::cross(points[i - 1][j + 1] - points[i][j], points[i][j + 1] - points[i][j]);
+            glm::vec3 norm2 = -1.f * glm::cross(points[i - 1][j] - points[i][j], points[i - 1][j + 1] - points[i - 1][j]);
+
+            normals.push_back(norm1);
+            normals.push_back(norm1);
+            normals.push_back(norm1);
+            normals.push_back(norm2);
+            normals.push_back(norm2);
+            normals.push_back(norm2);
+        }
+    }
+        int numverts = positions.size();
+    printf("Made Triangse");
+	model_ = new float[numverts * 8];
+    for (int i = 0; i < numverts; i++) {
+
+        model_[i * 8 + POSITION_OFFSET] =  positions[i].x * 3.f;
+        model_[i * 8 + POSITION_OFFSET + 1] = positions[i].y * 3.f;
+        model_[i * 8 + POSITION_OFFSET + 2] = positions[i].z * 3.f;
+        model_[i * 8 + TEXCOORD_OFFSET] = uvs[i].x;
+        model_[i * 8 + TEXCOORD_OFFSET + 1] = uvs[i].y;
+        model_[i * 8 + NORMAL_OFFSET] = normals[i].x;
+        model_[i * 8 + NORMAL_OFFSET + 1] = normals[i].y;
+        model_[i * 8 + NORMAL_OFFSET + 2] = normals[i].z;
+    }
+    printf("FINISHED");
+    num_verts_ = numverts;
 }
