@@ -11,6 +11,9 @@ out vec4 outColor;
 uniform sampler2D tex0;
 uniform sampler2D tex1;
 uniform sampler2D tex2;
+uniform sampler2D tex3;
+uniform sampler2D tex4;
+uniform sampler2D tex5;
 
 uniform int texID;
 uniform float specFactor;
@@ -24,6 +27,14 @@ void main() {
         color = texture(tex0, texcoord);
     else if (texID == 1)
         color = texture(tex1, texcoord);
+	else if (texID == 2)
+		color = texture(tex2, texcoord);
+	else if (texID == 3)
+		color = texture(tex3, texcoord);
+	else if (texID == 4)
+		color = texture(tex4, texcoord);
+	else if (texID == 5)
+		color = texture(tex5, texcoord);
     else {
         outColor = vec4(1, 0, 0, 1);
         return;  // This was an error, stop lighting!

@@ -19,6 +19,7 @@ class ModelManager {
     static Model* ChildModel;
     static Model* SeedModel;
     static Model* LandscapeModel;
+    static Model* TreeModel;
 
    private:
     static std::vector<Model*> models_;

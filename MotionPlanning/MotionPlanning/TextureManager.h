@@ -2,7 +2,7 @@
 #include "SDL.h"
 #include "glad.h"
 
-typedef enum { UNTEXTURED = -1, TEX0 = 0, TEX1 = 1, TEX2 = 2 } TEXTURE;
+typedef enum { UNTEXTURED = -1, TEX0 = 0, TEX1 = 1, TEX2 = 2, TEX3 = 3, TEX4 = 4, TEX5 = 5 } TEXTURE;
 
 class TextureManager {
    public:
@@ -15,4 +15,7 @@ class TextureManager {
     static GLuint tex0;
     static GLuint tex1;
     static GLuint tex2;
+    static GLuint tex3;
+    static GLuint tex4;
+    static GLuint tex5;
 };

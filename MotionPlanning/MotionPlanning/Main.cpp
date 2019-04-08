@@ -227,7 +227,10 @@ int main(int argc, char* argv[]) {
                     agentManager.Reset();
                 } else if (windowEvent.key.keysym.sym == SDLK_l) {
                     DebugManager::ShouldRenderDebugLines = !DebugManager::ShouldRenderDebugLines;
-                }
+				}
+				else if (windowEvent.key.keysym.sym == SDLK_f) {
+					environment.addSeed(camera.GetPosition());
+				}
 
                 if (GetParameterToTweak(windowEvent.key.keysym.sym) != nullptr)
                     lastSelectedParam = GetParameterToTweak(windowEvent.key.keysym.sym);

@@ -13,6 +13,23 @@ void Environment::UpdateAll() {
     for (auto animatedObject : _animatedObjects) {
         animatedObject->Update();
     }
+
+	for (int i = 0; i < _seeds.size(); i++) {
+		GameObject* seed = _seeds[i];
+		Seed* seedatt = _seedattribs[i];
+		glm::vec3 seedpos = seed->getPosition();
+		if (seedpos.z <= -10.01) {
+			seedpos.z = -10.02;
+			seed->SetPosition(seedpos);
+		}
+		else {
+			seedpos += seedatt->velocity;
+			seedatt->velocity -= glm::vec3(0, 0, .01f);
+		}
+		seed->SetPosition(seedpos);
+
+		seed->Update();
+	}
 }
 void Environment::SetGravityCenterPosition(const glm::vec3& position) {
     _gameObjects[_gravityCenterIndex]->SetPosition(position);
@@ -31,43 +48,39 @@ void Environment::CreateEnvironment() {
     _gameObjects.push_back(gameObject);
         */
     gameObject = new GameObject(ModelManager::LandscapeModel);  // ground
-    gameObject->SetTextureIndex(TEX0);
+    gameObject->SetTextureIndex(TEX2);
     gameObject->SetScale(1, 1, 1);
-    gameObject->SetPosition(glm::vec3(-100, -100, -12.5));
+    gameObject->SetPosition(glm::vec3(-100, -100, -13.3));
     gameObject->_material.specFactor_ = 0.01;
     _gameObjects.push_back(gameObject);
 
-    // gameObject = new GameObject(ModelManager::SphereModel);  // Start
-    // gameObject->SetTextureIndex(UNTEXTURED);
-    // gameObject->SetColor(glm::vec3(.5f, .2f, 1.f));
-    // gameObject->SetPosition(glm::vec3(10, -10, 10));
-    // gameObject->SetScale(1, 1, 1);
-    //_gameObjects.push_back(gameObject);
-
-    // gameObject = new GameObject(ModelManager::SphereModel);  // End
-    // gameObject->SetTextureIndex(UNTEXTURED);
-    // gameObject->SetColor(glm::vec3(.5f, 1.f, .3f));
-    // gameObject->SetPosition(glm::vec3(-10, 10, -10));
-    // gameObject->SetScale(1, 1, 1);
-    //_gameObjects.push_back(gameObject);
-
-    /*gameObject = new GameObject(ModelManager::ChildModel);
-    gameObject->SetTextureIndex(TEX0);
-    gameObject->SetScale(5, 5, 5);
-    _gameObjects.push_back(gameObject);
-
-    animatedObject = new AnimatedObject(ModelManager::SphereModel);
-    animatedObject->SetTextureIndex(UNTEXTURED);
-    animatedObject->SetColor(glm::vec3(.5f, 1.f, .5f));
-    animatedObject->SetPosition(glm::vec3(20, 10, 10));
-    animatedObject->SetScale(5, 5, 5);
-    _animatedObjects.push_back(animatedObject);
-
-        gameObject = new GameObject(ModelManager::SeedModel);
-    gameObject->SetTextureIndex(TEX1);
-    gameObject->SetScale(1, 1, 1);
-    gameObject->SetPosition(glm::vec3(5, 5, 5));
-    _gameObjects.push_back(gameObject);*/
+	gameObject = new GameObject(ModelManager::TreeModel);  // ground
+	gameObject->SetTextureIndex(TEX3);
+	gameObject->SetScale(.31, .31, .25);
+	gameObject->SetPosition(glm::vec3(0, 10, 4));
+	gameObject->_material.specFactor_ = 0.3;
+	_gameObjects.push_back(gameObject);
 
     _gravityCenterIndex = _gameObjects.size() - 1;
+}
+
+void Environment::addSeed(glm::vec3 pos) {
+	GameObject* seed;
+	Seed* seedatt;
+	glm::vec3 newpos;
+	for (int i = 0; i < 10; i++) {
+		seed = new GameObject(ModelManager::SeedModel);
+		seed->SetTextureIndex(TEX1);
+		seed->SetScale(.2, .2, .2);
+		seed->_material.specFactor_ = .3;
+		seedatt = new Seed();
+		newpos = pos + .1f * Utils::RandomVector();
+		seedatt->position = newpos;
+		seedatt->velocity = .1f * Utils::RandomVector();
+		seed->SetPosition(newpos);
+
+		_seeds.push_back(seed);
+		_seedattribs.push_back(seedatt);
+	}
+
 }

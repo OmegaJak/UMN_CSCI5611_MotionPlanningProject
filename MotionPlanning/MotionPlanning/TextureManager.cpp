@@ -8,6 +8,9 @@
 GLuint TextureManager::tex0;
 GLuint TextureManager::tex1;
 GLuint TextureManager::tex2;
+GLuint TextureManager::tex3;
+GLuint TextureManager::tex4;
+GLuint TextureManager::tex5;
 
 void TextureManager::InitTextures() {
     IMG_Init(IMG_INIT_PNG);
@@ -15,7 +18,7 @@ void TextureManager::InitTextures() {
     glBindVertexArray(ShaderManager::EnvironmentShader.VAO);
 
     // Allocate Texture 0
-    SDL_Surface* surface = IMG_Load("images/grass.png");
+    SDL_Surface* surface = IMG_Load("images/bird01.png");
     glActiveTexture(GL_TEXTURE0);
     InitTexture(&tex0, surface);
 
@@ -26,6 +29,19 @@ void TextureManager::InitTextures() {
     glActiveTexture(GL_TEXTURE2);
     surface = IMG_Load("images/grass.png");
     InitTexture(&tex2, surface);
+
+	glActiveTexture(GL_TEXTURE3);
+    surface = IMG_Load("images/Trees.png");
+    InitTexture(&tex3, surface);
+
+	glActiveTexture(GL_TEXTURE4);
+    surface = IMG_Load("images/Trees.png");
+    InitTexture(&tex4, surface);
+
+	glActiveTexture(GL_TEXTURE5);
+    surface = IMG_Load("images/Trees.png");
+    InitTexture(&tex5, surface);
+
 
     glBindVertexArray(0);
 }
@@ -42,6 +58,18 @@ void TextureManager::Update(GLuint program) {
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(GL_TEXTURE_2D, tex2);
     glUniform1i(glGetUniformLocation(program, "tex2"), TEX2);
+
+	glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, tex3);
+    glUniform1i(glGetUniformLocation(program, "tex3"), TEX3);
+
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_2D, tex4);
+    glUniform1i(glGetUniformLocation(program, "tex4"), TEX4);
+
+    glActiveTexture(GL_TEXTURE5);
+    glBindTexture(GL_TEXTURE_2D, tex5);
+    glUniform1i(glGetUniformLocation(program, "tex5"), TEX5);
 }
 
 // http://www.sdltutorials.com/sdl-tip-sdl-surface-to-opengl-texture

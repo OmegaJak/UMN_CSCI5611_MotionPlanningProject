@@ -22,7 +22,9 @@ class GameObject {
     void SetTextureIndex(TEXTURE texture_index);
 
     float DistanceFrom(GameObject* other) const;
-
+	glm::vec3 getPosition() {
+		return _position;
+	}
     virtual void Update();
 
     Material _material;
