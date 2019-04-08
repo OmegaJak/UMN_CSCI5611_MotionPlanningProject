@@ -1,10 +1,11 @@
+#include "Camera.h"
 #include "Environment.h"
 #include "ModelManager.h"
 #include "Utils.h"
-#include "Camera.h"
 
-Environment::Environment() {
+Environment::Environment(ConfigurationSpace* cSpace) {
     CreateEnvironment();
+    _cSpace = cSpace;
 }
 
 void Environment::UpdateAll() {
@@ -16,32 +17,63 @@ void Environment::UpdateAll() {
         animatedObject->Update();
     }
 
-	for (int i = 0; i < _seeds.size(); i++) {
-		GameObject* seed = _seeds[i];
-		Seed* seedatt = _seedattribs[i];
-		glm::vec3 seedpos = seed->getPosition();
-		if (seedpos.z <= -10.01) {
-			seedpos.z = -10.02;
-			seed->SetPosition(seedpos);
-		}
-		else {
-			seedpos += seedatt->velocity;
-			seedatt->velocity -= glm::vec3(0, 0, .01f);
-		}
-		seed->SetPosition(seedpos);
+    std::vector<Seed*> seedsToRemove = {};
+    for (auto& seedattrib : _seedattribs) {
+        GameObject* seedGameObject = seedattrib->gameObject;
+        glm::vec3 seedpos = seedGameObject->getPosition();
+        if (seedpos.z < -10) {
+            seedpos.z = -10;
+            seedGameObject->SetPosition(seedpos);
+            seedattrib->velocity = glm::vec3(0, 0, 0);
+            if (_cSpace->PointIsInsideObstacle(seedattrib->position)) {
+                seedsToRemove.push_back(seedattrib);
+            }
+        } else {
+            seedpos += seedattrib->velocity;
+            seedattrib->velocity -= glm::vec3(0, 0, .01f);
+        }
+        if (seedpos != seedGameObject->getPosition()) {
+            seedGameObject->SetPosition(seedpos);
+            seedattrib->position = seedpos;
+        }
 
-		seed->Update();
-	}
+        seedGameObject->Update();
+    }
+
+    for (Seed* seedToRemove : seedsToRemove) {
+        RemoveSeed(seedToRemove);
+    }
 }
 void Environment::SetGravityCenterPosition(const glm::vec3& position) {
     _gameObjects[_gravityCenterIndex]->SetPosition(position);
+}
+
+Seed* Environment::GetClosestSeedTo(const glm::vec3& position) {
+    float minDist = INFINITY;
+    Seed* closestSeed = nullptr;
+    for (auto seed : _seedattribs) {
+        auto dist = glm::distance(position, seed->position);
+        if (dist < minDist && seed->velocity == glm::vec3(0, 0, 0)) {
+            minDist = dist;
+            closestSeed = seed;
+        }
+    }
+
+    return closestSeed;
+}
+
+void Environment::RemoveSeed(Seed* seed) {
+    auto index = std::find(_seedattribs.begin(), _seedattribs.end(), seed);
+    if (index != _seedattribs.end()) {
+        _seedattribs.erase(index);
+    }
 }
 
 void Environment::CreateEnvironment() {
     GameObject* gameObject;
     AnimatedObject* animatedObject;
 
-	main_character = new GameObject(ModelManager::DudeModel);
+    main_character = new GameObject(ModelManager::DudeModel);
     main_character->SetTextureIndex(TEX4);
     main_character->SetScale(.10, .10, .10);
     main_character->SetPosition(glm::vec3(13, -12, 5.0));
@@ -62,34 +94,34 @@ void Environment::CreateEnvironment() {
     gameObject->_material.specFactor_ = 0.01;
     _gameObjects.push_back(gameObject);
 
-	gameObject = new GameObject(ModelManager::TreeModel);  // ground
-	gameObject->SetTextureIndex(TEX3);
-	gameObject->SetScale(.31, .31, .25);
-	gameObject->SetPosition(glm::vec3(0, 10, 4));
-	gameObject->_material.specFactor_ = 0.3;
-	_gameObjects.push_back(gameObject);
+    gameObject = new GameObject(ModelManager::TreeModel);  // ground
+    gameObject->SetTextureIndex(TEX3);
+    gameObject->SetScale(.31, .31, .25);
+    gameObject->SetPosition(glm::vec3(0, 10, 4));
+    gameObject->_material.specFactor_ = 0.3;
+    _gameObjects.push_back(gameObject);
 
     _gravityCenterIndex = _gameObjects.size() - 1;
 }
 
 void Environment::addSeed(glm::vec3 pos) {
-	GameObject* seed;
-	Seed* seedatt;
-	glm::vec3 newpos;
-	for (int i = 0; i < 10; i++) {
-		seed = new GameObject(ModelManager::SeedModel);
-		seed->SetTextureIndex(TEX1);
-		seed->SetScale(.2, .2, .2);
-		seed->_material.specFactor_ = .3;
-		seedatt = new Seed();
-		newpos = pos + .1f * Utils::RandomVector();
-		seedatt->position = newpos;
-		seedatt->velocity = .1f * Utils::RandomVector();
-		seed->SetPosition(newpos);
+    GameObject* seed;
+    Seed* seedatt;
+    glm::vec3 newpos;
+    for (int i = 0; i < 10; i++) {
+        seed = new GameObject(ModelManager::SeedModel);
+        seed->SetTextureIndex(TEX1);
+        seed->SetScale(.2, .2, .2);
+        seed->_material.specFactor_ = .3;
+        seedatt = new Seed();
+        newpos = pos + .1f * Utils::RandomVector();
+        seedatt->position = newpos;
+        seedatt->velocity = .1f * Utils::RandomVector();
+        seedatt->gameObject = seed;
+        seed->SetPosition(newpos);
 
-		_seeds.push_back(seed);
-		_seedattribs.push_back(seedatt);
-	}
+        _seedattribs.push_back(seedatt);
+    }
 }
 
 void Environment::updateDude(glm::vec3 pos) {
@@ -144,5 +176,5 @@ void Environment::ProcessKeyboardInput(Camera c) {
         pos -= _up * moveSpeed;
     }
 
-	main_character->SetPosition(pos);
+    main_character->SetPosition(pos);
 }

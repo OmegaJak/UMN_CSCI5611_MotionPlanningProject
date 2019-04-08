@@ -116,16 +116,16 @@ int main(int argc, char* argv[]) {
 
     ModelManager::InitModels();
 
-    Environment environment = Environment();
     Extents envExtents = Extents(glm::vec3(-10, -10, -10), glm::vec3(10, 10, 10));
     ConfigurationSpace cSpace = ConfigurationSpace(envExtents);
+    Environment environment = Environment(&cSpace);
 
     // Cup
-    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-7, -7, -7), glm::vec3(7, -6, 7)));
+    /*cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-7, -7, -7), glm::vec3(7, -6, 7)));
     cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-7, -6, -7), glm::vec3(-6, 3, 7)));
     cSpace.AddObstacle(new AABoxObstacle(glm::vec3(6, -6, -7), glm::vec3(7, 3, 7)));
     cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6, -6, 6), glm::vec3(6, 3, 7)));
-    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6, -6, -7), glm::vec3(6, 3, -6)));
+    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6, -6, -7), glm::vec3(6, 3, -6)));*/
 
     // Maze
     /*auto xLen = 0.5f;
@@ -155,15 +155,15 @@ int main(int argc, char* argv[]) {
     cSpace.AddObstacle(new AABoxObstacle(glm::vec3(1, 3, 0), xLen, yLen, zLen));*/
 
     // Cross
-    // cSpace.AddObstacle(new AABoxObstacle(glm::vec3(0, 0, 0), 5, 5, 20));
-    // cSpace.AddObstacle(new AABoxObstacle(glm::vec3(6.25, 0, 0), 7.5, 5, 10));
-    // cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6.25, 0, 0), 7.5, 5, 10));
+    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(0, 0, 0), 5, 5, 20));
+    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(6.25, 0, 0), 7.5, 5, 10));
+    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6.25, 0, 0), 7.5, 5, 10));
 
     // cSpace.AddObstacle(new SphereObstacle(glm::vec3(0, 0, 10), 4));
     // cSpace.AddObstacle(new SphereObstacle(glm::vec3(8, -2, 5), 2));
 
     MotionPlanner motionPlanner = MotionPlanner(cSpace);
-    AgentManager agentManager = AgentManager(&motionPlanner);
+    AgentManager agentManager = AgentManager(&motionPlanner, &environment);
 
     vector<std::string> faces = {"images/right2.png", "images/left2.png", "images/bottom2.png",
                                  "images/top2.png",   "images/back2.png", "images/front2.png"};
@@ -227,10 +227,9 @@ int main(int argc, char* argv[]) {
                     agentManager.Reset();
                 } else if (windowEvent.key.keysym.sym == SDLK_l) {
                     DebugManager::ShouldRenderDebugLines = !DebugManager::ShouldRenderDebugLines;
-				}
-				else if (windowEvent.key.keysym.sym == SDLK_f) {
-					environment.addSeed(camera.GetPosition());
-				}
+                } else if (windowEvent.key.keysym.sym == SDLK_f) {
+                    environment.addSeed(camera.GetPosition());
+                }
 
                 if (GetParameterToTweak(windowEvent.key.keysym.sym) != nullptr)
                     lastSelectedParam = GetParameterToTweak(windowEvent.key.keysym.sym);
@@ -276,9 +275,7 @@ int main(int argc, char* argv[]) {
         float gray = 0.6f;
         glClearColor(gray, gray, gray, 1.0f);  // Clear the screen to default color
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
-        
-        
+
         glm::mat4 proj = glm::perspective(3.14f / 2, screenWidth / (float)screenHeight, 0.1f, 1000.0f);  // FOV, aspect, near, far
         ShaderManager::ApplyToEachRenderShader(
             [proj](ShaderAttributes attributes) -> void { glUniformMatrix4fv(attributes.projection, 1, GL_FALSE, glm::value_ptr(proj)); },
@@ -304,15 +301,14 @@ int main(int argc, char* argv[]) {
         glBindBuffer(GL_ARRAY_BUFFER, ShaderManager::EnvironmentShader.VBO);
         TextureManager::Update(ShaderManager::EnvironmentShader.Program);
 
-		//environment.updateDude(camera.GetPosition());
-        
-       
+        // environment.updateDude(camera.GetPosition());
+
         environment.UpdateAll();
         environment.ProcessKeyboardInput(camera);
         camera.setPosition(environment.getObject()->getPosition());
-        
+
         camera.Update();
-        
+
         agentManager.Update();
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 

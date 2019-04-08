@@ -1,4 +1,5 @@
 #pragma once
+#include "Environment.h"
 #include "GameObject.h"
 #include "MotionPlanner.h"
 #include "Search.h"
@@ -22,10 +23,12 @@ class Agent : public GameObject {
     Agent(const glm::vec3& start, const glm::vec3& goal, MotionPlanner* motionPlanner, AgentManager* agentManager);
     ~Agent();
 
-    void SetGoal(const glm::vec3& newGoal);
+    void SetGoal(const glm::vec3& newGoal, Seed* seed = nullptr);
 
     void Update() override;
     void Reset();
+
+    float _goalRadius = 0.5f;
 
    private:
     void Move();
@@ -39,10 +42,10 @@ class Agent : public GameObject {
     void InitializeStartAndGoal(const glm::vec3& startPosition, const glm::vec3& goalPosition);
     void InitializeVelocity();
     void PlanPath();
+    void HandleSeedReached();
 
     Node* _start = nullptr;
     Node* _goal = nullptr;
-    float _goalRadius = 0.5f;
 
     MotionPlanner* _motionPlanner;
     AgentManager* _agentManager;
@@ -50,4 +53,5 @@ class Agent : public GameObject {
     LineIndexRange _debugLines;
 
     glm::vec3 _velocity;
+    Seed* _seedGoal;
 };

@@ -24,7 +24,7 @@ float Agent::Damping = 0.999;
 
 Agent::Agent(const vec3& start, const vec3& goal, MotionPlanner* motionPlanner, AgentManager* agentManager)
     : GameObject(ModelManager::BirdModel) {
-    SetTextureIndex(UNTEXTURED);
+    SetTextureIndex(TEX0);
 
     _motionPlanner = motionPlanner;
     _agentManager = agentManager;
@@ -40,7 +40,8 @@ Agent::~Agent() {
     _solutionPath.clear();
 }
 
-void Agent::SetGoal(const vec3& newGoal) {
+void Agent::SetGoal(const vec3& newGoal, Seed* seed) {
+    _seedGoal = seed;
     InitializeStartAndGoal(_position, newGoal);
 }
 
@@ -132,7 +133,12 @@ vec3 Agent::GetFollowPathVelocity() {
     }
 
     if (distance(_position, _solutionPath.back()->position) < _goalRadius) {
-        _agentManager->SetNewGroupGoal(this);
+        if (_seedGoal != nullptr) {
+            HandleSeedReached();
+        } else {
+            _agentManager->SetNewGroupGoal(this);
+        }
+
         return GetFollowPathVelocity();
     }
 
@@ -197,4 +203,9 @@ void Agent::PlanPath() {
     for (Node* node : _goal->connections) {
         node->connections.pop_back();
     }
+}
+
+void Agent::HandleSeedReached() {
+    _agentManager->_environment->RemoveSeed(_seedGoal);
+    _agentManager->SetNewGroupGoal(this);
 }
