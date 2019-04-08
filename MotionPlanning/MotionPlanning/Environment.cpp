@@ -33,7 +33,7 @@ void Environment::CreateEnvironment() {
     gameObject = new GameObject(ModelManager::LandscapeModel); // ground
     gameObject->SetTextureIndex(TEX0);
     gameObject->SetScale(1, 1, 1);
-    gameObject->SetPosition(glm::vec3(-100, -100, -10.5));
+    gameObject->SetPosition(glm::vec3(-100, -100, -12.5));
     gameObject->_material.specFactor_ = 0.01;
     _gameObjects.push_back(gameObject);
 

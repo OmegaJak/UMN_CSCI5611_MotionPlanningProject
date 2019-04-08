@@ -438,12 +438,12 @@ void Model::LoadLandScape(int width, int depth, int height) {
             positions.push_back(points[i][j]);
             positions.push_back(points[i-1][j]);
             positions.push_back(points[i-1][j+1]);
-            uvs.push_back(glm::vec2(1, .5));
-            uvs.push_back(glm::vec2(.5, 1));
+            uvs.push_back(glm::vec2(1, 0));
+            uvs.push_back(glm::vec2(0, 1));
             uvs.push_back(glm::vec2(1, 1));
-            uvs.push_back(glm::vec2(1, .5));
-            uvs.push_back(glm::vec2(.5, .5));
-            uvs.push_back(glm::vec2(.5, 1));
+            uvs.push_back(glm::vec2(1, 0));
+            uvs.push_back(glm::vec2(0, 0));
+            uvs.push_back(glm::vec2(0, 1));
             glm::vec3 norm1 =  - 1.f * glm::cross(points[i - 1][j + 1] - points[i][j], points[i][j + 1] - points[i][j]);
             glm::vec3 norm2 = -1.f * glm::cross(points[i - 1][j] - points[i][j], points[i - 1][j + 1] - points[i - 1][j]);
 
