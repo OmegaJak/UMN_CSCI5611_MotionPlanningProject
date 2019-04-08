@@ -127,8 +127,8 @@ int main(int argc, char* argv[]) {
     MotionPlanner motionPlanner = MotionPlanner(cSpace);
     AgentManager agentManager = AgentManager(&motionPlanner);
 
-    vector<std::string> faces = {"images/right2.png",  "images/left2.png", "images/top2.png",
-                                 "images/bottom2.png", "images/back2.png", "images/front2.png"};
+    vector<std::string> faces = {"images/right2.png",  "images/left2.png", "images/bottom2.png",
+                                 "images/top2.png", "images/back2.png", "images/front2.png"};
     Skybox skybox = Skybox(faces);
 
     // Render the axes

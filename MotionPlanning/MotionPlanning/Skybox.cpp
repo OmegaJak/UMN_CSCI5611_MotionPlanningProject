@@ -53,8 +53,7 @@ void Skybox::Update(glm::mat4 view, glm::mat4 proj) {
         // Draw Skybox //
         glUseProgram(skyShader);
         glm::mat4 newview = glm::mat4(glm::mat3(view));
-        newview = glm::rotate(newview, (float)M_PI / 2, glm::vec3(1.f, 0.0f, 0.0f));
-        newview = glm::rotate(newview, (float)M_PI / 4, glm::vec3(0.f, 1.0f, 0.0f));
+                newview = glm::rotate(newview, -90.f, glm::vec3(1.f, 0.f, 0.f));
         glBindVertexArray(skyboxVAO);
         glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
         glActiveTexture(GL_TEXTURE0);
