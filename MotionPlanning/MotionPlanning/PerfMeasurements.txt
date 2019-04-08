@@ -15,3 +15,7 @@ A*, PRM using KDTree & linking to 5 nearest neighbors:
 	PRM Con: ~500ms
 		Of this, KDTree construction is ~160ms
 	Solution: ~5-7ms
+	
+Cup scenario, -10 to 10, solution time, 500 nodes:
+	With A*: 4-4.5ms
+	Greedy: 1-1.3ms
