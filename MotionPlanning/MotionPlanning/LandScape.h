@@ -95,12 +95,17 @@ float get_height_at(glm::vec3 point) {
             float x3 = (round(point[0])) - floor(round(point[0]));
             float z3 = (round(point[1])) - floor(round(point[1]));
 
+
+
+
             if ((x3 >= -z3 + 1)) {                     // Using the equation x >= -z + 1 to determine which triangle the object is in.
                 v1 = points[x1][z2] - points[x2][z1];  // Top Triangle
                 v2 = points[x2][z2] - points[x2][z1];
+               // printf("Top");
             } else {
                 v1 = points[x1][z2] - points[x2][z1];  // Bottom Triangle
                 v2 = points[x1][z1] - points[x1][z2];
+               // printf("Bottom");
             }
 
             normal = glm::cross(v1, v2);

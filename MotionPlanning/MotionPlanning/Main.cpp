@@ -1,5 +1,5 @@
-// ParticleSystem, Jackson Kruger, 2019
-// Based on MazeGame, Jackson Kruger, 2018
+// Motion Planning
+// 
 // Credit to Stephen J. Guy, 2018 for the foundations
 
 #define GLM_FORCE_RADIANS
@@ -158,7 +158,7 @@ int main(int argc, char* argv[]) {
     cSpace.AddObstacle(new AABoxObstacle(glm::vec3(1, 3, 0), xLen, yLen, zLen));*/
 
     // Cross
-    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(0, 0, 0), 2, 2, 2));
+    cSpace.AddObstacle(new AABoxObstacle(glm::vec3(0, 0, -11), 3, 3, 3));
     //cSpace.AddObstacle(new AABoxObstacle(glm::vec3(6.25, 0, 0), 7.5, 5, 10));
     //cSpace.AddObstacle(new AABoxObstacle(glm::vec3(-6.25, 0, 0), 7.5, 5, 10));
 
@@ -232,7 +232,9 @@ int main(int argc, char* argv[]) {
                     DebugManager::ShouldRenderDebugLines = !DebugManager::ShouldRenderDebugLines;
                 } else if (windowEvent.key.keysym.sym == SDLK_f) {
                     environment.addSeed(camera.GetPosition());
-                }
+                } else if (windowEvent.key.keysym.sym == SDLK_w) {
+				}
+
 
                 if (GetParameterToTweak(windowEvent.key.keysym.sym) != nullptr)
                     lastSelectedParam = GetParameterToTweak(windowEvent.key.keysym.sym);
@@ -317,6 +319,7 @@ int main(int argc, char* argv[]) {
 
         // Render the PBR (DEBUG ONLY)
         motionPlanner.Update();
+        
 
         // Render Debug Lines
         ShaderManager::ActivateShader(ShaderManager::DebugShader);

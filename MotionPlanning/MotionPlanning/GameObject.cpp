@@ -1,9 +1,9 @@
 #define GLM_FORCE_RADIANS
+#include "GameObject.h"
 #include <SDL_stdinc.h>
 #include <gtc/type_ptr.hpp>
 #include <gtx/euler_angles.hpp>
 #include "Constants.h"
-#include "GameObject.h"
 #include "ShaderManager.h"
 #include "glad.h"
 #include "gtx/rotate_vector.hpp"
@@ -70,6 +70,11 @@ void GameObject::SetScale(glm::vec3 scale) {
 
 void GameObject::EulerRotate(float yawDeg, float pitchDeg, float rollDeg) {
     _rotation = glm::eulerAngleYXZ(glm::radians(yawDeg), glm::radians(pitchDeg), glm::radians(rollDeg));
+    CalculateTransform();
+}
+
+void GameObject::EulerRotateBy(float yawDeg, float pitchDeg, float rollDeg) {
+    _rotation = _rotation * glm::eulerAngleYXZ(glm::radians(yawDeg), glm::radians(pitchDeg), glm::radians(rollDeg));
     CalculateTransform();
 }
 

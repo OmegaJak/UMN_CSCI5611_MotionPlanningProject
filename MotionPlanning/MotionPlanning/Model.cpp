@@ -237,6 +237,96 @@ void Model::LoadObj2(const std::string& filename) {
     modelFile.close();
 }
 
+float* Model::LoadObjtoModel(const std::string& file) {
+    std::vector<glm::vec3> out_vertices;
+    std::vector<glm::vec2> out_uvs;
+    std::vector<glm::vec3> out_normals;
+    std::vector<unsigned int> indices, uvs, normals;
+    std::vector<glm::vec3> temp_vertices;
+    std::vector<glm::vec2> temp_uvs;
+    std::vector<glm::vec3> temp_normals;
+    std::ifstream modelFile;
+    modelFile.open(file);
+    int numLines = 0;
+    string command;
+    string unused_line;
+    while (modelFile >> command) {  // Read first word in the line (i.e., the command type)
+
+        if (command[0] == '#') {
+            getline(modelFile, unused_line);  // skip rest of line
+            std::cout << "Skipping comment: " << command << unused_line << std::endl;
+            continue;
+        } else if (command == "v") {
+            glm::vec3 vertex;
+            float x, y, z;
+            modelFile >> vertex.x >> vertex.y >> vertex.z;
+            temp_vertices.push_back(vertex);
+        } else if (command == "vt") {
+            glm::vec2 uv;
+            modelFile >> uv.x >> uv.y;
+            temp_uvs.push_back(uv);
+        } else if (command == "vn") {
+            glm::vec3 normal;
+            modelFile >> normal.x >> normal.y >> normal.z;
+            temp_normals.push_back(normal);
+        } else if (command == "f") {
+            std::string v1, v2, v3;
+            unsigned int vIndex[3], uIndex[3], nIndex[3];
+            for (int i = 0; i < 3; i++) {
+                modelFile >> vIndex[i];
+                modelFile.ignore(1);
+                modelFile >> uIndex[i];
+                modelFile.ignore(1);
+                modelFile >> nIndex[i];
+            }
+
+            for (int i = 0; i < 3; i++) {
+                indices.push_back(vIndex[i]);
+                uvs.push_back(uIndex[i]);
+                normals.push_back(nIndex[i]);
+            }
+        } else {
+            getline(modelFile, unused_line);  // skip rest of line
+            std::cout << "WARNING. Do not know command: " << command << std::endl;
+        }
+    }
+
+    for (int i = 0; i < indices.size(); i++) {
+        int index = indices[i];
+        glm::vec3 vertex = temp_vertices[index - 1];  // Obj has index starting at 1
+        out_vertices.push_back(vertex);
+    }
+    for (int i = 0; i < uvs.size(); i++) {
+        int index = uvs[i];
+        glm::vec2 uv = temp_uvs[index - 1];
+        out_uvs.push_back(uv);
+    }
+    for (int i = 0; i < normals.size(); i++) {
+        int index = normals[i];
+        glm::vec3 normal = temp_normals[index - 1];
+        out_normals.push_back(normal);
+    }
+    printf("Loading parsed data into vectors");
+    printf("normal size: %d", out_vertices.size());
+    printf(" vertex size: %d", out_uvs.size());
+    printf(" indice size: %d", out_normals.size());
+    printf("\n");
+
+    float* model_ = new float[out_vertices.size() * 8];
+    for (int i = 0; i < out_vertices.size(); i++) {
+        model_[i * 8 + POSITION_OFFSET] = out_vertices[i].x;
+        model_[i * 8 + POSITION_OFFSET + 1] = out_vertices[i].y;
+        model_[i * 8 + POSITION_OFFSET + 2] = out_vertices[i].z;
+        model_[i * 8 + TEXCOORD_OFFSET] = out_uvs[i].x;
+        model_[i * 8 + TEXCOORD_OFFSET + 1] = out_uvs[i].y;
+        model_[i * 8 + NORMAL_OFFSET] = out_normals[i].x;
+        model_[i * 8 + NORMAL_OFFSET + 1] = out_normals[i].y;
+        model_[i * 8 + NORMAL_OFFSET + 2] = out_normals[i].z;
+    }
+    modelFile.close();
+    return model_;
+}
+
 void Model::LoadDae(const std::string& filename) {
     std::vector<float> vertdata;
     std::vector<float> uvdata;
@@ -477,4 +567,9 @@ void Model::LoadLandScape(int width, int depth, int height) {
     }
     printf("FINISHED");
     num_verts_ = numverts;
+}
+
+void Model::setModel(float* modeldata) {
+    model_ = modeldata;
+    ModelManager::updateVBO();
 }

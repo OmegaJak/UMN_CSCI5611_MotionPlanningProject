@@ -36,6 +36,7 @@ class Agent : public GameObject {
     glm::vec3 GetSeparationVelocity();
     glm::vec3 GetCohesionVelocity();
     glm::vec3 GetAlignmentVelocity();
+    glm::vec3 GetDudeVelocity();
     glm::vec3 GetObstacleAvoidanceVelocity();
     glm::vec3 GetFollowPathVelocity();
 

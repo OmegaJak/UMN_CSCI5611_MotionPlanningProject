@@ -6,12 +6,12 @@
 
 using namespace glm;
 
-// Decent settings for agents without groups, picking their own goals
-// Agent::EffectParams Agent::SeparationParams = {0.9f, 0.05f};
-// Agent::EffectParams Agent::CohesionParams = {2.1f, 0.007f};
-// Agent::EffectParams Agent::AlignmentParams = {3.5f, 0.2f};
-// Agent::EffectParams Agent::ObstacleParams = {1.0f, 0.00015f};
-// Agent::EffectParams Agent::PathParams = {0.13f, 0.2f};  // The first value is actually used as desired speed
+ //Decent settings for agents without groups, picking their own goals
+ //Agent::EffectParams Agent::SeparationParams = {0.9f, 0.05f};
+ //Agent::EffectParams Agent::CohesionParams = {2.1f, 0.007f};
+ //Agent::EffectParams Agent::AlignmentParams = {3.5f, 0.2f};
+ //Agent::EffectParams Agent::ObstacleParams = {1.0f, 0.00015f};
+ //Agent::EffectParams Agent::PathParams = {0.13f, 0.2f};  // The first value is actually used as desired speed
 
 // Decent settings for group navigation
 Agent::EffectParams Agent::SeparationParams = {1.0f, 0.05f};
@@ -20,7 +20,7 @@ Agent::EffectParams Agent::AlignmentParams = {4.0f, 0.3f};
 Agent::EffectParams Agent::ObstacleParams = {0.75f, 0.001f};
 Agent::EffectParams Agent::PathParams = {0.13f, 0.2f};  // The first value is actually used as desired speed
 
-float Agent::Damping = 0.999;
+float Agent::Damping = .999;
 
 Agent::Agent(const vec3& start, const vec3& goal, MotionPlanner* motionPlanner, AgentManager* agentManager)
     : GameObject(ModelManager::BirdModel) {
@@ -48,7 +48,7 @@ void Agent::SetGoal(const vec3& newGoal, Seed* seed) {
 void Agent::Update() {
     // FollowPath(0.1f);
     if (AgentManager::AgentsRunning && !eating) {
-        _velocity += GetSeparationVelocity() + GetCohesionVelocity() + GetAlignmentVelocity() + GetObstacleAvoidanceVelocity() +
+        _velocity += GetSeparationVelocity() + GetCohesionVelocity() + GetAlignmentVelocity() + GetDudeVelocity() + GetObstacleAvoidanceVelocity() +
                      GetFollowPathVelocity();
         _velocity *= Damping;
         if (length(_velocity) > 1) {
@@ -56,7 +56,11 @@ void Agent::Update() {
         }
         Move();
     }
+    //LookAt(getPosition() + _velocity, glm::vec3(0, 1, 0));
+    //EulerRotateBy(-90, 180, 0);
     GameObject::Update();
+
+
 }
 
 void Agent::Reset() {
@@ -67,12 +71,12 @@ void Agent::Reset() {
 void Agent::Move() {
     // Move towards that point
     vec3 newPos = _position + _velocity;
-    if (newPos.x > 25) newPos.x = -25;
-    if (newPos.x < -25) newPos.x = 25;
-    if (newPos.y > 25) newPos.y = -25;
-    if (newPos.y < -25) newPos.y = 25;
-    if (newPos.z > 25) newPos.z = -25;
-    if (newPos.z < -25) newPos.z = 25;
+    if (newPos.x > 50) newPos.x = -50;
+    if (newPos.x < -50) newPos.x = 50;
+    if (newPos.y > 50) newPos.y = -50;
+    if (newPos.y < -50) newPos.y = 50;
+    if (newPos.z > 50) newPos.z = -50;
+    if (newPos.z < -50) newPos.z = 50;
 
     SetPosition(newPos);
 
@@ -117,6 +121,14 @@ vec3 Agent::GetAlignmentVelocity() {
     vec3 averageVelocity = velocityTotal / float(neighbors.size());
 
     return (averageVelocity - _velocity) * AlignmentParams.strength;
+}
+
+glm::vec3 Agent::GetDudeVelocity() {
+    glm::vec3 pos = _agentManager->_environment->getObject()->getPosition();
+    float dist = glm::distance(pos, getPosition());
+    float mag = -.1f / (dist * dist);
+    
+    return mag * (pos - getPosition());
 }
 
 vec3 Agent::GetObstacleAvoidanceVelocity() {
@@ -213,11 +225,13 @@ void Agent::HandleSeedReached() {
 }
 
 void Agent::CheckEating(glm::vec3 pos) {
+    
     glm::vec3 pos2 = getPosition();
 
     //printf("Person is at: %f %f %f\n", pos.x, pos.y, pos.z);
     //printf("Bird is at: %f %f %f\n", pos2.x, pos2.y, pos2.z);
-    if (glm::distance(glm::vec3(pos2.x, pos2.y, 0),glm::vec3(pos.x, pos.y, 0)) < 5) {
+    if (glm::distance(glm::vec3(pos2.x, pos2.y, 0),glm::vec3(pos.x, pos.y, 0)) < 7) {
         eating = false;
 	}
+	
 }

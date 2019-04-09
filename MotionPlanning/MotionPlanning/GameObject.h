@@ -17,6 +17,7 @@ class GameObject {
     void SetScale(float n);
     void SetScale(glm::vec3 scale);
     void EulerRotate(float yawDeg, float pitchDeg, float rollDeg);
+    void EulerRotateBy(float yawDeg, float pitchDeg, float rollDeg);
     void LookAt(const glm::vec3& position, const glm::vec3& up = UP);
     void SetColor(const glm::vec3& color);
     void SetTextureIndex(TEXTURE texture_index);

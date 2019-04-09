@@ -99,13 +99,6 @@ void Environment::CreateEnvironment() {
     gameObject->_material.specFactor_ = 0.01;
     _gameObjects.push_back(gameObject);
 
-    gameObject = new GameObject(ModelManager::TreeModel);  // ground
-    gameObject->SetTextureIndex(TEX3);
-    gameObject->SetScale(.31, .31, .25);
-    gameObject->SetPosition(glm::vec3(0, 10, 4));
-    gameObject->_material.specFactor_ = 0.3;
-    _gameObjects.push_back(gameObject);
-
     _gravityCenterIndex = _gameObjects.size() - 1;
 }
 
@@ -163,8 +156,10 @@ void Environment::ProcessKeyboardInput(Camera c) {
     // Forward/back
     if (key_state[SDL_SCANCODE_W]) {
         pos += _forward * moveSpeed;
+        ModelManager::update();
     } else if (key_state[SDL_SCANCODE_S]) {
         pos -= _forward * moveSpeed;
+        ModelManager::update();
     }
 
     // Right/left

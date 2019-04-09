@@ -15,13 +15,12 @@ class Model {
     void LoadObj2(const std::string& file);
     void LoadDae(const std::string& file);
     void LoadLandScape(int width, int height, int depth);
+    void setModel(float* modeldata);
     static void print_xmlfile(xmlNode* a_node, int level);
     static xmlNode* searchNode(xmlNode* a_node, char target[]);
     static void parsefloatNode(xmlDocPtr doc, xmlNodePtr cur, std::vector<float>* data);
     static void parseintNode(xmlDocPtr doc, xmlNodePtr cur, std::vector<int>* data);
-    void setModel(float* model) {
-        model_ = model;
-    }
+    static float* LoadObjtoModel(const std::string& file);
     void setNumVerts(int numverts) {
         num_verts_ = numverts;
     }

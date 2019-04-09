@@ -75,9 +75,9 @@ glm::vec3 AABoxObstacle::GetRepulsionNormalToPoint(const glm::vec3& point) const
 }
 
 void AABoxObstacle::InitRendering() {
-    _environmentObstacle = GameObject(ModelManager::CubeModel);
-    _environmentObstacle.SetTextureIndex(UNTEXTURED);
+    _environmentObstacle = GameObject(ModelManager::TreeModel);
+    _environmentObstacle.SetTextureIndex(TEX3);
     _environmentObstacle.SetColor(glm::vec3(.5f, .2f, .3f));
     _environmentObstacle.SetPosition(_center);
-    _environmentObstacle.SetScale(_halfSideLength * 2.f);
+    _environmentObstacle.SetScale(_halfSideLength * .14f);
 }

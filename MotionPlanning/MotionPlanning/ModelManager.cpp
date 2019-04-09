@@ -11,14 +11,16 @@ Model* ModelManager::SeedModel;
 Model* ModelManager::TreeModel;
 LandScape* ModelManager::landscape;
 Model* ModelManager::LandscapeModel;
+std::vector<float*> ModelManager::guymodels;
 std::vector<Model*> ModelManager::models_;
 int ModelManager::num_verts_;
+int ModelManager::current_dude;
 
 void ModelManager::InitModels() {
     SphereModel = new Model("models/sphere.txt");
     CubeModel = new Model("models/cube.txt");
     BirdModel = new Model("models/bird.dae");
-    DudeModel = new Model("models/Dude.obj");
+    DudeModel = new Model("models/dudes/True guy1.obj");
     SeedModel = new Model("models/seed.obj");
     landscape = new LandScape(100, 100, 3);
     //LandscapeModel = new Model("landscape.lan");  // landscape->model;
@@ -27,6 +29,21 @@ void ModelManager::InitModels() {
     printf("\n\n Model size is: %d\n\n", LandscapeModel->model_[0]);
 
     TreeModel = new Model("models/Tree1.obj");
+    guymodels = std::vector<float*>();
+    
+    guymodels.push_back(Model::LoadObjtoModel("models/dudes/True guy.obj"));
+    guymodels.push_back(Model::LoadObjtoModel("models/dudes/True guy1.obj"));
+    guymodels.push_back(Model::LoadObjtoModel("models/dudes/True guy2.obj"));
+    guymodels.push_back(Model::LoadObjtoModel("models/dudes/True guy3.obj"));
+    guymodels.push_back(Model::LoadObjtoModel("models/dudes/True guy4.obj"));
+    guymodels.push_back(Model::LoadObjtoModel("models/dudes/True guy5.obj"));
+    guymodels.push_back(Model::LoadObjtoModel("models/dudes/True guy6.obj"));
+    guymodels.push_back(Model::LoadObjtoModel("models/dudes/True guy7.obj"));
+    guymodels.push_back(Model::LoadObjtoModel("models/dudes/True guy8.obj"));
+    guymodels.push_back(Model::LoadObjtoModel("models/dudes/True guy9.obj"));
+    guymodels.push_back(Model::LoadObjtoModel("models/dudes/True guy10.obj"));
+    guymodels.push_back(Model::LoadObjtoModel("models/dudes/True guy11.obj"));
+    current_dude = 0;
 }
 
 void ModelManager::RegisterModel(Model* model) {
@@ -50,6 +67,27 @@ void ModelManager::InitVBO() {
     glBindBuffer(GL_ARRAY_BUFFER,
                  ShaderManager::EnvironmentShader.VBO);  // Set the vbo as the active array buffer (Only one buffer can be active at a time)
     glBufferData(GL_ARRAY_BUFFER, NumElements() * sizeof(float), model_data, GL_STATIC_DRAW);  // upload vertices to vbo
+}
+
+void ModelManager::updateVBO() {
+    int current_offset = 0;
+    float* model_data = new float[NumElements()];
+    for (auto model : models_) {
+        std::copy(model->model_, model->model_ + model->NumElements(), model_data + current_offset);
+        current_offset += model->NumElements();
+    }
+    glBindBuffer(GL_ARRAY_BUFFER,
+                 ShaderManager::EnvironmentShader.VBO);  // Set the vbo as the active array buffer (Only one buffer can be active at a time)
+    glBufferData(GL_ARRAY_BUFFER, NumElements() * sizeof(float), model_data, GL_STATIC_DRAW);  // upload vertices to vbo
+    delete model_data;
+}
+
+void ModelManager::update() {
+    if (current_dude > 11) current_dude = 0;
+
+    DudeModel->setModel(guymodels[current_dude]);
+    current_dude++;
+    updateVBO();
 }
 
 void ModelManager::Cleanup() {

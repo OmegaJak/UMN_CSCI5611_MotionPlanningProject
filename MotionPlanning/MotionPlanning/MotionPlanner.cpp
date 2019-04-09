@@ -13,7 +13,7 @@ using namespace glm;
 MotionPlanner::MotionPlanner(ConfigurationSpace cSpace) {
     _cSpace = cSpace;
 
-    InitializePRM(100);
+    InitializePRM(1000);
     SetupDebugLines();
 }
 
@@ -121,10 +121,8 @@ void MotionPlanner::InitializePRM(int numSamples) {
 
 void MotionPlanner::Connect(Node* n1, Node* n2) const {
     if (n1 != n2) {
-        if (!_cSpace.SegmentIntersectsObstacle(n1->position, n2->position)) {
-            n1->connections.push_back(n2);
-            n2->connections.push_back(n1);
-        }
+        n1->connections.push_back(n2);
+        n2->connections.push_back(n1);
     }
 }
 

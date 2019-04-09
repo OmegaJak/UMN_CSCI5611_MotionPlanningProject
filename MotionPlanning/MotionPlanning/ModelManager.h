@@ -10,7 +10,9 @@ class ModelManager {
     static void RegisterModel(Model* model);
 
     static void InitVBO();
+    static void updateVBO();
     static void Cleanup();
+    static void update();
 
     static int NumElements();
 
@@ -22,8 +24,11 @@ class ModelManager {
     static LandScape* landscape;
 	static Model* LandscapeModel;
     static Model* TreeModel;
+    static std::vector<float*> guymodels; 
+
 
    private:
     static std::vector<Model*> models_;
     static int num_verts_;
+    static int current_dude;
 };

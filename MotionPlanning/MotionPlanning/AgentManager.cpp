@@ -60,13 +60,13 @@ void AgentManager::SetNewGroupGoal(Agent* agent) {
 }
 
 void AgentManager::InitializeAgents() {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 6; i++) {
         _agentGroups.emplace_back();
         glm::vec3 groupGoal = _motionPlanner->GetRandomValidPoint();
         glm::vec3 groupStart = _motionPlanner->GetRandomValidPoint();
         auto color = Utils::RandomVector01();
 
-        for (int j = 0; j < 5; j++) {
+        for (int j = 0; j < 9; j++) {
             auto newAgent = new Agent(groupStart, groupGoal, _motionPlanner, this);
             newAgent->SetColor(color);
             _agentGroups[i].push_back(newAgent);

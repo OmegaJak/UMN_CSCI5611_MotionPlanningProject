@@ -35,7 +35,7 @@ void TextureManager::InitTextures() {
     InitTexture(&tex3, surface);
 
 	glActiveTexture(GL_TEXTURE4);
-    surface = IMG_Load("images/Dude.png");
+    surface = IMG_Load("images/GuyThing.png");
     InitTexture(&tex4, surface);
 
 	glActiveTexture(GL_TEXTURE5);
